@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="{{ asset('/css/bootstrap-reboot.css') }}"  type="text/css"/>
     <link rel="stylesheet" href="{{ asset('/css/bootstrap-utilities.css') }}"  type="text/css"/>
 
-    <link rel="stylesheet" href="{{ asset('/css/adminlte/OverlayScrollbars.css') }}"  type="text/css"/>
     <title>ADMINSIDE</title>
 </head>
 
