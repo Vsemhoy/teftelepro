@@ -17,7 +17,7 @@
 
 <header class="navbar navbar-dark sticky-top bg-darker flex-nowrap p-0 shadow">
   <div class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6" href="#">
-  <button class="navbar-toggler  collapsed nav-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+  <button id="leftSidenavToggler" class="navbar-toggler  collapsed nav-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <span>Budget</span>  
@@ -26,19 +26,48 @@
   <input class="form-control form-control-dark w-100 rounded-0 border-0 top-search" type="text" placeholder="Search" aria-label="Search">
   <div class="navbar-nav">
     <div class="nav-item text-nowrap">
-      <a class="nav-link px-3" href="#">Apps</a>
+      <a class="nav-link px-3" id="appTrigger" href="#">Apps</a>
     </div>
+  </div>
+  <div class="app-menu d-none" id="appMenu">
+    <a href="{{ route('budger')}}" class="app-item">
+      BUDGET
+    </a>
+    <a href="{{ route('eventor')}}"  class="app-item">
+      EVENTS
+    </a>
+    <a  href="{{ route('warehouser')}}" class="app-item">
+      WAREHOUSE
+    </a>
+    <a href="{{ route('stuffer')}}"  class="app-item">
+      STUFF
+    </a>
+    <span class="small-gap"></span>
+    <a href="{{ route('home')}}"  class="app-item current">
+      HOME
+    </a>
+    <span class="small-gap"></span>
+    <a href="#"  class="app-item">
+      LOGIN
+    </a>
   </div>
 </header>
 
-<div class="container-fluid sea hero">
+<div class="container-fluid sea hero menu-minimized" id="mainWrapper">
   <div class="row">
-    
+  {{-- side navigation menu (dynamical)   --}}
+  @include('bootstrap.sidenav')  
+
+    <main class="col-main ms-sm-auto p-0" id="mainWrapper">
     @yield('page-content')
+
+    @include('bootstrap.footer') 
+    </main>
   </div>
 </div>
 
 
-
+{{-- vendors and page scripts file   --}}
+  @include('bootstrap.scripts')
 </body>
 </html>

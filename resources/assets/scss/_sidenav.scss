@@ -1,0 +1,125 @@
+.nav-toggler {
+  padding: 0px;
+  border-radius: 0px;
+  margin-right: 12px;
+  border-color: transparent;
+}
+.nav-bg {
+  background-color: rgb(0 80 149 / 58%);
+  backdrop-filter: blur(4px);
+}
+.nav-bg a {
+  color: white;
+  transition: all ease 0.0s;
+  font-size: smaller;
+}
+.nav-bg a:hover {
+  background-color: rgb(0 80 149 / 58%);
+  color: white;
+  margin-top: -1px;
+  margin-bottom: -1px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+.nav-bg li.active {
+  background-color: rgba(0, 80, 149, 0.58);
+  color: white;
+  margin-top: -1px;
+  margin-bottom: -1px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: inset 0px 0px 19px -6px rgb(6 6 6 / 48%);
+}
+.nav-bg h6 > span {
+  color: rgb(176 223 251);
+}
+.icon-square{
+  font-size: large;
+  padding-right: 12px;
+}
+.col-sidenav {
+  transition: all ease 0.3s;
+  overflow: hidden;
+  height: revert;
+  position: fixed;
+  height: calc(100vh - 42px);
+}
+.col-main {
+  transition: all ease 0.3s;
+}
+.nav-rail {
+    transition: all ease 0.3s;
+    padding: 0px;
+    opacity:  0.0;
+    background: rgb(255 255 255 / 32%);
+    cursor: pointer;
+  }
+  .nav-rail:hover {
+    transition: all ease 0.3s;
+    padding: 0px;
+    opacity: 1;
+    padding: 0px;
+  }
+  
+  .menu-opened
+  {
+    .col-sidenav {
+      width: 300px !important;
+    }
+    .col-main {
+      width: calc(100% - 300px) !important;
+      margin-left: 300px;
+    }
+    .nav-rail {
+      position: fixed;
+      height: 100vh;
+      margin-left: 294px;
+    width: 12px !important;
+    padding: 0px;
+  }
+  .icon-square{
+    color: #adb5bd;
+  }
+  @media screen and (max-width: 1900px)
+  {
+    .col-sidenav {
+      width: 300px !important;
+      position: fixed;
+      
+    }
+    .col-main {
+      width: calc(100% - 60px) !important;
+      margin-left: 60px;
+    }
+  }
+
+}
+
+.menu-minimized
+{
+  .col-sidenav {
+
+    width: 60px !important;
+    height: calc(100vh - 42px);
+  }
+  .col-main {
+    width: calc(100% - 60px) !important;
+    margin-left: 60px;
+  }
+  .nav-rail {
+    position: fixed;
+    height: 100vh;
+    margin-left: 58px;
+    width: 12px !important;
+    padding: 0px;
+    
+  }
+  .icon-square{
+    text-align: center;
+    display: block;
+  }
+
+  .sitem-text {
+    display: none;
+  }
+}

@@ -20,3 +20,20 @@ Route::get('/', function () {
 Route::get('/home', function () {
   return view('home');
 })->name('home');
+
+
+Route::get('/budger', function () {
+  return view('budger');
+})->name('budger');
+
+Route::get('/eventor', function () {
+  return view('eventor');
+})->name('eventor');
+
+Route::get('/stuffer', function () {
+  return view('stuffer');
+})->name('stuffer');
+
+Route::get('/warehouser', function () {
+  return view('warehouser');
+})->name('warehouser');

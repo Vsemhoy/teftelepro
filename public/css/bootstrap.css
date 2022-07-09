@@ -6556,6 +6556,78 @@ textarea.form-control-lg {
   padding: 0px !important;
 }
 
+body {
+  background-image: url("https://wallpaperaccess.com/full/2425046.jpg");
+  background-size: cover;
+}
+
+.fr {
+  float: right;
+}
+
+.fs-smaller {
+  font-size: smaller !important;
+}
+
+.top-search {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: white;
+  transition: all ease 0.3s;
+}
+
+.top-search:hover {
+  background-color: rgba(255, 255, 255, 0.13);
+  box-shadow: none;
+}
+
+.top-search:focus {
+  background-color: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.45) !important;
+  color: white;
+  box-shadow: none;
+}
+
+.app-menu {
+  position: absolute;
+  right: 0px;
+  top: 42px;
+  min-width: 200px;
+}
+
+.app-item {
+  background-color: rgba(0, 80, 149, 0.88);
+  backdrop-filter: blur(2px);
+  color: white;
+  font-size: large;
+  padding: 12px;
+  width: 100%;
+  display: block;
+  text-decoration: none;
+}
+
+.app-item:hover {
+  background-color: rgba(18, 57, 102, 0.82);
+  backdrop-filter: blur(2px);
+  color: white;
+  box-shadow: inset 0px 0px 0px 1px rgba(255, 255, 255, 0.29);
+}
+
+.app-item.current {
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  color: white;
+  text-align: right;
+}
+
+.small-gap {
+  height: 3px;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  display: block;
+}
+
 .nav-toggler {
   padding: 0px;
   border-radius: 0px;
@@ -6597,36 +6669,87 @@ textarea.form-control-lg {
   color: rgb(176, 223, 251);
 }
 
-body {
-  background-image: url("https://wallpaperaccess.com/full/2425046.jpg");
-  background-size: cover;
+.icon-square {
+  font-size: large;
+  padding-right: 12px;
 }
 
-.fr {
-  float: right;
+.col-sidenav {
+  transition: all ease 0.3s;
+  overflow: hidden;
+  height: revert;
+  position: fixed;
+  height: calc(100vh - 42px);
 }
 
-.fs-smaller {
-  font-size: smaller !important;
-}
-
-.top-search {
-  background-color: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: white;
+.col-main {
   transition: all ease 0.3s;
 }
 
-.top-search:hover {
-  background-color: rgba(255, 255, 255, 0.13);
-  box-shadow: none;
+.nav-rail {
+  transition: all ease 0.3s;
+  padding: 0px;
+  opacity: 0;
+  background: rgba(255, 255, 255, 0.32);
+  cursor: pointer;
 }
 
-.top-search:focus {
-  background-color: rgba(255, 255, 255, 0.13);
-  border: 1px solid rgba(255, 255, 255, 0.45) !important;
-  color: white;
-  box-shadow: none;
+.nav-rail:hover {
+  transition: all ease 0.3s;
+  padding: 0px;
+  opacity: 1;
+  padding: 0px;
+}
+
+.menu-opened .col-sidenav {
+  width: 300px !important;
+}
+.menu-opened .col-main {
+  width: calc(100% - 300px) !important;
+  margin-left: 300px;
+}
+.menu-opened .nav-rail {
+  position: fixed;
+  height: 100vh;
+  margin-left: 294px;
+  width: 12px !important;
+  padding: 0px;
+}
+.menu-opened .icon-square {
+  color: #adb5bd;
+}
+@media screen and (max-width: 1900px) {
+  .menu-opened .col-sidenav {
+    width: 300px !important;
+    position: fixed;
+  }
+  .menu-opened .col-main {
+    width: calc(100% - 60px) !important;
+    margin-left: 60px;
+  }
+}
+
+.menu-minimized .col-sidenav {
+  width: 60px !important;
+  height: calc(100vh - 42px);
+}
+.menu-minimized .col-main {
+  width: calc(100% - 60px) !important;
+  margin-left: 60px;
+}
+.menu-minimized .nav-rail {
+  position: fixed;
+  height: 100vh;
+  margin-left: 58px;
+  width: 12px !important;
+  padding: 0px;
+}
+.menu-minimized .icon-square {
+  text-align: center;
+  display: block;
+}
+.menu-minimized .sitem-text {
+  display: none;
 }
 
 .clearfix::after {

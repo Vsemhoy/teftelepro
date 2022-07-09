@@ -1,41 +1,7 @@
 .p0 {
   padding: 0px !important;
 }
-.nav-toggler {
-  padding: 0px;
-  border-radius: 0px;
-  margin-right: 12px;
-  border-color: transparent;
-}
-.nav-bg {
-  background-color: rgb(0 80 149 / 58%);
-  backdrop-filter: blur(4px);
-}
-.nav-bg a {
-  color: white;
-  transition: all ease 0.0s;
-  font-size: smaller;
-}
-.nav-bg a:hover {
-  background-color: rgb(0 80 149 / 58%);
-  color: white;
-  margin-top: -1px;
-  margin-bottom: -1px;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-}
-.nav-bg li.active {
-  background-color: rgba(0, 80, 149, 0.58);
-  color: white;
-  margin-top: -1px;
-  margin-bottom: -1px;
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: inset 0px 0px 19px -6px rgb(6 6 6 / 48%);
-}
-.nav-bg h6 > span {
-  color: rgb(176 223 251);
-}
+
 body {
   background-image: url("https://wallpaperaccess.com/full/2425046.jpg");
   background-size: cover;
@@ -66,4 +32,39 @@ body {
   border: 1px solid rgb(255 255 255 / 45%) !important;
   color: white;
   box-shadow: none;
+}
+.app-menu {
+  position: absolute;
+  right: 0px;
+  top: 42px;
+  min-width: 200px;
+  }
+  .app-item {
+    background-color: rgba(0, 80, 149, 0.88);
+    backdrop-filter: blur(2px);
+  color: white;
+  font-size: large;
+  padding: 12px;
+  width: 100%;
+  display: block;
+  text-decoration: none;
+}
+.app-item:hover {
+  background-color: rgb(18 57 102 / 82%);
+  backdrop-filter: blur(2px);
+  color: white;
+  box-shadow: inset 0px 0px 0px 1px rgb(255 255 255 / 29%);
+}
+.app-item.current {
+  background-color: rgb(0 0 0 / 55%);
+  backdrop-filter: blur(2px);
+  color: white;
+  text-align: right;
+}
+.small-gap {
+  height: 3px;
+  margin: 0px;
+  padding: 0px;
+  width: 100%;
+  display: block;
 }
