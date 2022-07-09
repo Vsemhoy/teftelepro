@@ -12,14 +12,13 @@
     //     print_r($value);
     //     echo "<br>";
     // }
-
+    $component = Controller::getComponent('home');
     ?>
-
 
 
     <div class="content p-3 pt-0">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center px-md-4 pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2">Dashboard</h1>
+        <h1 class="h2"><?php echo $component->name; ?></h1>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>

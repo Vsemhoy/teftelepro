@@ -12,13 +12,13 @@
     //     print_r($value);
     //     echo "<br>";
     // }
-
+      $component = Controller::getComponent('home');
     ?>
 
 
 
     <div class="content p-3 pt-0">
-      <h1>Warehouser</h1>
+      <h1><?php echo $component->name; ?></h1>
       <!-- end of content -->
     </div>
 

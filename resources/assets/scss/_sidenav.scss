@@ -60,7 +60,17 @@
     opacity: 1;
     padding: 0px;
   }
-  
+.badger {
+  display: block;
+  padding: 4px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  position: absolute;
+  margin-left: 32px;
+}
+
+
+
   .menu-opened
   {
     .col-sidenav {
@@ -74,12 +84,17 @@
       position: fixed;
       height: 100vh;
       margin-left: 294px;
-    width: 12px !important;
-    padding: 0px;
-  }
-  .icon-square{
-    color: #adb5bd;
-  }
+      width: 12px !important;
+      padding: 0px;
+    }
+    .icon-square{
+      color: #adb5bd;
+    }
+    .col-sidenav .badger 
+    {
+      display: none;
+    }
+
   @media screen and (max-width: 1900px)
   {
     .col-sidenav {
@@ -120,6 +135,16 @@
   }
 
   .sitem-text {
+    display: none;
+  }
+  .col-sidenav .badge 
+  {
+    display: none;
+  }
+  i {
+    font-size: x-large;
+  }
+  .nav-divider-text {
     display: none;
   }
 }

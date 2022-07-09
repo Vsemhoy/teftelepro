@@ -57,7 +57,7 @@ body {
 }
 .app-item.current {
   background-color: rgb(0 0 0 / 55%);
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(6px);
   color: white;
   text-align: right;
 }
@@ -67,4 +67,16 @@ body {
   padding: 0px;
   width: 100%;
   display: block;
+}
+.br-0 {
+  border-radius: 0px !important;
+}
+.modal-head-dark {
+  background-color: rgba(18, 57, 102, 0.92);
+  color: white;
+  border-radius: 0px;
+}
+.modal-head-dark button {
+  filter: invert(1);
+
 }
