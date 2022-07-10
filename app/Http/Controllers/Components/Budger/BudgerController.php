@@ -55,6 +55,26 @@ class BudgerController extends BaseController
       //$menuItem1->isDivider = $isDiv;
       array_push($this->sideMenu, $menuItem2 );
 
+      $menuItem2 = new SidemenuItem("Loans", false);
+      $menuItem2->itemReference = "#";
+      $menuItem2->itemLetters = "LO";
+      $menuItem2->itemIcon = "";
+      $menuItem2->itemBadge = "";
+      $menuItem2->itemClass = "";
+      $menuItem1->badgeClass = "";
+      //$menuItem1->isDivider = $isDiv;
+      array_push($this->sideMenu, $menuItem2 );
+
+      $menuItem2 = new SidemenuItem("Credits", false);
+      $menuItem2->itemReference = "#";
+      $menuItem2->itemLetters = "CR";
+      $menuItem2->itemIcon = "";
+      $menuItem2->itemBadge = "";
+      $menuItem2->itemClass = "";
+      $menuItem1->badgeClass = "";
+      //$menuItem1->isDivider = $isDiv;
+      array_push($this->sideMenu, $menuItem2 );
+
       
       $menuItem3 = new SidemenuItem("Utilities:", true);
       $menuItem3->itemReference = "";
@@ -96,6 +116,26 @@ class BudgerController extends BaseController
       //$menuItem1->isDivider = $isDiv;
       array_push($this->sideMenu, $menuItem5 );
       
+      $menuItem3 = new SidemenuItem("Statistics:", true);
+      $menuItem3->itemReference = "";
+      $menuItem3->itemLetters = "ST";
+      $menuItem3->itemIcon = "bi-dot";
+      $menuItem3->itemBadge = "";
+      $menuItem3->itemClass = "";
+      $menuItem3->badgeClass = "";
+      //$menuItem1->isDivider = $isDiv;
+      array_push($this->sideMenu, $menuItem3 );
+
+      $menuItem4 = new SidemenuItem("Common stat", false);
+      $menuItem4->itemReference = "#";
+      $menuItem4->itemLetters = "CS";
+      $menuItem4->itemIcon = "";
+      $menuItem4->itemBadge = "";
+      $menuItem4->itemClass = "";
+      $menuItem4->badgeClass = "";
+      //$menuItem1->isDivider = $isDiv;
+      array_push($this->sideMenu, $menuItem4 );
+
       return $this;
     }
 

@@ -69,6 +69,9 @@
   margin-left: 32px;
 }
 
+.col-sidenav, .nav-rail {
+  z-index: 99;
+}
 
 
   .menu-opened
@@ -116,6 +119,9 @@
 
     width: 60px !important;
     height: calc(100vh - 42px);
+    i {
+      font-size: x-large;
+    }
   }
   .col-main {
     width: calc(100% - 60px) !important;
@@ -140,9 +146,6 @@
   .col-sidenav .badge 
   {
     display: none;
-  }
-  i {
-    font-size: x-large;
   }
   .nav-divider-text {
     display: none;

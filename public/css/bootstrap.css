@@ -6724,6 +6724,10 @@ body {
   margin-left: 32px;
 }
 
+.col-sidenav, .nav-rail {
+  z-index: 99;
+}
+
 .menu-opened .col-sidenav {
   width: 300px !important;
 }
@@ -6759,6 +6763,9 @@ body {
   width: 60px !important;
   height: calc(100vh - 42px);
 }
+.menu-minimized .col-sidenav i {
+  font-size: x-large;
+}
 .menu-minimized .col-main {
   width: calc(100% - 60px) !important;
   margin-left: 60px;
@@ -6779,9 +6786,6 @@ body {
 }
 .menu-minimized .col-sidenav .badge {
   display: none;
-}
-.menu-minimized i {
-  font-size: x-large;
 }
 .menu-minimized .nav-divider-text {
   display: none;
