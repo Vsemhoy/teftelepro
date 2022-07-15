@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Components\Home\HomeController;
+use App\Http\Controllers\MainController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,23 +19,35 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
+
+Route::get('/login', [MainController::class, 'login'])->name('login');
+Route::get('/registration', [MainController::class, 'registration'] )->name('registration');
+Route::post('/auth.save', [MainController::class, 'save'])->name('auth.save');
+
+
+
 Route::get('/home', function () {
   return view('home');
 })->name('home');
 
 
 Route::get('/budger', function () {
-  return view('budger');
+  return view('budger.budger');
 })->name('budger');
 
 Route::get('/eventor', function () {
-  return view('eventor');
+  return view('eventor.eventor');
 })->name('eventor');
 
 Route::get('/stuffer', function () {
-  return view('stuffer');
+  return view('stuffer.stuffer');
 })->name('stuffer');
 
 Route::get('/warehouser', function () {
-  return view('warehouser');
+  return view('warehouser.warehouser');
 })->name('warehouser');
+
+
+Route::get('/diary', function () {
+  return view('diary.diary');
+})->name('diary');

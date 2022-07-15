@@ -156,3 +156,23 @@
 .btn-sm {
   @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-border-radius-sm);
 }
+.login-btn {
+  color: white;
+  background: #FF416C;
+  background: -webkit-linear-gradient(to right, #FF4B2B, #FF416C);
+  background: linear-gradient(to right, #FF4B2B, #FF416C);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 0 0;
+}
+.login-btn:hover {
+  color: white;
+  background: #db385e;
+  background: -webkit-linear-gradient(to right, #db4226, #df3a60);
+  background: linear-gradient(to right, #dd4126, #e43b62);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 0 0;
+  border-radius: 0px;
+  text-decoration: none;
+}

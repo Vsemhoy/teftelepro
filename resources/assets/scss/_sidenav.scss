@@ -30,6 +30,9 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: inset 0px 0px 19px -6px rgb(6 6 6 / 48%);
 }
+.col-sidenav li.active {
+  background: #dc3545;
+}
 .nav-bg h6 > span {
   color: rgb(176 223 251);
 }
@@ -43,6 +46,7 @@
   height: revert;
   position: fixed;
   height: calc(100vh - 42px);
+  box-shadow: rgb(0 54 108 / 70%) 0px 0px 200px inset;
 }
 .col-main {
   transition: all ease 0.3s;
@@ -110,7 +114,12 @@
       margin-left: 60px;
     }
   }
-
+  @media (max-width: 767px){
+    .col-main {
+      width: 100% !important;
+      margin-left: 0px;
+    }
+  }
 }
 
 .menu-minimized
@@ -149,5 +158,23 @@
   }
   .nav-divider-text {
     display: none;
+  }
+  @media (max-width: 767px){
+    .col-sidenav {
+      width: 0px;
+    display: none;
+    }
+    .nav-rail {
+      position: fixed;
+      height: 100vh;
+      margin-left: 0px;
+      width: 12px !important;
+      padding: 0px;
+      
+    }
+    .col-main {
+      width: 100% !important;
+      margin-left: 0px;
+    }
   }
 }

@@ -42,32 +42,32 @@
     <a href="{{ route('budger')}}" class="app-item 
     <?php if ($routed == "budger"){echo "current"; }; ?>
     ">
-      BUDGET
+      <span>BUDGET</span><span><i class="bi-currency-bitcoin" role="img" aria-label="Budget"></i></span>
     </a>
     <a href="{{ route('eventor')}}"  class="app-item 
     <?php if ($routed == "eventor"){echo "current"; }; ?>
     ">
-      EVENTS
+    <span>EVENTS</span><span><i class="bi-calendar-check" role="img" aria-label="Events"></i>
     </a>
     <a  href="{{ route('warehouser')}}" class="app-item 
     <?php if ($routed == "warehouser"){echo "current"; }; ?>
     ">
-      WAREHOUSE
+    <span>WAREHOUSE</span><span><i class="bi-upc-scan" role="img" aria-label="Warehouse"></i>
     </a>
     <a href="{{ route('stuffer')}}"  class="app-item 
     <?php if ($routed == "stuffer"){echo "current"; }; ?>
     ">
-      STUFF
+      STUFF</span><span><i class="bi-boombox" role="img" aria-label="Stuff"></i>
     </a>
     <span class="small-gap"></span>
     <a href="{{ route('home')}}"  class="app-item 
     <?php if ($routed == "home" || $routed == ""){echo "current"; }; ?>
     ">
-      HOME
+    <span>HOME</span><span><i class="bi-house" role="img" aria-label="Home"></i>
     </a>
     <span class="small-gap"></span>
-    <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal" class="app-item">
-      LOGIN
+    <a href="{{ route('login')}}"  class="app-item login-btn">
+    <span>LOGIN</span><span><i class="bi-door-open" role="img" aria-label="Sign in"></i>
     </a>
   </div>
 </header>

@@ -3065,6 +3065,28 @@ textarea.form-control-lg {
   --bs-btn-border-radius: 0.25rem;
 }
 
+.login-btn {
+  color: white;
+  background: #FF416C;
+  background: -webkit-linear-gradient(to right, #FF4B2B, #FF416C);
+  background: linear-gradient(to right, #FF4B2B, #FF416C);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 0 0;
+}
+
+.login-btn:hover {
+  color: white;
+  background: #db385e;
+  background: -webkit-linear-gradient(to right, #db4226, #df3a60);
+  background: linear-gradient(to right, #dd4126, #e43b62);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 0 0;
+  border-radius: 0px;
+  text-decoration: none;
+}
+
 .fade {
   transition: opacity 0.15s linear;
 }
@@ -6602,8 +6624,14 @@ body {
   font-size: large;
   padding: 12px;
   width: 100%;
-  display: block;
+  display: flex;
+  justify-content: space-between;
   text-decoration: none;
+}
+
+.app-item i {
+  font-size: x-large;
+  line-height: 10px;
 }
 
 .app-item:hover {
@@ -6640,6 +6668,10 @@ body {
 
 .modal-head-dark button {
   filter: invert(1);
+}
+
+.text-gray {
+  color: grey;
 }
 
 .nav-toggler {
@@ -6679,6 +6711,10 @@ body {
   box-shadow: inset 0px 0px 19px -6px rgba(6, 6, 6, 0.48);
 }
 
+.col-sidenav li.active {
+  background: #dc3545;
+}
+
 .nav-bg h6 > span, .nav-bg .h6 > span {
   color: rgb(176, 223, 251);
 }
@@ -6694,6 +6730,7 @@ body {
   height: revert;
   position: fixed;
   height: calc(100vh - 42px);
+  box-shadow: rgba(0, 54, 108, 0.7) 0px 0px 200px inset;
 }
 
 .col-main {
@@ -6758,6 +6795,12 @@ body {
     margin-left: 60px;
   }
 }
+@media (max-width: 767px) {
+  .menu-opened .col-main {
+    width: 100% !important;
+    margin-left: 0px;
+  }
+}
 
 .menu-minimized .col-sidenav {
   width: 60px !important;
@@ -6789,6 +6832,23 @@ body {
 }
 .menu-minimized .nav-divider-text {
   display: none;
+}
+@media (max-width: 767px) {
+  .menu-minimized .col-sidenav {
+    width: 0px;
+    display: none;
+  }
+  .menu-minimized .nav-rail {
+    position: fixed;
+    height: 100vh;
+    margin-left: 0px;
+    width: 12px !important;
+    padding: 0px;
+  }
+  .menu-minimized .col-main {
+    width: 100% !important;
+    margin-left: 0px;
+  }
 }
 
 .clearfix::after {
