@@ -13,7 +13,7 @@
 
     <title>Sign in</title>
 
-<style>
+    <style>
   @use postcss-preset-env {
   stage: 0;
 }
@@ -39,7 +39,6 @@
     border: 1px solid;
     box-shadow: inset 1px 0px 110px rgb(0 149 255 / 25%);
 }
-
 
 /* helpers/hidden.css */
 
@@ -151,6 +150,7 @@ input[type="submit"] {
 }
 
 .form input[type="password"],
+.form input[type="email"],
 .form input[type="text"],
 .form input[type="submit"] {
   inline-size: 100%;
@@ -186,6 +186,7 @@ input[type="submit"] {
 
 .login label,
 .login input[type="text"],
+.login input[type="email"],
 .login input[type="password"],
 .login input[type="submit"] {
   border-radius: var(--loginBorderRadus);
@@ -200,6 +201,7 @@ input[type="submit"] {
 }
 
 .login input[type="password"],
+.login input[type="email"],
 .login input[type="text"] {
   background-color: var(--loginInputBackgroundColor);
   border-bottom-left-radius: 0;
@@ -207,6 +209,8 @@ input[type="submit"] {
 }
 .login input[type="password"]:focus,
 .login input[type="password"]:hover,
+.login input[type="email"]:focus,
+.login input[type="email"]:hover,
 .login input[type="text"]:focus,
 .login input[type="text"]:hover {
   background-color: var(--loginInputHoverBackgroundColor);
@@ -239,22 +243,36 @@ p {
 
   <div class="grid p-4">
     <h4 class="text-white display-6">Sign in</h4>
+    @if (Session::get('success'))
+      <div class="alert alert-success">
+        {{ Session::get('success')}}
+      </div>
+    @endif
+    @if (Session::get('fail'))
+      <div class="alert alert-danger">
+        {{ Session::get('fail')}}
+      </div>
+    @endif
     <br>
-    <form action="{{ route('login')}}" method="POST" class="form login">
+    <form action="{{ route('auth.check')}}" method="POST" class="form login">
     @csrf
       <div class="form__field">
-        <label for="login__username"><svg class="icon">
+        <label for="login__email"><svg class="icon">
             <use xlink:href="#icon-user"></use>
-          </svg><span class="hidden">Username</span></label>
-        <input autocomplete="username" id="login__username" type="text" name="username" class="form__input" placeholder="Email" required>
-      </div>
-
-      <div class="form__field">
+          </svg><span class="hidden">Email</span></label>
+        <input autocomplete="email" id="login__email" type="email" 
+        name="email" class="form__input" placeholder="Email" required
+        value="{{ old('email')}}">
+        </div>
+        <span class="text-danger">@error('email'){{ $message }}  @enderror</span>
+        
+        <div class="form__field">
         <label for="login__password"><svg class="icon">
-            <use xlink:href="#icon-lock"></use>
-          </svg><span class="hidden">Password</span></label>
+        <use xlink:href="#icon-lock"></use>
+        </svg><span class="hidden">Password</span></label>
         <input id="login__password" type="password" name="password" class="form__input" placeholder="Password" required>
-      </div>
+        </div>
+        <span class="text-danger">@error('password'){{ $message }}  @enderror</span>
 
       <div class="form__field">
         <input type="submit" class="btn btn-primary" value="Sign In">

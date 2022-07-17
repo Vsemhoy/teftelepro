@@ -243,7 +243,19 @@ p {
 
   <div class="grid p-4">
     <h4 class="text-white display-6">Hello, Friend!</h4>
+    @if (Session::get('success'))
+      <div class="alert alert-success">
+        {{ Session::get('success')}}
+      </div>
+    @endif
+    @if (Session::get('fail'))
+      <div class="alert alert-warning">
+        {{ Session::get('fail')}}
+      </div>
+    @endif
+    @if (!Session::get('success') || !Session::get('fail'))
     <p class="text-white">Enter your personal details and start journey with us</p>
+    @endif
     <form action="{{ route('auth.save')}}" method="POST" class="form login">
     @csrf
       <div class="form__field">
@@ -251,8 +263,8 @@ p {
       <use xlink:href="#icon-user"></use>
       </svg><span class="hidden">Username</span></label>
       <input autocomplete="username" id="login__username" type="text" 
-      name="username" class="form__input" placeholder="Username" required
-      value="{{ old('username') }}">
+      name="name" class="form__input" placeholder="Username" required
+      value="{{ old('name') }}">
       </div>
       <span class="text-danger">@error('username'){{ $message }} @enderror</span>
 
@@ -280,10 +292,10 @@ p {
           </svg><span class="hidden">Repeat Password</span></label>
         <input id="login__password_repeat" type="password" name="checkpassword" class="form__input" placeholder="Password Repeat" required>
         </div>
-        <span class="text-danger">@error('checkpassword'){{ $message }} @enderror</span>
+        <span id="passnotmatch" class="text-danger">@error('checkpassword'){{ $message }} @enderror</span>
       
       <div class="form__field">
-        <input type="submit" class="btn btn-primary" value="Sign In">
+        <input id="btn__submit" type="submit" class="btn btn-primary" value="Sign In">
       </div>
 
     </form>
@@ -306,5 +318,22 @@ p {
       <path d="M1600 1405q0 120-73 189.5t-194 69.5H459q-121 0-194-69.5T192 1405q0-53 3.5-103.5t14-109T236 1084t43-97.5 62-81 85.5-53.5T538 832q9 0 42 21.5t74.5 48 108 48T896 971t133.5-21.5 108-48 74.5-48 42-21.5q61 0 111.5 20t85.5 53.5 62 81 43 97.5 26.5 108.5 14 109 3.5 103.5zm-320-893q0 159-112.5 271.5T896 896 624.5 783.5 512 512t112.5-271.5T896 128t271.5 112.5T1280 512z" />
     </symbol>
   </svg>
+
+  <script>
+    let password = document.querySelector("#login__password");
+    let passwordcheck = document.querySelector("#login__password_repeat");
+    let formsender = document.querySelector("#btn__submit");
+    let passnotmatch = document.querySelector("#passnotmatch");
+    formsender.addEventListener("click", function(e){
+      if (password.value != passwordcheck.value){
+        e.preventDefault();
+        passnotmatch.innerHTML = "Passwords not match!";
+        return false;
+      } else {
+        passnotmatch.innerHTML = "";
+      }
+    });
+
+  </script>
 
 </body>

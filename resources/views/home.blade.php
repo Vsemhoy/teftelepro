@@ -4,6 +4,7 @@
 
     <?php
     use App\Http\Controllers\Controller;
+    use Illuminate\Foundation\Auth\User;
     // $instant  = new Controller();
     // echo $instant->renderValue();
 
@@ -13,10 +14,11 @@
     //     echo "<br>";
     // }
     $component = Controller::getComponent('home');
+    $user = User::where('id', '=', session('LoggedUser'))->first();
     ?>
 
 
-    <div class="content p-3 pt-0">
+    <div class="content p-3 pt-0 bg-white">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center px-md-4 pt-3 pb-2 mb-3 border-bottom">
         <h1 class="h2"><?php echo $component->name; ?></h1>
         <div class="btn-toolbar mb-2 mb-md-0">
@@ -30,7 +32,7 @@
           </button>
         </div>
       </div>
-
+      <p>{{ $user['name'] }}</p><a href="{{ route('logout')}}">Logout</a>
       <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
 
       <h2>Section title</h2>

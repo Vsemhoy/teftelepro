@@ -23,6 +23,8 @@ Route::get('/', function () {
 Route::get('/login', [MainController::class, 'login'])->name('login');
 Route::get('/registration', [MainController::class, 'registration'] )->name('registration');
 Route::post('/auth.save', [MainController::class, 'save'])->name('auth.save');
+Route::post('/auth.check', [MainController::class, 'check'])->name('auth.check');
+Route::get('/logout', [MainController::class, 'logout'] )->name('logout');
 
 
 
