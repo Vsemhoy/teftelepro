@@ -1,8 +1,10 @@
 <?php 
   use App\Http\Controllers\Controller;
   use Illuminate\Support\Facades\Route;
+  use Illuminate\Foundation\Auth\User;
   $routed = Route::currentRouteName();
   $component = Controller::getComponent($routed);
+  $user = User::where('id', '=', session('LoggedUser'))->first();
 ?>
 
 <!DOCTYPE html>
@@ -65,10 +67,18 @@
     ">
     <span>HOME</span><span><i class="bi-house" role="img" aria-label="Home"></i>
     </a>
+    @if(!isset($user))
     <span class="small-gap"></span>
     <a href="{{ route('login')}}"  class="app-item login-btn">
     <span>LOGIN</span><span><i class="bi-door-open" role="img" aria-label="Sign in"></i>
     </a>
+    @endif
+    @if(isset($user))
+    <span class="small-gap"></span>
+    <a href="{{ route('logout')}}?token={{ csrf_token() }}"  class="app-item login-btn">
+    <span>LOGOUT</span><span><i class="bi-door-open" role="img" aria-label="Sign in"></i>
+    </a>
+    @endif
   </div>
 </header>
 

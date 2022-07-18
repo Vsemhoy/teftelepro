@@ -75,10 +75,15 @@ class MainController extends Controller
     }
   }
 
-  function logout(){
-    if (session()->has('LoggedUser')){
-      session()->pull('LoggedUser');
-      return redirect('login');
+  function logout(Request $request){
+    if ($request->token == csrf_token()){
+
+      if (session()->has('LoggedUser')){
+        session()->pull('LoggedUser');
+        return redirect('login');
+      } 
+    } else {
+      return view('home');
     }
   }
 

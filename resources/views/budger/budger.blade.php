@@ -12,7 +12,7 @@
     //     print_r($value);
     //     echo "<br>";
     // }
-
+    
     ?>
 
 <style>
@@ -473,7 +473,10 @@ box-shadow: 0 3px 12px rgb(255 225 0 / 87%);
 
 
 </style>
-
+<h1>
+<?php 
+echo Route::input('view');
+?></h1>
 <div class="section-l w-100 bg-white" style="overflow: auto;" id="main-tf-1">
     <div class="container-fluid px-0">
       <div class="input-group mb-0">
