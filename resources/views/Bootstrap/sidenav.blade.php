@@ -1,8 +1,12 @@
 <?php 
   use App\Http\Controllers\Controller;
   use Illuminate\Support\Facades\Route;
-  $routed = Route::currentRouteName();
-  $component = Controller::getComponent($routed);
+
+  $routed = explode('.', Route::currentRouteName())[0];
+  $section = "";
+  if (isset(explode('.', Route::currentRouteName())[1])){
+    $section = explode('.', Route::currentRouteName())[1];
+  };
 ?>
 <nav id="sidebarMenu" class="col-sidenav d-md-block nav-bg sidebar collapse p0">
       <div class="position-sticky pt-3">

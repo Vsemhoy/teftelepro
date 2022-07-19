@@ -11,8 +11,6 @@ use App\Http\Controllers\Components\Budger\BudgerController;
 
 class Controller extends BaseController
 {
-
-
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     public static function getComponent($compo)

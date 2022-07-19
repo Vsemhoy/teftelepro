@@ -23,6 +23,7 @@ Route::get('/', function () {
 
 Route::post('/auth.save', [MainController::class, 'save'])->name('auth.save');
 Route::post('/auth.check', [MainController::class, 'check'])->name('auth.check');
+Route::post('/auth.checkmain', [MainController::class, 'checkmain'])->name('auth.checkmain');
 Route::get('/logout', [MainController::class, 'logout'] )->name('logout');
 
 
@@ -39,9 +40,7 @@ Route::group(['middleware' => ['AuthCheck']], function(){
     return view('home');
   })->name('home');
 
-  Route::get('/budger', function () {
-    return view('budger.budger');
-  })->name('budger');
+
 
   Route::get('/warehouser', function () {
     return view('warehouser.warehouser');
@@ -49,7 +48,49 @@ Route::group(['middleware' => ['AuthCheck']], function(){
 });
 
 
+Route::prefix('budger')->group(function () {
 
+  Route::get('/', function () {
+    return view('budger.budger');
+  })->name('budger');
+
+  Route::get('/base', function () {
+    return view('budger.base');
+  })->name('budger.base');
+
+  Route::get('/credits', function () {
+    return view('budger.credits');
+  })->name('budger.credits');
+
+  Route::get('/shares', function () {
+    return view('budger.shares');
+  })->name('budger.shares');
+
+  Route::get('/group', function () {
+    return view('budger.group');
+  })->name('budger.group');
+
+  Route::get('/loans', function () {
+    return view('budger.loans');
+  })->name('budger.loans');
+
+  Route::get('/accmanager', function () {
+    return view('budger.accmanager');
+  })->name('budger.accmanager');
+
+  Route::get('/catmanager', function () {
+    return view('budger.catmanager');
+  })->name('budger.catmanager');
+
+  Route::get('/accgroups', function () {
+    return view('budger.accgroups');
+  })->name('budger.accgroups');
+
+  Route::get('/commstat', function () {
+    return view('budger.commstat');
+  })->name('budger.commstat');
+
+});
 
 
 

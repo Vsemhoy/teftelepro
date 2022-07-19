@@ -176,3 +176,23 @@
   border-radius: 0px;
   text-decoration: none;
 }
+.register-btn {
+  color: white;
+  background: #20599f;
+  background: -webkit-linear-gradient(to right, #20599f,#6b367c);
+  background: linear-gradient(to right, #20599f, #6b367c);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 0 0;
+}
+.register-btn:hover {
+  color: white;
+  background: #1b4c88;
+  background: -webkit-linear-gradient(to right, #124786,#6b367c);
+  background: linear-gradient(to right, #12498b,#6b367c);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 0 0;
+  border-radius: 0px;
+  text-decoration: none;
+}

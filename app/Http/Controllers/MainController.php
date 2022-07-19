@@ -75,12 +75,37 @@ class MainController extends Controller
     }
   }
 
+  function checkmain(Request $request){
+    //return $request->input();
+    $request->validate([
+      'email' => 'required|email',
+      'password' => 'required|min:5|max:32'
+    ]);
+
+    $userInfo = User::where('email', '=', $request->email)->first();
+
+    if (!$userInfo){
+      return redirect('login');
+    
+    } else {
+      // check password
+      if (Hash::check($request->password, $userInfo->password)){
+        $request->session()->put('LoggedUser', $userInfo->id);
+        return back()->with('fail', 'We do not recognize your email address');
+        
+      } else {
+        return redirect('login');
+      }
+    }
+  }
+
   function logout(Request $request){
     if ($request->token == csrf_token()){
 
       if (session()->has('LoggedUser')){
         session()->pull('LoggedUser');
-        return redirect('login');
+        //return redirect('login');
+        return back()->with('message', 'Unlogged');
       } 
     } else {
       return view('home');

@@ -2,7 +2,11 @@
   use App\Http\Controllers\Controller;
   use Illuminate\Support\Facades\Route;
   use Illuminate\Foundation\Auth\User;
-  $routed = Route::currentRouteName();
+  $routed = explode('.', Route::currentRouteName())[0];
+  $section = "";
+  if (isset(explode('.', Route::currentRouteName())[1])){
+    $section = explode('.', Route::currentRouteName())[1];
+  };
   $component = Controller::getComponent($routed);
   $user = User::where('id', '=', session('LoggedUser'))->first();
 ?>
@@ -33,7 +37,7 @@
   </button>
   <span><?php echo $component->name; ?></span>
 </div>
-  
+  <?php echo $routed; ?>
   <input class="form-control form-control-dark w-100 rounded-0 border-0 top-search" type="text" placeholder="Search" aria-label="Search">
   <div class="navbar-nav">
     <div class="nav-item text-nowrap">
@@ -68,9 +72,22 @@
     <span>HOME</span><span><i class="bi-house" role="img" aria-label="Home"></i>
     </a>
     @if(!isset($user))
+
+    
+
+
     <span class="small-gap"></span>
-    <a href="{{ route('login')}}"  class="app-item login-btn">
-    <span>LOGIN</span><span><i class="bi-door-open" role="img" aria-label="Sign in"></i>
+    <form style="display: flex; flex-direction: column;" action="{{ route('auth.checkmain')}}" method="POST">
+    @csrf
+    <input type="text" placeholder="Login email" name="email" style="padding: 6px;"/>
+    <span class="small-gap"></span>
+    <input type="password" placeholder="password" name="password" style="padding: 6px;"/>
+    <span class="small-gap"></span>
+    <input type="submit" value="LOGIN" class="btn app-item login-btn" style="padding: 12px; border-radius: 0px; border: none;"/>
+    </form>
+    <span class="small-gap"></span>
+    <a href="{{ route('registration')}}"  class="app-item register-btn">
+    <span>Registration</span><span><i class="bi-door-open" role="img" aria-label="Sign in"></i>
     </a>
     @endif
     @if(isset($user))
@@ -78,7 +95,9 @@
     <a href="{{ route('logout')}}?token={{ csrf_token() }}"  class="app-item login-btn">
     <span>LOGOUT</span><span><i class="bi-door-open" role="img" aria-label="Sign in"></i>
     </a>
+
     @endif
+
   </div>
 </header>
 
