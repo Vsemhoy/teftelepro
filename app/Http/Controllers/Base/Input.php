@@ -82,6 +82,14 @@ class Input
     {
       return self::HTMLSPECIALCHARS($input);
     }
+    elseif ($filter == 'ARRAY')
+    {
+      return self::ARRAY($input);
+    }
+    elseif ($filter == 'INTARAY')
+    {
+      return self::INTARRAY($input);
+    }
     else 
     {
       return self::STRING($input);
@@ -147,5 +155,36 @@ class Input
   {
     //return htmlspecialchars($value, ENT_QUOTES);
     return filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  }
+
+  public static $array = true;
+  public static function ARRAY($value)
+  {
+    //return htmlspecialchars($value, ENT_QUOTES);
+    return $value;
+  }
+
+  public static $intarray = true;
+  public static function INTARRAY($value)
+  {
+    //return htmlspecialchars($value, ENT_QUOTES);
+    if (is_array($value)){
+      $arr = [];
+      foreach ($value AS $number){
+        $num = self::INT($number);
+        if (is_numeric($num)){
+          array_push($arr, $num);
+        }
+      }
+      return $arr;
+    } else {
+      if ($value == ""){
+        return "";
+      } else {
+        return self::INT($value);
+      }
+    }
   } 
+
+  
 }

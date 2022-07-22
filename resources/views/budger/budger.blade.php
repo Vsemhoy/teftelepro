@@ -12,7 +12,8 @@
     //     print_r($value);
     //     echo "<br>";
     // }
-    
+    $com = Controller::getComponent('budger');
+
     ?>
 
 
