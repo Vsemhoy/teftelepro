@@ -6,6 +6,7 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use App\Http\Controllers\Objects\SidemenuItem;
+use App\Http\Controllers\Base\Input;
 
 class BudgerController extends BaseController
 {   
@@ -13,13 +14,16 @@ class BudgerController extends BaseController
     public $sideMenu;
     public $name;
     public $title;
+    public $input;
+
     
     public function __construct()
     {
       $this->sideMenu = [];
       $this->name = "Budget";
       $this->title = "Simple Budget manager";
-
+      
+      $input = new Input();
       $this->_buildSideMenu();
     }
     

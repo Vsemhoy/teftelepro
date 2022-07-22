@@ -8,10 +8,12 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use App\Http\Controllers\Components\Home\HomeController;
 use App\Http\Controllers\Components\Budger\BudgerController;
+use App\Http\Controllers\Base\Input;
 
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
 
     public static function getComponent($compo)
     {
