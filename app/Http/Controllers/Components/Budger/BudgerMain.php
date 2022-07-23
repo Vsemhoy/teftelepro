@@ -309,4 +309,267 @@ public static function countDaysBetweenDates($d1, $d2){
   }
 }
 
+
+public function renderNavigateButtons(){
+  $result = "";
+  $result .= "<div class='container'>";
+  $result .= "<div class='btn-group mb-3 m-auto d-table' role='group' aria-label='Basic outlined example'>";
+  $result .= "<a type='button' href='{ $this->_btn_go_prevMonth }' class='btn btn-outline-secondary'><i class=' bi-chevron-left'></i></a>";
+  $result .= "<a type='button' href='{ $this->_btn_expand_prevMonth; }'  class='btn btn-outline-secondary'>";
+  $result .= "<i class=' bi-chevron-left'></i>";
+  $result .= "<i class=' bi-plus'></i>";
+  $result .= "</a>";
+  $result .= "<button type='button' id='f_showEmptyRows' class='btn btn-outline-secondary' title='COM_TFBUDGET_BUTTON_HIDEEMPTY'>";
+  $result .= "<i class=' bi-distribute-vertical'></i>";
+  $result .= "</button>";
+  $result .= "<button  type='button' id='f_showTotalCols' class='btn btn-outline-secondary' title='COM_TFBUDGET_BUTTON_HIDETOTALS'>";
+  $result .= "<i class=' bi-grip-vertical'></i>";
+  $result .= "</button>";
+  $result .= "<button type='button' onclick='databaseRecount();' class='d-none btn btn-outline-danger'>Update Database</button>";
+  $result .= "<button type='button' onclick='recounttotals();' class='d-none btn btn-outline-secondary'>RECOUNT TOTALS</button>";
+  $result .= "<button type='button' onclick='tf_create(1, 0);' class='btn btn-outline-secondary' title='COM_TFBUDGET_BUTTON_NEWEVENT'>";
+  $result .= "<i class=' bi-journal-plus'></i>";
+  $result .= "</button>";
+  $result .= "<a type='button' href='{ $this->_btn_expand_nextMonth }' class='btn btn-outline-secondary'>";
+  $result .= "<i class=' bi-plus'></i>";
+  $result .= "<i class=' bi-chevron-right'></i>";
+  $result .= "</a>";
+  $result .= "<a type='button'href='{ $this->_btn_go_nextMonth }'  class='btn btn-outline-secondary'><i class=' bi-chevron-right'></i></a>";
+  $result .= "</div>";
+  $result .= "</div>";
+  $result .= "<br>";
+  return $result;
+}
+
+
+public function renderMonthTable(){
+  
+}
+
+public function renderWholeTable(){
+  /* --------------------------- IF ACCOUNTS EXISTs, LOAD TABLE ------------------------------- */
+  $result = "";
+  
+  
+    
+    
+  //<?php if (!empty($accountsToLoad)): 
+  
+  //<?php
+    $idconstructor   = "";
+    $idconstructorrow = 0;
+    $idconstructorcol = 0;
+    $daytotal         = 0;
+    $currentDate = date('Y-m-d', time());
+    $cdate = date('m/d/Y', strtotime($get_lastmonth));
+    $cdate_day = date('d', strtotime($get_lastmonth));
+    $secondcounter = 0;
+
+  
+  
+    <table class="table table-bordered table-hover tftable">
+      <thead>
+      <tr>
+        <th scope="col" class="tthd"><?= Text::_('COM_TFBUDGET_TABLE_HEAD_DATE') ?></th>
+        <th scope="col" class="tthd">
+        <span class="datetrigwrap">
+          <input class="headdate" type="month" id="dateflash" 
+              name="flash_date" value="<?php echo $get_startmonth_filter; ?>">
+              </span></th>
+  <?php 
+    if (count($accountsToloadArr)){
+      foreach ($accountsToloadArr AS $accid){
+        echo "<th scope='col' acc='" . trim($accid) . "' decimal='" . $accounts[trim($accid)]->decimals . "'>" . $accounts[trim($accid)]->name . "</th>
+        <th class='daytotals' scope='col' accfor='" . trim($accid) . "'>" . Text::_('COM_TFBUDGET_TABLE_HEAD_TOTAL') . "</th>";
+      }
+    }
+    if (count($accountsToloadArr) > 1){
+      echo '<th scope="col" class="headtotal ttfr">' . Text::_('COM_TFBUDGET_TABLE_HEAD_TOTALS') . '</th>';
+    };
+  ?>
+      </tr>
+    </thead>
+    <tbody id="budgettable">
+  <?php
+  if ($cdate_day != 1){
+    for ($i = 0; $i < 32; $i++){
+      $secondcounter = ($i * 60 * 60 * 24);
+      $tmpdate_day = date('d', strtotime($get_lastmonth) + $secondcounter + (60 * 60 * 24));
+      if ($tmpdate_day == 1){
+        break;
+      }
+    }
+  }
+  
+  
+  /* LOOP */
+  for ($x = 0; $x < $tableLength; $x++){
+    $date = date('Y-m-d', strtotime($get_lastmonth) - ($x * 60 * 60 * 24) + $secondcounter);
+    $shortDate = date('d', strtotime($get_lastmonth) - ($x * 60 * 60 * 24) + $secondcounter);
+    $week = date('w', strtotime($get_lastmonth) - ($x * 60 * 60 * 24) + $secondcounter);
+    $daynum = date('d', strtotime($get_lastmonth) - ($x * 60 * 60 * 24) + $secondcounter);
+    $idconstructorrow = $x;
+  
+  if ($x == 0){
+    $datemonth_ = date('m', strtotime($date));
+    $dateyear_  = date('Y', strtotime($date));
+    $dateObj    = DateTime::createFromFormat('!m', $datemonth_);
+    $monthname  = $dateObj->format('F');
+    $date4total = $dateyear_ . "-" . $dateObj->format('m') . "-01";
+    echo "<tr class='bg-subtotal subtotal'>
+    <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
+    for ($r = 0; $r < count($accountsToloadArr); $r++ ){
+      echo "<td class='mtotalio'><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_INCOMS') . ": <span class='incoms'></span></small></br><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_EXPENSES') . ": <span class='expences'></span></small></br><small>" . Text::_('COM_TFBUDGET_TABLE_DIFFERENCE') . ": <span class='difference'></span></small></td>
+      <td class='mtotals'>" . Text::_('COM_TFBUDGET_COMMON_NAME_BALANCE') . ": <span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($accountsToloadArr[$r]) . "'>";
+      $ttv = 0;
+          foreach ($total_Objects AS $total){
+            if ($total->setdate == $date4total && $total->account ==  $accountsToloadArr[$r]){
+                $ttv = $total->value;
+            }
+          }
+          echo $ttv;
+      echo "</span></td>";
+    };
+    if (count($accountsToloadArr) > 1){
+      echo "<td class='totalofrow_s'><small>" . Text::_('COM_TFBUDGET_COMMON_NAME_BALANCE') . 
+      ": <span class='incoms'></span></small></br><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_EXPENSES') . 
+      ": <span class='expences'></span></small></br><small>" . Text::_('COM_TFBUDGET_TABLE_DIFFERENCE') . ": <span class='difference'></span></small></td>";
+    };
+    echo "</tr>";
+  };
+  
+    $cdateclass = "";
+    $cdateIden = "";
+    if ($date == $currentDate){
+      $cdateclass = " currentdate";
+      $empty = "";
+    };
+    if ($week == 0 || $week == 6){
+      $cdateclass .= " weekend";
+    }
+    
+    echo "<tr class='budrow {$cdateclass}' id='dragrow_{$idconstructorrow}' date='{$date}'>
+    <td class='tf_datetd'  title='{$date}' scope='row'>{$shortDate}</td>
+    <td  class='tf_daytd'>" . $weekdayNames[$week] . "</td>";
+    for ($t = 0; $t < count($accountsToloadArr); $t++){
+      $accountid = trim($accountsToloadArr[$t]);
+      $idconstructorcol = $t;
+      echo "<td id='dragarea_" . $idconstructorrow . "_" . $idconstructorcol . "' 
+      class='droptabledata' ondrop='drop(event)' ondragover='allowDrop(event)'
+      acc='{$accountid}' date='{$date}' ><span class='daytotal'>";
+      if (empty($empty)) {
+         // echo $randvalue[$t];
+       };
+  
+       echo "</span><span class='rect table-button-right' onclick='tf_create(1, this);'>
+       <i class='bi-plus-lg' title='Add new item' title='edit' data-bs-toggle='modal' data-bs-target='#EditorWindow'>
+       </i></span>";
+       foreach ($item_Objects AS $_object){
+        if ($_object->datein == $date){
+          if ($_object->account == $accountid){
+            if (trim($_object->type) < 3){
+  
+              if (!empty($_object->groups)) {
+                $_grpname      = $groups_Objects[$_object->groups]->name;
+                $_gpricon      = $groups_Objects[$_object->groups]->icon;
+                $_grpcolor     = $groups_Objects[$_object->groups]->color; 
+                $_grpwhiteicon = $groups_Objects[$_object->groups]->whiteicon; 
+              };
+              if (empty($_object->groups) || !isset($_grpname)) {
+                  $_grpname      = '';
+                  $_gpricon      = '';
+                  $_grpcolor     = '';
+                  $_grpwhiteicon = '';
+                };
+  
+              echo tpl_in_calendar_event( // $group, $groupname, $icon, $iconcolor, $iconpath, 
+              $_object->id, 
+              $_object->name, 
+              $_object->text, 
+              $_object->datein,
+              $_object->account, 
+              $_object->type, 
+              $_object->value,
+              $_object->groups,
+              $_grpname, 
+              $_gpricon,
+              $_grpcolor, 
+              $_grpwhiteicon,
+              $iconpath,
+              0, // frequency
+              $_object->ordered,
+              1,
+              $_object->disabled,
+              $_object->accented); // RENDERER
+            } else {
+              if (!isset($allAccounts)){
+                $allAccounts = IndexModel::LoadAccountList_ALL_keyId(USERID);
+              };
+              echo tpl_in_calendar_event_transfer(
+                $_object->id, 
+                $_object->name, 
+                $_object->text, 
+                $_object->datein,
+                $_object->transaccount,
+                $_object->transferred,
+                $allAccounts[$_object->transaccount]->name,
+                $allAccounts[$_object->transaccount]->color,
+                $allAccounts[$_object->transaccount]->currency,
+                $_object->type,  
+                $_object->value,
+                $_object->ordered); // RENDERER */
+            };
+          }
+        }
+      }
+       echo "</td>";
+       echo "<td class='daytotals' for='{$accountid}' date='{$date}'></td>";
+    };
+    if (count($accountsToloadArr) > 1){
+      echo "<td class='totalofrow'></td>";
+    };
+  echo "</tr>";
+  if ($daynum == 1){
+    $date       = date('Y-m-d', strtotime($date . "-1 month"));
+    $datemonth_ = date('m', strtotime($date));
+    $dateyear_  = date('Y', strtotime($date));
+    $dateObj    = DateTime::createFromFormat('!m', $datemonth_);
+    $monthname  = $dateObj->format('F');
+    $date4total = $dateyear_ . "-" . $dateObj->format('m') . "-01";
+    echo "<tr class='bg-subtotal subtotal' date='" . $date . "'>
+    <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
+    for ($r = 0; $r < count($accountsToloadArr); $r++ ){
+      echo "<td class='mtotalio'><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_INCOMS') . ": <span class='incoms'></span></small></br><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_EXPENSES') . ": <span class='expences'></span></small></br><small>" . Text::_('COM_TFBUDGET_TABLE_DIFFERENCE') . ": <span class='difference'></span></small></td>
+      <td class='mtotals'>" . Text::_('COM_TFBUDGET_COMMON_NAME_BALANCE') . ": <span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($accountsToloadArr[$r]) . "'>";
+      $ttv = 0;
+          foreach ($total_Objects AS $total){
+            if ($total->setdate == $date4total && $total->account ==  $accountsToloadArr[$r]){
+                $ttv = $total->value;
+            }
+          } 
+          echo $ttv;
+      echo "</span></td>";
+    }
+    if (count($accountsToloadArr) > 1){
+      echo "<td class='totalofrow_s'><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_INCOMS') . 
+      ": <span class='incoms'></span></small></br><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_EXPENSES') . 
+      ": <span class='expences'></span></small></br><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_EXPENSES') . 
+      ": <span class='difference'></span></small></td>";
+    };
+    echo "</tr>";
+  };
+  };
+  ?>
+    </tbody>
+    </table>
+    <?php // if NO ACCOUNTS, GO create account BUTTON
+    else:
+  echo "<h3>There is no accounts yet, please make one</h3>";
+  echo "<a href='/index.php/component/teftelebudget/?view=accounts&modal=open'>
+  <input type='button' class='btn btn-info' value='CREATE ACCOUNT'/>
+  </a>";
+    endif;
+    
+}
+
 }
