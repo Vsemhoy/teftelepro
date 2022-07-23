@@ -7,12 +7,23 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use App\Http\Controllers\Objects\SidemenuItem;
 use App\Http\Controllers\Base\Input;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Components\Utils;
+use DateTime;
 
 class BudgerMain extends BaseController
 {
   public $weekdays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
   // need to set ICONPATH
   // $iconpath = "/components/com_teftelebudget/src/Media/icons/";
+
+  const ACCOUNTS  = 'bud_accounts';
+  const AGENTS = 'bud_agents';
+  const BASKET  = 'bud_basket';
+  const CATEGORIES = 'bud_categories';
+  const EVENTS = 'bud_events';
+  const TOTALS = 'bud_totals';
+  const EVENT_TEMPLATES  = 'bud_event_templates';
 
   public $get_groups;
   public $get_accounts;
@@ -49,16 +60,18 @@ class BudgerMain extends BaseController
   public $Goods_Objects;
   public $Categories_Objects;
 
+  public $URL;
+
   //http://link/foo.php?id[]=1&id[]=2&id[]=3
 
   public function __construct($USER = '0')
   {
+    $this->URL = rtrim($_SERVER['SERVER_NAME'] , '/') . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); //.
     $this->_GET_PARAMS = "";
     $this->_params_startMonth = "";
     $this->_params_endMonth = "";
 
     $this->input = new Input();
-    $this->_buildSideMenu();
 
     $this->get_groups = $this->input->get('grp', '', 'STRING');
     $this->get_accounts = $this->input->get('grp', '', 'ARRAY');
@@ -101,7 +114,7 @@ class BudgerMain extends BaseController
       };
     
     if (empty($this->_params_startMonth)){
-      $$his->_params_startMonth = $this->get_startMonth;
+      $this->_params_startMonth = $this->get_startMonth;
     };
     if (empty($this->_params_endMonth)){
       $this->_params_endMonth = $this->get_lastMonth;
@@ -110,11 +123,11 @@ class BudgerMain extends BaseController
     $this->_btn_prev_month_date = date("Y-m", strtotime($this->_params_startMonth . " -1 month"));
     $this->_btn_next_month_date = date("Y-m", strtotime($this->_params_endMonth . " +1 month"));
 
-    $this->_btn_go_prevMonth = $url . "?" . $this->_GET_PARAMS . "stm=" . $this->_btn_prev_month_date . "&enm=" . $this->_btn_prev_month_date;
-    $this->_btn_go_nextMonth = $url . "?" . $this->_GET_PARAMS . "stm=" . $this->_btn_next_month_date . "&enm=" . $this->_btn_next_month_date;
+    $this->_btn_go_prevMonth = $this->URL . "?" . $this->_GET_PARAMS . "stm=" . $this->_btn_prev_month_date . "&enm=" . $this->_btn_prev_month_date;
+    $this->_btn_go_nextMonth = $this->URL . "?" . $this->_GET_PARAMS . "stm=" . $this->_btn_next_month_date . "&enm=" . $this->_btn_next_month_date;
 
-    $this->_btn_expand_prevMonth = $url . "?" . $this->_GET_PARAMS . "stm=" . $this->_btn_prev_month_date . "&enm=" . $this->_params_endMonth;
-    $this->_btn_expand_nextMonth = $url . "?" . $this->_GET_PARAMS . "stm=" . $this->_params_startMonth . "&enm=" . $this->_btn_next_month_date;
+    $this->_btn_expand_prevMonth = $this->URL . "?" . $this->_GET_PARAMS . "stm=" . $this->_btn_prev_month_date . "&enm=" . $this->_params_endMonth;
+    $this->_btn_expand_nextMonth = $this->URL . "?" . $this->_GET_PARAMS . "stm=" . $this->_params_startMonth . "&enm=" . $this->_btn_next_month_date;
 
     $this->get_startMonth_filter = $this->get_startMonth;
     $this->get_lastMonth_filter = $this->get_lastMonth;
@@ -131,7 +144,7 @@ class BudgerMain extends BaseController
     $total_last_date .= "-01";
     // END RESERVE
 
-    $this->Accounts = self::LoadAccountList_keyId($USER, $defaultPage);
+    $this->Accounts = self::LoadAccountList_keyId($USER, $this->defaultPage);
     $this->Template_Objects = self::LoadTemplateList($USER);
     $this->Goods_Objects = self::LoadGoodsList($USER);
     $this->Categories_Objects = self::LoadGroupList_keyId($USER);
@@ -147,148 +160,131 @@ class BudgerMain extends BaseController
   /* ----------------------- get accounts ------------------------ */
   public static function LoadAccountList_keyId($user, $defaultPage = 0 ){
     //  FIRST HARVEST LANGUAGES to arrange items into Currency-groups
-    $db = parent::getDbo();
-    $query = $db->getQuery(true);
-    $query->select('*');
-    $query->from($db->quoteName('#__tf_budget_accounts'));
-    $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
-    if ($defaultPage == 1){ 
-      $query->where($db->quoteName('notshow') . ' = ' . $db->quote(0));
-    };
-    $query->where($db->quoteName('removed') . ' = ' . $db->quote(0));
-    $query->order('ordered ASC');
-    $db->setQuery($query);
-    $result = $db->loadObjectList('id');
-    return $result;
+    // it was object list associated by id's
+    $result = DB::select('select * from ' . self::ACCOUNTS . ' where user = :user AND notshow = 0 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    return Utils::arrayToIndexed($result);
   }
 
 
   public static function LoadAccountList_ALL_keyId($user){
     //  FIRST HARVEST LANGUAGES to arrange items into Currency-groups
-    $db = parent::getDbo();
-    $query = $db->getQuery(true);
-    $query->select('*');
-    $query->from($db->quoteName('#__tf_budget_accounts'));
-    $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
-    $query->order('ordered ASC');
-    $db->setQuery($query);
-    $result = $db->loadObjectList('id');
-    return $result;
+    $result = DB::select('select * from ' . self::ACCOUNTS . ' where user = :user ORDER BY ordered ASC', ['user' => $user, ]);
+    return Utils::arrayToIndexed($result);
   }
 
 /* ----------------------- get templates ------------------------ */
   public static function LoadTemplateList($user){
-    $db = parent::getDbo();
-    $query = $db->getQuery(true);
-    $query->select('*');
-    $query->from($db->quoteName('#__tf_budget_templates'));
-    $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
-    $query->order('ordered ASC');
-    $db->setQuery($query);
-    $result = $db->loadObjectList(); 
-    return $result;
+    // $db = parent::getDbo();
+    // $query = $db->getQuery(true);
+    // $query->select('*');
+    // $query->from($db->quoteName('#__tf_budget_templates'));
+    // $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
+    // $query->order('ordered ASC');
+    // $db->setQuery($query);
+    // $result = $db->loadObjectList(); 
+    // return $result;
   }
 
 /* ----------------------- get goods ------------------------ */
   public static function LoadGoodsList($user){
-    $db = parent::getDbo();
-    $query = $db->getQuery(true);
-    $query->select('*');
-    $query->from($db->quoteName('#__tf_budget_goods'));
-    $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
-    $query->order('ordered ASC');
-    $db->setQuery($query);
-    $result = $db->loadObjectList();
-    return $result;
+    // $db = parent::getDbo();
+    // $query = $db->getQuery(true);
+    // $query->select('*');
+    // $query->from($db->quoteName('#__tf_budget_goods'));
+    // $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
+    // $query->order('ordered ASC');
+    // $db->setQuery($query);
+    // $result = $db->loadObjectList();
+    // return $result;
   }
 
   /* ----------------------- get Groups ------------------------ */
   public static function LoadGroupList_keyId($user){
-    $db = parent::getDbo();
-    $query = $db->getQuery(true);
-    $query->select('*');
-    $query->from($db->quoteName('#__tf_budget_groups'));
-    $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
-    $query->order('ordered ASC');
-    $db->setQuery($query);
-    $result = $db->loadObjectList('id');
-    return $result;
+    // $db = parent::getDbo();
+    // $query = $db->getQuery(true);
+    // $query->select('*');
+    // $query->from($db->quoteName('#__tf_budget_groups'));
+    // $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
+    // $query->order('ordered ASC');
+    // $db->setQuery($query);
+    // $result = $db->loadObjectList('id');
+    // return $result;
   }
 
 
 /* ----------------------- get totals ------------------------ */
   public static function LoadAllTotals($user, $startmonth, $lastmonth, $accounts){
-    $newstartmonth = date("Y-m-d", strtotime($startmonth . "-1 month"));
-    $db = parent::getDbo();
-    $query = $db->getQuery(true);
-    $query->select('*');
-    $query->from($db->quoteName('#__tf_budget_totals'));
-    $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
-    $query->where($db->quoteName('account') . ' IN (' . $accounts . ')');
-    $query->where($db->quoteName('setdate') . ' BETWEEN ' . $db->quote($newstartmonth) . ' AND ' . $db->quote($lastmonth));
-    $query->order('setdate ASC');
-    $db->setQuery($query);
-    $result = $db->loadObjectList();
-    $accArr = explode(",", $accounts);
-    $falsecounter = count($accArr);
-    foreach ($accArr AS $account){  // Looking for last month totals
-      foreach ($result AS $object){
-        if (isset($object->value)){ 
-          $falsecounter--;
-          break;
-        };
-      };
-    };
-    if ($falsecounter == 0){
-      return $result;
-    } else { // If totals not esist (it may be Gap), we get last amount value by each account and return it here
-      $resultObjects = [];
-      foreach ($accArr AS $account){
-        $acc = trim($account);
-        $db = parent::getDbo();
-        $query = $db->getQuery(true);
-        $query->select('*');
-        $query->from($db->quoteName('#__tf_budget_totals'));
-        $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
-        $query->where($db->quoteName('account') . ' = ' . $db->quote($acc));
-        $query->where($db->quoteName('disabled') . ' = ' . $db->quote(0));
-        $query->where($db->quoteName('setdate') . ' < ' . $db->quote($lastmonth));
-        $query->order('setdate DESC');
-        $db->setQuery($query);
-        $result = $db->loadObject();
-          /* We don't need to fill Gaps, because user can not set new events
-          and we fill Gaps only if user will create an event */
-        if (!empty($result)){ // If we found values in the past, we pack it into array
-          $result->setdate = $newstartmonth;
-          array_push($resultObjects, $result);
-        } else {              // But if we don't find them, we create empty object and return it
-          $cork = (object)[];
-          $cork->setdate = $newstartmonth;
-          $cork->value   = 0;
-          $cork->account = $acc;
-          $cork->user    = $user;
-          array_push($resultObjects, $cork);
-        };
-    }
-    return $resultObjects;
-    };
+    // $newstartmonth = date("Y-m-d", strtotime($startmonth . "-1 month"));
+    // $db = parent::getDbo();
+    // $query = $db->getQuery(true);
+    // $query->select('*');
+    // $query->from($db->quoteName('#__tf_budget_totals'));
+    // $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
+    // $query->where($db->quoteName('account') . ' IN (' . $accounts . ')');
+    // $query->where($db->quoteName('setdate') . ' BETWEEN ' . $db->quote($newstartmonth) . ' AND ' . $db->quote($lastmonth));
+    // $query->order('setdate ASC');
+    // $db->setQuery($query);
+    // $result = $db->loadObjectList();
+    // $accArr = explode(",", $accounts);
+    // $falsecounter = count($accArr);
+    // foreach ($accArr AS $account){  // Looking for last month totals
+    //   foreach ($result AS $object){
+    //     if (isset($object->value)){ 
+    //       $falsecounter--;
+    //       break;
+    //     };
+    //   };
+    // };
+    // if ($falsecounter == 0){
+    //   return $result;
+    // } else { // If totals not esist (it may be Gap), we get last amount value by each account and return it here
+    //   $resultObjects = [];
+    //   foreach ($accArr AS $account){
+    //     $acc = trim($account);
+    //     $db = parent::getDbo();
+    //     $query = $db->getQuery(true);
+    //     $query->select('*');
+    //     $query->from($db->quoteName('#__tf_budget_totals'));
+    //     $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
+    //     $query->where($db->quoteName('account') . ' = ' . $db->quote($acc));
+    //     $query->where($db->quoteName('disabled') . ' = ' . $db->quote(0));
+    //     $query->where($db->quoteName('setdate') . ' < ' . $db->quote($lastmonth));
+    //     $query->order('setdate DESC');
+    //     $db->setQuery($query);
+    //     $result = $db->loadObject();
+    //       /* We don't need to fill Gaps, because user can not set new events
+    //       and we fill Gaps only if user will create an event */
+    //     if (!empty($result)){ // If we found values in the past, we pack it into array
+    //       $result->setdate = $newstartmonth;
+    //       array_push($resultObjects, $result);
+    //     } else {              // But if we don't find them, we create empty object and return it
+    //       $cork = (object)[];
+    //       $cork->setdate = $newstartmonth;
+    //       $cork->value   = 0;
+    //       $cork->account = $acc;
+    //       $cork->user    = $user;
+    //       array_push($resultObjects, $cork);
+    //     };
+    // }
+    // return $resultObjects;
+    // };
   }
 
 
 /* ----------------------- get items ------------------------ */
   public static function LoadItemsToChart($user, $accounts, $startmonth, $lastmonth){
-    $db = parent::getDbo();
-    $query = $db->getQuery(true);
-    $query->select('*');
-    $query->from($db->quoteName('#__tf_budget_items'));
-    $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
-    $query->where($db->quoteName('account') . ' IN (' . $accounts . ')');
-    $query->where($db->quoteName('datein') . ' BETWEEN ' . $db->quote($startmonth) . ' AND ' . $db->quote($lastmonth));
-    $query->where($db->quoteName('removed') . ' = ' . $db->quote(0));
-    $query->order('timec ASC');
-    $db->setQuery($query);
-    $result = $db->loadObjectList("id");
-    return $result;
+    // $db = parent::getDbo();
+    // $query = $db->getQuery(true);
+    // $query->select('*');
+    // $query->from($db->quoteName('#__tf_budget_items'));
+    // $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
+    // $query->where($db->quoteName('account') . ' IN (' . $accounts . ')');
+    // $query->where($db->quoteName('datein') . ' BETWEEN ' . $db->quote($startmonth) . ' AND ' . $db->quote($lastmonth));
+    // $query->where($db->quoteName('removed') . ' = ' . $db->quote(0));
+    // $query->order('timec ASC');
+    // $db->setQuery($query);
+    // $result = $db->loadObjectList("id");
+    // return $result;
   }
 
 
@@ -343,19 +339,46 @@ public function renderNavigateButtons(){
 
 
 public function renderMonthTable(){
-  
+  return 0;
+}
+
+public function tableTotalSection($date, $accountsToloadArr, $isEnd = false){
+  $result = "";
+  if ($isEnd == true){
+    $date       = date('Y-m-d', strtotime($date . "-1 month"));
+  };
+  $datemonth_ = date('m', strtotime($date));
+  $dateyear_  = date('Y', strtotime($date));
+  $dateObj    = DateTime::createFromFormat('!m', $datemonth_);
+  $monthname  = $dateObj->format('F');
+  $date4total = $dateyear_ . "-" . $dateObj->format('m') . "-01";
+  $result .= "<tr class='bg-subtotal subtotal'>
+  <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
+  for ($r = 0; $r < count($accountsToloadArr); $r++ ){
+    $result .=  "<td class='mtotalio'><small>COM_TFBUDGET_COMMON_TYPE_INCOMS<span class='incoms'></span></small></br><small>COM_TFBUDGET_COMMON_TYPE_EXPENSES<span class='expences'></span></small></br><small>COM_TFBUDGET_TABLE_DIFFERENCE<span class='difference'></span></small></td>
+    <td class='mtotals'>COM_TFBUDGET_COMMON_NAME_BALANCE<span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($accountsToloadArr[$r]) . "'>";
+    $ttv = 0;
+        foreach ($total_Objects AS $total){
+          if ($total->setdate == $date4total && $total->account ==  $accountsToloadArr[$r]){
+              $ttv = $total->value;
+          }
+        }
+        $result .=  $ttv;
+    $result .=  "</span></td>";
+  };
+  if (count($accountsToloadArr) > 1){
+    $result .=  "<td class='totalofrow_s'><small>COM_TFBUDGET_COMMON_NAME_BALANCE"  . 
+    ": <span class='incoms'></span></small></br><small>COM_TFBUDGET_COMMON_TYPE_EXPENSES" . 
+    ": <span class='expences'></span></small></br><small>COM_TFBUDGET_TABLE_DIFFERENCE<span class='difference'></span></small></td>";
+  };
+  $result .=  "</tr>";
+  return $result;
 }
 
 public function renderWholeTable(){
   /* --------------------------- IF ACCOUNTS EXISTs, LOAD TABLE ------------------------------- */
   $result = "";
-  
-  
-    
-    
-  //<?php if (!empty($accountsToLoad)): 
-  
-  //<?php
+
     $idconstructor   = "";
     $idconstructorrow = 0;
     $idconstructorcol = 0;
@@ -367,29 +390,28 @@ public function renderWholeTable(){
 
   
   
-    <table class="table table-bordered table-hover tftable">
-      <thead>
-      <tr>
-        <th scope="col" class="tthd"><?= Text::_('COM_TFBUDGET_TABLE_HEAD_DATE') ?></th>
-        <th scope="col" class="tthd">
-        <span class="datetrigwrap">
-          <input class="headdate" type="month" id="dateflash" 
-              name="flash_date" value="<?php echo $get_startmonth_filter; ?>">
-              </span></th>
-  <?php 
+    $result .= "<table class='table table-bordered table-hover tftable'>
+    <thead>
+    <tr>
+      <th scope='col' class='tthd'>COM_TFBUDGET_TABLE_HEAD_DATE</th>
+      <th scope='col' class='tthd'>
+      <span class='datetrigwrap'>
+        <input class='headdate' type='month' id='dateflash' 
+            name='flash_date' value='{ $get_startmonth_filter }
+            </span></th>";
     if (count($accountsToloadArr)){
       foreach ($accountsToloadArr AS $accid){
-        echo "<th scope='col' acc='" . trim($accid) . "' decimal='" . $accounts[trim($accid)]->decimals . "'>" . $accounts[trim($accid)]->name . "</th>
+        $result .=  "<th scope='col' acc='" . trim($accid) . "' decimal='" . $accounts[trim($accid)]->decimals . "'>" . $accounts[trim($accid)]->name . "</th>
         <th class='daytotals' scope='col' accfor='" . trim($accid) . "'>" . Text::_('COM_TFBUDGET_TABLE_HEAD_TOTAL') . "</th>";
       }
     }
     if (count($accountsToloadArr) > 1){
-      echo '<th scope="col" class="headtotal ttfr">' . Text::_('COM_TFBUDGET_TABLE_HEAD_TOTALS') . '</th>';
+      $result .= '<th scope="col" class="headtotal ttfr">' . Text::_('COM_TFBUDGET_TABLE_HEAD_TOTALS') . '</th>';
     };
   ?>
-      </tr>
+  $result .= "</tr>
     </thead>
-    <tbody id="budgettable">
+    <tbody id='budgettable'>";
   <?php
   if ($cdate_day != 1){
     for ($i = 0; $i < 32; $i++){
@@ -411,31 +433,7 @@ public function renderWholeTable(){
     $idconstructorrow = $x;
   
   if ($x == 0){
-    $datemonth_ = date('m', strtotime($date));
-    $dateyear_  = date('Y', strtotime($date));
-    $dateObj    = DateTime::createFromFormat('!m', $datemonth_);
-    $monthname  = $dateObj->format('F');
-    $date4total = $dateyear_ . "-" . $dateObj->format('m') . "-01";
-    echo "<tr class='bg-subtotal subtotal'>
-    <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
-    for ($r = 0; $r < count($accountsToloadArr); $r++ ){
-      echo "<td class='mtotalio'><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_INCOMS') . ": <span class='incoms'></span></small></br><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_EXPENSES') . ": <span class='expences'></span></small></br><small>" . Text::_('COM_TFBUDGET_TABLE_DIFFERENCE') . ": <span class='difference'></span></small></td>
-      <td class='mtotals'>" . Text::_('COM_TFBUDGET_COMMON_NAME_BALANCE') . ": <span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($accountsToloadArr[$r]) . "'>";
-      $ttv = 0;
-          foreach ($total_Objects AS $total){
-            if ($total->setdate == $date4total && $total->account ==  $accountsToloadArr[$r]){
-                $ttv = $total->value;
-            }
-          }
-          echo $ttv;
-      echo "</span></td>";
-    };
-    if (count($accountsToloadArr) > 1){
-      echo "<td class='totalofrow_s'><small>" . Text::_('COM_TFBUDGET_COMMON_NAME_BALANCE') . 
-      ": <span class='incoms'></span></small></br><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_EXPENSES') . 
-      ": <span class='expences'></span></small></br><small>" . Text::_('COM_TFBUDGET_TABLE_DIFFERENCE') . ": <span class='difference'></span></small></td>";
-    };
-    echo "</tr>";
+    $this->tableTotalSectton($date, $this->Accounts);
   };
   
     $cdateclass = "";
@@ -448,20 +446,20 @@ public function renderWholeTable(){
       $cdateclass .= " weekend";
     }
     
-    echo "<tr class='budrow {$cdateclass}' id='dragrow_{$idconstructorrow}' date='{$date}'>
+    $result .=  "<tr class='budrow {$cdateclass}' id='dragrow_{$idconstructorrow}' date='{$date}'>
     <td class='tf_datetd'  title='{$date}' scope='row'>{$shortDate}</td>
     <td  class='tf_daytd'>" . $weekdayNames[$week] . "</td>";
     for ($t = 0; $t < count($accountsToloadArr); $t++){
       $accountid = trim($accountsToloadArr[$t]);
       $idconstructorcol = $t;
-      echo "<td id='dragarea_" . $idconstructorrow . "_" . $idconstructorcol . "' 
+      $result .=  "<td id='dragarea_" . $idconstructorrow . "_" . $idconstructorcol . "' 
       class='droptabledata' ondrop='drop(event)' ondragover='allowDrop(event)'
       acc='{$accountid}' date='{$date}' ><span class='daytotal'>";
       if (empty($empty)) {
          // echo $randvalue[$t];
        };
   
-       echo "</span><span class='rect table-button-right' onclick='tf_create(1, this);'>
+       $result .=  "</span><span class='rect table-button-right' onclick='tf_create(1, this);'>
        <i class='bi-plus-lg' title='Add new item' title='edit' data-bs-toggle='modal' data-bs-target='#EditorWindow'>
        </i></span>";
        foreach ($item_Objects AS $_object){
@@ -522,54 +520,30 @@ public function renderWholeTable(){
           }
         }
       }
-       echo "</td>";
-       echo "<td class='daytotals' for='{$accountid}' date='{$date}'></td>";
+      $result .=  "</td>";
+      $result .=  "<td class='daytotals' for='{$accountid}' date='{$date}'></td>";
     };
     if (count($accountsToloadArr) > 1){
-      echo "<td class='totalofrow'></td>";
+      $result .=  "<td class='totalofrow'></td>";
     };
-  echo "</tr>";
+    $result .=  "</tr>";
   if ($daynum == 1){
-    $date       = date('Y-m-d', strtotime($date . "-1 month"));
-    $datemonth_ = date('m', strtotime($date));
-    $dateyear_  = date('Y', strtotime($date));
-    $dateObj    = DateTime::createFromFormat('!m', $datemonth_);
-    $monthname  = $dateObj->format('F');
-    $date4total = $dateyear_ . "-" . $dateObj->format('m') . "-01";
-    echo "<tr class='bg-subtotal subtotal' date='" . $date . "'>
-    <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
-    for ($r = 0; $r < count($accountsToloadArr); $r++ ){
-      echo "<td class='mtotalio'><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_INCOMS') . ": <span class='incoms'></span></small></br><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_EXPENSES') . ": <span class='expences'></span></small></br><small>" . Text::_('COM_TFBUDGET_TABLE_DIFFERENCE') . ": <span class='difference'></span></small></td>
-      <td class='mtotals'>" . Text::_('COM_TFBUDGET_COMMON_NAME_BALANCE') . ": <span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($accountsToloadArr[$r]) . "'>";
-      $ttv = 0;
-          foreach ($total_Objects AS $total){
-            if ($total->setdate == $date4total && $total->account ==  $accountsToloadArr[$r]){
-                $ttv = $total->value;
-            }
-          } 
-          echo $ttv;
-      echo "</span></td>";
-    }
-    if (count($accountsToloadArr) > 1){
-      echo "<td class='totalofrow_s'><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_INCOMS') . 
-      ": <span class='incoms'></span></small></br><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_EXPENSES') . 
-      ": <span class='expences'></span></small></br><small>" . Text::_('COM_TFBUDGET_COMMON_TYPE_EXPENSES') . 
-      ": <span class='difference'></span></small></td>";
-    };
-    echo "</tr>";
+    $this->tableTotalSectton($date, $this->Accounts, true);
   };
   };
-  ?>
-    </tbody>
-    </table>
-    <?php // if NO ACCOUNTS, GO create account BUTTON
-    else:
-  echo "<h3>There is no accounts yet, please make one</h3>";
-  echo "<a href='/index.php/component/teftelebudget/?view=accounts&modal=open'>
-  <input type='button' class='btn btn-info' value='CREATE ACCOUNT'/>
-  </a>";
-    endif;
-    
+
+  $result .= "</tbody>
+    </table>";
+    // if NO ACCOUNTS, GO create account BUTTON
+    return $result;
+}
+
+public function renderNoAccounts(){
+  $result .=  "<h3>There is no accounts yet, please make one</h3>";
+  $result .=  "<a href='/index.php/component/teftelebudget/?view=accounts&modal=open'>
+<input type='button' class='btn btn-info' value='CREATE ACCOUNT'/>
+</a>";
+return $result;
 }
 
 }

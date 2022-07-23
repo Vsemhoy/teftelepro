@@ -4,6 +4,7 @@
 
     <?php
     use App\Http\Controllers\Controller;
+    use App\Http\Controllers\Components\Budger\BudgerMain;
     // $instant  = new Controller();
     // echo $instant->renderValue();
 
@@ -13,12 +14,13 @@
     //     echo "<br>";
     // }
     $com = Controller::getComponent('budger');
-
+    $content = new BudgerMain(1);
     ?>
 
 
 
 <div class="section-l w-100 bg-white" style="overflow: auto;" id="main-tf-1">
+<?php echo $content->URL; ?>
     <div class="container-fluid px-0">
       <div class="input-group mb-0">
       <input id="tf_budget_search" type="text" class="form-control rounded-0 bg-transparent" placeholder="Component search" aria-label="Recipient's username" aria-describedby="button-addon2" value="">
