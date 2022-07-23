@@ -59,49 +59,7 @@ class BudgerController extends BaseController
       $this->sideMenu = [];
       $this->name = "Budget";
       $this->title = "Simple Budget manager";
-      $this->_GET_PARAMS = "";
-      $this->_params_startMonth = "";
-      $this->_params_endMonth = "";
 
-      $this->input = new Input();
-      $this->_buildSideMenu();
-
-      $this->get_groups = $this->input->get('grp', '', 'STRING');
-      $this->get_accounts = $this->input->get('grp', '', 'ARRAY');
-      $this->get_currency = $this->input->get('grp', '', 'INT');
-
-      if ($this->get_accounts == ""){
-      $this->defaultPage = 1;
-      }
-
-      $this->today_MY = date("Y-m");
-      $this->last_MY  =  date("Y-m", strtotime("-0 Months")); // Here we can set count of month loaded default
-
-      $this->get_startMonth = $this->input->get('stm',$this->last_MY,'URL');   // date of start table (future)
-      $this->get_lastMonth  = $this->input->get('enm',$this->today_MY,'URL');   // date of end table (past)
-      if (empty($this->input->get('stm',"",'URL'))){
-        $this->get_startMonth = $this->get_lastMonth;
-      };
-      if (empty($this->input->get('enm',"",'URL'))){
-        $this->get_lastMonth = $this->get_startMonth;
-      };
-      if (strtotime($this->get_lastMonth) < strtotime($this->get_startMonth)){
-        $this->get_lastMonth = $this->get_startMonth;
-      }
-
-      $this->_btn_prev_month_date ;
-      $this->_btn_next_month_date ;
-      $this->_btn_go_prevMonth    ;
-      $this->_btn_go_nextMonth    ;
-      $this->_btn_expand_prevMonth;
-      $this->_btn_expand_nextMonth;
-      $this->get_startMonth_filter;
-      $this->get_lastMonth_filter ;
-      $this->tableLength;
-      $this->currentCurr;
-      $this->__accounts;
-      $this->__goods_Objects;
-      $this->__groups_Objects;
     }
     
     private function _buildSideMenu()
