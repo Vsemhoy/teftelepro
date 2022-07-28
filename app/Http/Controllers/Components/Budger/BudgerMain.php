@@ -173,17 +173,19 @@ class BudgerMain extends BaseController
   }
 
 /* ----------------------- get templates ------------------------ */
-  public static function LoadTemplateList($user){
-    // $db = parent::getDbo();
-    // $query = $db->getQuery(true);
-    // $query->select('*');
-    // $query->from($db->quoteName('#__tf_budget_templates'));
-    // $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
-    // $query->order('ordered ASC');
-    // $db->setQuery($query);
-    // $result = $db->loadObjectList(); 
-    // return $result;
+  public static function LoadTemplateList_ALL_keyId($user){
+    $result = DB::select('select * from ' . self::EVENT_TEMPLATES . ' where user = :user AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    return Utils::arrayToIndexed($result);
   }
+  public static function LoadTemplateList_NotArchieved($user){
+    $result = DB::select('select * from ' . self::EVENT_TEMPLATES . ' where user = :user AND archieved = 0 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    return Utils::arrayToIndexed($result);
+  }
+  public static function LoadTemplateList_Archieved($user){
+    $result = DB::select('select * from ' . self::EVENT_TEMPLATES . ' where user = :user AND  archieved = 1 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    return Utils::arrayToIndexed($result);
+  }
+
 
 /* ----------------------- get goods ------------------------ */
   public static function LoadGoodsList($user){
@@ -199,18 +201,18 @@ class BudgerMain extends BaseController
   }
 
   /* ----------------------- get Groups ------------------------ */
-  public static function LoadGroupList_keyId($user){
-    // $db = parent::getDbo();
-    // $query = $db->getQuery(true);
-    // $query->select('*');
-    // $query->from($db->quoteName('#__tf_budget_groups'));
-    // $query->where($db->quoteName('user') . ' = ' . $db->quote($user));
-    // $query->order('ordered ASC');
-    // $db->setQuery($query);
-    // $result = $db->loadObjectList('id');
-    // return $result;
+  public static function LoadGroupList_ALL_keyId($user){
+    $result = DB::select('select * from ' . self::CATEGORIES . ' where user = :user AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    return Utils::arrayToIndexed($result);
   }
-
+  public static function LoadGroupList_NotArchieved($user){
+    $result = DB::select('select * from ' . self::CATEGORIES . ' where user = :user AND archieved = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    return Utils::arrayToIndexed($result);
+  }
+  public static function LoadGroupList_Archieved($user){
+    $result = DB::select('select * from ' . self::CATEGORIES . ' where user = :user AND archieved = 1 ORDER BY ordered ASC', ['user' => $user, ]);
+    return Utils::arrayToIndexed($result);
+  }
 
 /* ----------------------- get totals ------------------------ */
   public static function LoadAllTotals($user, $startmonth, $lastmonth, $accounts){
@@ -273,6 +275,12 @@ class BudgerMain extends BaseController
 
 /* ----------------------- get items ------------------------ */
   public static function LoadItemsToChart($user, $accounts, $startmonth, $lastmonth){
+    if (is_array($accounts)){
+      $accounts = Utils::arrayToCommaSeparated($accounts);
+    }
+    $result = DB::select('select * from ' . self::EVENTS . ' where user = :user AND is_removed = 0 AND account IN (' . 
+    $accounts . ') AND date_in BETWEEN ' . $startmonth . ' AND ' . $lastmonth . ' ORDER BY ordered ASC', ['user' => $user, ]);
+    return Utils::arrayToIndexed($result);
     // $db = parent::getDbo();
     // $query = $db->getQuery(true);
     // $query->select('*');
