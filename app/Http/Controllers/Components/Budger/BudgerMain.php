@@ -13,7 +13,7 @@ use DateTime;
 
 class BudgerMain extends BaseController
 {
-  public $weekdays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+  public $weekdayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   // need to set ICONPATH
   // $iconpath = "/components/com_teftelebudget/src/Media/icons/";
 
@@ -66,7 +66,7 @@ class BudgerMain extends BaseController
 
   public function __construct($USER = '0')
   {
-    $this->URL = rtrim($_SERVER['SERVER_NAME'] , '/') . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); //.
+    $this->URL = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); //. rtrim($_SERVER['SERVER_NAME'] , '/') . 
     $this->_GET_PARAMS = "";
     $this->_params_startMonth = "";
     $this->_params_endMonth = "";
@@ -108,7 +108,10 @@ class BudgerMain extends BaseController
                 $this->_GET_PARAMS .= $param . "[]=" . $eulav . "&";
               }
             } else {
-               $this->_GET_PARAMS .= $param . "=" . $value . "&";
+              if ($param  != "stm" && $param != "enm"){
+
+                $this->_GET_PARAMS .= $param . "=" . $value . "&";
+              }
             };
         }
       };
@@ -145,9 +148,9 @@ class BudgerMain extends BaseController
     // END RESERVE
 
     $this->Accounts = self::LoadAccountList_keyId($USER, $this->defaultPage);
-    $this->Template_Objects = self::LoadTemplateList($USER);
+    $this->Template_Objects = self::LoadTemplateList_ALL_keyId($USER);
     $this->Goods_Objects = self::LoadGoodsList($USER);
-    $this->Categories_Objects = self::LoadGroupList_keyId($USER);
+    $this->Categories_Objects = self::LoadGroupList_ALL_keyId($USER);
 
     $this->tableLength = self::countDaysBetweenDates($this->get_startMonth, $this->get_lastMonth);
     $this->currentCurr = 1;
@@ -318,8 +321,8 @@ public function renderNavigateButtons(){
   $result = "";
   $result .= "<div class='container'>";
   $result .= "<div class='btn-group mb-3 m-auto d-table' role='group' aria-label='Basic outlined example'>";
-  $result .= "<a type='button' href='{ $this->_btn_go_prevMonth }' class='btn btn-outline-secondary'><i class=' bi-chevron-left'></i></a>";
-  $result .= "<a type='button' href='{ $this->_btn_expand_prevMonth; }'  class='btn btn-outline-secondary'>";
+  $result .= "<a type='button' href='" . $this->_btn_go_prevMonth ."' class='btn btn-outline-secondary'><i class=' bi-chevron-left'></i></a>";
+  $result .= "<a type='button' href='". $this->_btn_expand_prevMonth ."'  class='btn btn-outline-secondary'>";
   $result .= "<i class=' bi-chevron-left'></i>";
   $result .= "<i class=' bi-plus'></i>";
   $result .= "</a>";
@@ -334,11 +337,11 @@ public function renderNavigateButtons(){
   $result .= "<button type='button' onclick='tf_create(1, 0);' class='btn btn-outline-secondary' title='COM_TFBUDGET_BUTTON_NEWEVENT'>";
   $result .= "<i class=' bi-journal-plus'></i>";
   $result .= "</button>";
-  $result .= "<a type='button' href='{ $this->_btn_expand_nextMonth }' class='btn btn-outline-secondary'>";
+  $result .= "<a type='button' href='". $this->_btn_expand_nextMonth ."' class='btn btn-outline-secondary'>";
   $result .= "<i class=' bi-plus'></i>";
   $result .= "<i class=' bi-chevron-right'></i>";
   $result .= "</a>";
-  $result .= "<a type='button'href='{ $this->_btn_go_nextMonth }'  class='btn btn-outline-secondary'><i class=' bi-chevron-right'></i></a>";
+  $result .= "<a type='button'href='". $this->_btn_go_nextMonth ."'  class='btn btn-outline-secondary'><i class=' bi-chevron-right'></i></a>";
   $result .= "</div>";
   $result .= "</div>";
   $result .= "<br>";
@@ -350,7 +353,7 @@ public function renderMonthTable(){
   return 0;
 }
 
-public function tableTotalSection($date, $accountsToloadArr, $isEnd = false){
+public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false){
   $result = "";
   if ($isEnd == true){
     $date       = date('Y-m-d', strtotime($date . "-1 month"));
@@ -392,8 +395,8 @@ public function renderWholeTable(){
     $idconstructorcol = 0;
     $daytotal         = 0;
     $currentDate = date('Y-m-d', time());
-    $cdate = date('m/d/Y', strtotime($get_lastmonth));
-    $cdate_day = date('d', strtotime($get_lastmonth));
+    $cdate = date('m/d/Y', strtotime($this->get_lastMonth));
+    $cdate_day = date('d', strtotime($this->get_lastMonth));
     $secondcounter = 0;
 
   
@@ -401,30 +404,29 @@ public function renderWholeTable(){
     $result .= "<table class='table table-bordered table-hover tftable'>
     <thead>
     <tr>
-      <th scope='col' class='tthd'>COM_TFBUDGET_TABLE_HEAD_DATE</th>
+      <th scope='col' class='tthd'>_DATE</th>
       <th scope='col' class='tthd'>
       <span class='datetrigwrap'>
         <input class='headdate' type='month' id='dateflash' 
-            name='flash_date' value='{ $get_startmonth_filter }
+            name='flash_date' value='{ $this->get_startMonth_filter }
             </span></th>";
-    if (count($accountsToloadArr)){
-      foreach ($accountsToloadArr AS $accid){
+    if (count($this->Accounts)){
+      foreach ($his->Accounts AS $accid){
         $result .=  "<th scope='col' acc='" . trim($accid) . "' decimal='" . $accounts[trim($accid)]->decimals . "'>" . $accounts[trim($accid)]->name . "</th>
         <th class='daytotals' scope='col' accfor='" . trim($accid) . "'>" . Text::_('COM_TFBUDGET_TABLE_HEAD_TOTAL') . "</th>";
       }
     }
-    if (count($accountsToloadArr) > 1){
+    if (count($this->Accounts) > 1){
       $result .= '<th scope="col" class="headtotal ttfr">' . Text::_('COM_TFBUDGET_TABLE_HEAD_TOTALS') . '</th>';
     };
-  ?>
-  $result .= "</tr>
+    $result .= "</tr>
     </thead>
     <tbody id='budgettable'>";
-  <?php
+
   if ($cdate_day != 1){
     for ($i = 0; $i < 32; $i++){
       $secondcounter = ($i * 60 * 60 * 24);
-      $tmpdate_day = date('d', strtotime($get_lastmonth) + $secondcounter + (60 * 60 * 24));
+      $tmpdate_day = date('d', strtotime($this->get_lastMonth) + $secondcounter + (60 * 60 * 24));
       if ($tmpdate_day == 1){
         break;
       }
@@ -433,11 +435,11 @@ public function renderWholeTable(){
   
   
   /* LOOP */
-  for ($x = 0; $x < $tableLength; $x++){
-    $date = date('Y-m-d', strtotime($get_lastmonth) - ($x * 60 * 60 * 24) + $secondcounter);
-    $shortDate = date('d', strtotime($get_lastmonth) - ($x * 60 * 60 * 24) + $secondcounter);
-    $week = date('w', strtotime($get_lastmonth) - ($x * 60 * 60 * 24) + $secondcounter);
-    $daynum = date('d', strtotime($get_lastmonth) - ($x * 60 * 60 * 24) + $secondcounter);
+  for ($x = 0; $x < $this->tableLength; $x++){
+    $date = date('Y-m-d', strtotime($this->get_lastMonth) - ($x * 60 * 60 * 24) + $secondcounter);
+    $shortDate = date('d', strtotime($this->get_lastMonth) - ($x * 60 * 60 * 24) + $secondcounter);
+    $week = date('w', strtotime($this->get_lastMonth) - ($x * 60 * 60 * 24) + $secondcounter);
+    $daynum = date('d', strtotime($this->get_lastMonth) - ($x * 60 * 60 * 24) + $secondcounter);
     $idconstructorrow = $x;
   
   if ($x == 0){
@@ -456,9 +458,9 @@ public function renderWholeTable(){
     
     $result .=  "<tr class='budrow {$cdateclass}' id='dragrow_{$idconstructorrow}' date='{$date}'>
     <td class='tf_datetd'  title='{$date}' scope='row'>{$shortDate}</td>
-    <td  class='tf_daytd'>" . $weekdayNames[$week] . "</td>";
-    for ($t = 0; $t < count($accountsToloadArr); $t++){
-      $accountid = trim($accountsToloadArr[$t]);
+    <td  class='tf_daytd'>" . $this->weekdayNames[$week] . "</td>";
+    for ($t = 0; $t < count($this->Accounts); $t++){
+      $accountid = trim($this->Accounts[$t]);
       $idconstructorcol = $t;
       $result .=  "<td id='dragarea_" . $idconstructorrow . "_" . $idconstructorcol . "' 
       class='droptabledata' ondrop='drop(event)' ondragover='allowDrop(event)'
@@ -531,7 +533,7 @@ public function renderWholeTable(){
       $result .=  "</td>";
       $result .=  "<td class='daytotals' for='{$accountid}' date='{$date}'></td>";
     };
-    if (count($accountsToloadArr) > 1){
+    if (count($this->Accounts) > 1){
       $result .=  "<td class='totalofrow'></td>";
     };
     $result .=  "</tr>";

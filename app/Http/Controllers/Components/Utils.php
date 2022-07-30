@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Controllers\Components;
+use App\Http\Controllers\Base\Input;
 
 class Utils
 {
@@ -122,7 +123,7 @@ class Utils
 			return $text;
 		}
 
-		return '\'' . ($escape ? Filter::ESCAPECHARS($text) : $text) . '\'';
+		return '\'' . ($escape ? Input::HTMLSPECIALCHARS($text) : $text) . '\'';
 	}
 
 
@@ -134,18 +135,4 @@ class Utils
 	}
 
 
-
-  // DATABASE LOGIC
-  // Get the current query object or a new DatabaseQuery object.
-  public function getQuery($new = false)
-	{
-		if ($new)
-		{
-      parent::__construct(parent::$dbhost, parent::$dbuser , parent::$dbpass, parent::$dbname, parent::$charset, parent::$prefix);
-
-			return parent::$connection;
-		}
-
-		return parent::$connection;
-	}
 }
