@@ -60,6 +60,7 @@ class BudgerController extends BaseController
       $this->name = "Budget";
       $this->title = "Simple Budget manager";
 
+      $this->_buildSideMenu();
     }
     
     private function _buildSideMenu()

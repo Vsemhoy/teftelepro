@@ -17,7 +17,7 @@ class BudgerMain extends BaseController
   // need to set ICONPATH
   // $iconpath = "/components/com_teftelebudget/src/Media/icons/";
 
-  const ACCOUNTS  = 'bud_accounts';
+
   const AGENTS = 'bud_agents';
   const BASKET  = 'bud_basket';
   const CATEGORIES = 'bud_categories';
@@ -164,28 +164,28 @@ class BudgerMain extends BaseController
   public static function LoadAccountList_keyId($user, $defaultPage = 0 ){
     //  FIRST HARVEST LANGUAGES to arrange items into Currency-groups
     // it was object list associated by id's
-    $result = DB::select('select * from ' . self::ACCOUNTS . ' where user = :user AND notshow = 0 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_ACCOUNTS') . ' where user = :user AND notshow = 0 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
 
 
   public static function LoadAccountList_ALL_keyId($user){
     //  FIRST HARVEST LANGUAGES to arrange items into Currency-groups
-    $result = DB::select('select * from ' . self::ACCOUNTS . ' where user = :user ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_ACCOUNTS') . ' where user = :user ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
 
 /* ----------------------- get templates ------------------------ */
   public static function LoadTemplateList_ALL_keyId($user){
-    $result = DB::select('select * from ' . self::EVENT_TEMPLATES . ' where user = :user AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_EVENT_TEMPLATES') . ' where user = :user AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
   public static function LoadTemplateList_NotArchieved($user){
-    $result = DB::select('select * from ' . self::EVENT_TEMPLATES . ' where user = :user AND archieved = 0 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_EVENT_TEMPLATES') . ' where user = :user AND archieved = 0 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
   public static function LoadTemplateList_Archieved($user){
-    $result = DB::select('select * from ' . self::EVENT_TEMPLATES . ' where user = :user AND  archieved = 1 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_EVENT_TEMPLATES') . ' where user = :user AND  archieved = 1 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
 
@@ -205,15 +205,15 @@ class BudgerMain extends BaseController
 
   /* ----------------------- get Groups ------------------------ */
   public static function LoadGroupList_ALL_keyId($user){
-    $result = DB::select('select * from ' . self::CATEGORIES . ' where user = :user AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_CATEGORIES') . ' where user = :user AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
   public static function LoadGroupList_NotArchieved($user){
-    $result = DB::select('select * from ' . self::CATEGORIES . ' where user = :user AND archieved = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_CATEGORIES') . ' where user = :user AND archieved = 0 ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
   public static function LoadGroupList_Archieved($user){
-    $result = DB::select('select * from ' . self::CATEGORIES . ' where user = :user AND archieved = 1 ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_CATEGORIES') . ' where user = :user AND archieved = 1 ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
 
@@ -281,7 +281,7 @@ class BudgerMain extends BaseController
     if (is_array($accounts)){
       $accounts = Utils::arrayToCommaSeparated($accounts);
     }
-    $result = DB::select('select * from ' . self::EVENTS . ' where user = :user AND is_removed = 0 AND account IN (' . 
+    $result = DB::select('select * from ' . env('TB_BUD_EVENTS') . ' where user = :user AND is_removed = 0 AND account IN (' . 
     $accounts . ') AND date_in BETWEEN ' . $startmonth . ' AND ' . $lastmonth . ' ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
     // $db = parent::getDbo();
