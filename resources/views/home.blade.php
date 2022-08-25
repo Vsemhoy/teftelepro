@@ -1,4 +1,4 @@
-@extends('bootstrap.default')
+@extends('Template.shell')
 
 @section('page-content')
 
@@ -18,9 +18,10 @@
     ?>
 
 
-    <div class="content p-3 pt-0 bg-white">
+    <div class="uk-padding-small">
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center px-md-4 pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="h2"><?php echo $component->name; ?></h1>
+        <h2 class="uk-h3 tm-heading-fragment"><?php echo $component->name; ?></h2>
+        <hr>
         <div class="btn-toolbar mb-2 mb-md-0">
           <div class="btn-group me-2">
             <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
@@ -33,12 +34,12 @@
         </div>
       </div>
       @if(isset($user))
-      <p>{{ $user['name'] }}</p><a href="{{ route('logout')}}">Logout</a>
-      <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+
+
       @endif
       <h2>Section title</h2>
       <div class="table-responsive">
-        <table class="table table-striped table-sm">
+        <table class="uk-table table-striped table-sm">
           <thead>
             <tr>
               <th scope="col">#</th>

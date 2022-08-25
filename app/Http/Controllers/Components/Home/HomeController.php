@@ -38,7 +38,7 @@ class HomeController extends BaseController
       $menuItem2 = new SidemenuItem("Dashboard", false);
       $menuItem2->itemReference = "#";
       $menuItem2->itemLetters = "DB";
-      $menuItem2->itemIcon = "bi-github";
+      $menuItem2->itemIcon = "home";
       $menuItem2->itemBadge = "";
       $menuItem2->itemClass = "";
       $menuItem1->badgeClass = "";
@@ -48,7 +48,7 @@ class HomeController extends BaseController
       $menuItem3 = new SidemenuItem("Super Divider", true);
       $menuItem3->itemReference = "";
       $menuItem3->itemLetters = "BS";
-      $menuItem3->itemIcon = "bi-dot";
+      $menuItem3->itemIcon = "settings";
       $menuItem3->itemBadge = "";
       $menuItem3->itemClass = "";
       $menuItem3->badgeClass = "";
@@ -68,7 +68,7 @@ class HomeController extends BaseController
       $menuItem5 = new SidemenuItem("Group Manager", false);
       $menuItem5->itemReference = "#";
       $menuItem5->itemLetters = "GM";
-      $menuItem5->itemIcon = "bi-collection";
+      $menuItem5->itemIcon = "comment";
       $menuItem5->itemBadge = "";
       $menuItem5->itemClass = "";
       $menuItem5->badgeClass = "";

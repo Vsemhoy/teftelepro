@@ -1,6 +1,7 @@
 (function(){
 
   let trigger = document.querySelector('#leftSidenavToggler');
+  let trigger2 = document.querySelector('#leftSidenavToggler2');
   let container = document.querySelector('#mainWrapper');
   let menuSide = document.querySelector('#sidebarMenu');
   let contentSide = document.querySelector('#mainContent');
@@ -29,6 +30,10 @@
   })
   
   trigger.addEventListener('click', function()
+  {
+    triggerMenu()
+  });
+  trigger2.addEventListener('click', function()
   {
     triggerMenu()
   });
