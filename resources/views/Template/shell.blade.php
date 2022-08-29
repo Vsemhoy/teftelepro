@@ -96,7 +96,7 @@ uk-sticky="show-on-up: true" style="z-index: 9;">
 
     </div>
     <div class="uk-width-auto" style="padding-left: 4px;">
-      <button class="uk-button uk-button-default">Search</button>
+      <button class="uk-button uk-button-default uk-button-inshadow">Search</button>
     </div>
     <a class="uk-navbar-toggle" id="searchBarCloser"><span uk-icon="close"></span></a>
   </form>
@@ -234,7 +234,7 @@ uk-sticky="show-on-up: true" style="z-index: 9;">
   @include('Template.sidenav')  
 
     <main class="col-main ms-sm-auto p-0" id="mainWrapper">
-    <div class="uk-margin"></div>
+    <!-- <div class="uk-margin"></div> -->
     @yield('page-content')
 
     @include('bootstrap.footer') 

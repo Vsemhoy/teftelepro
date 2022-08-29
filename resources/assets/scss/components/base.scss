@@ -294,7 +294,7 @@ iframe { border: 0; }
  * Margins
  */
 
-p,
+
 ul,
 ol,
 dl,
@@ -304,7 +304,7 @@ fieldset,
 figure { margin: 0 0 $base-margin-vertical 0; }
 
 /* Add margin if adjacent element */
-* + p,
+
 * + ul,
 * + ol,
 * + dl,

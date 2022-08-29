@@ -197,7 +197,6 @@ iframe {
 /*
  * Margins
  */
-p,
 ul,
 ol,
 dl,
@@ -209,7 +208,6 @@ figure {
 }
 
 /* Add margin if adjacent element */
-* + p,
 * + ul,
 * + ol,
 * + dl,
@@ -10199,7 +10197,7 @@ h3 {
   font-size: large;
   text-align: center;
   width: 32px;
-  display: block;
+  padding-right: 6px;
 }
 
 .menu-opened .icon-square {
@@ -10227,6 +10225,9 @@ h3 {
 .nav .badger {
   display: none;
 }
+.nav .uk-badge {
+  background: #03a9f4;
+}
 
 .nav-item:hover a {
   text-decoration: none;
@@ -10253,6 +10254,10 @@ h3 {
   color: rgb(176, 223, 251);
 }
 
+.sidebar-heading {
+  border-bottom: 1px solid rgba(185, 218, 243, 0.75);
+}
+
 .menu-minimized .sitem-text {
   display: none;
 }
@@ -10264,7 +10269,7 @@ h3 {
   margin-top: -6px;
   height: 12px;
   min-width: 12px;
-  background: white;
+  background: #03a9f4;
 }
 .menu-minimized .textbadge {
   display: none;
@@ -10274,6 +10279,31 @@ h3 {
 }
 .menu-minimized .nav-divider-icon {
   display: block;
+}
+.menu-minimized .icon-square {
+  display: block;
+}
+.menu-minimized .uk-padding-x-small {
+  text-align: center;
+}
+.menu-minimized .sidebar-heading span {
+  color: #999;
+}
+.menu-minimized .sidebar-heading {
+  border-bottom: 1px solid rgba(185, 218, 243, 0.15);
+}
+
+.uk-padding-x-small {
+  padding: 8px;
+}
+
+.uk-button-inshadow {
+  box-shadow: inset 0px 0px 1px rgba(0, 0, 0, 0.66);
+}
+
+.uk-sideborder {
+  border-left: 1px solid #e5e5e5;
+  border-right: 1px solid #e5e5e5;
 }
 
 /*# sourceMappingURL=uikit-theme.css.map */

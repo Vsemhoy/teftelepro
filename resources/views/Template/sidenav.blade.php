@@ -55,7 +55,7 @@
             } else {
               ?>
               </ul>
-              <div class="sidebar-heading uk-padding-small uk-text-uppercase uk-text-medium">
+              <div class="sidebar-heading uk-padding-x-small uk-text-uppercase uk-text-medium">
                 <span class="nav-divider-text"><?php echo $item->itemName; ?></span>
                 <span class="nav-divider-icon"><?php echo "<i class='" . $item->itemIcon . "' uk-icon='icon: flickr' title='" . $item->itemLetters . "'></i>"; ?></span>
             </div>

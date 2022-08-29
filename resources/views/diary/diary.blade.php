@@ -1,9 +1,10 @@
-@extends('bootstrap.default')
+@extends('Template.shell')
 
 @section('page-content')
 
     <?php
     use App\Http\Controllers\Controller;
+    use Illuminate\Foundation\Auth\User;
     // $instant  = new Controller();
     // echo $instant->renderValue();
 
@@ -12,13 +13,14 @@
     //     print_r($value);
     //     echo "<br>";
     // }
-      $component = Controller::getComponent('home');
+    $component = Controller::getComponent('home');
+    $user = User::where('id', '=', session('LoggedUser'))->first();
     ?>
 
 
 
     <div class="content p-3 pt-0 bg-white">
-      <h1><?php echo $component->name; ?></h1>
+      <!-- <h1><?php echo $component->name; ?></h1> -->
       
       
 
@@ -43,13 +45,15 @@ html{
 .toolbar{
   display:grid;
   grid-template-columns: repeat(auto-fit,minmax(20px,40px));
-  background-color: dimgray;
+  /*background-color: dimgray; */
   color: rgb(0, 0, 0);
   position: fixed;
   width: 100%;
   justify-content: center;
   align-items:center;
+  border: 1px solid #e5e5e5;
    /* box-shadow: 0px -7px 8px 7px black; */
+   backdrop-filter: blur(5px);
 }
 
 .tool-button{
@@ -64,12 +68,14 @@ cursor: pointer;
   grid-gap: 1px;
   margin: 1px;
   transition: all .5s;
+  opacity: 0.5;
 }
 .tool-button:hover{
   box-shadow: none;
-  background-color: #6b5e5e;
-  border: 1px solid rgb(187, 90, 0);
-  box-shadow: 1px 1px 4px rgb(201, 130, 0);
+  background-color: #fefefe;
+  /* border: 1px solid rgb(187, 90, 0);
+  box-shadow: 1px 1px 4px rgb(201, 130, 0); */
+  opacity: 0.9;
 }
 
 .colorPicker {
@@ -152,8 +158,8 @@ outline:  none;
 
 .btn{
     padding: .5rem;
-    background-color: #7e1111;
-    margin-right: 1rem;
+    background-color: #fff;
+    margin-right: 0rem;
     color: #fffffc;
     letter-spacing: .1rem;
     font-size: 1rem;
@@ -229,7 +235,7 @@ padding-left: 1rem;
 padding-right: 1rem;
 }
 .lup {
-filter: invert(1);
+/*filter: invert(1); */
 background-repeat: no-repeat;
 background-position: center;
 }
@@ -351,7 +357,19 @@ border-bottom: 1px solid rgb(0, 174, 255);
 
 </style>
 
-  <div class="toolbar">
+<div class="uk-padding-small uk-container uk-container-small uk-sideborder">
+      <div class="uk-margin"></div>
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center px-md-4 pt-3 pb-2 mb-3 border-bottom">
+        <h2 class="uk-h3 tm-heading-fragment"><?php echo $component->name; ?></h2>
+        <hr>
+
+      </div>
+      @if(isset($user))
+
+
+      @endif
+
+  <div class="toolbar" uk-sticky="position: bottom">
 
     <!-- <input type ='button' class="tool-button lup lup-underline"  onclick="document.execCommand('insertHTML', false, '<table><tr><td>123</td></tr></table>');"/> -->
     <input type ='button' class="tool-button lup lup-heading"  onclick="document.execCommand('formatBlock', false, '<h3>');"/>
@@ -438,6 +456,11 @@ border-bottom: 1px solid rgb(0, 174, 255);
     <section class="getcontent">
     </section>
   </div>
+
+   <!-- end of content -->
+   </div>
+
+
 
 
 

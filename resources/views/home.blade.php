@@ -18,7 +18,8 @@
     ?>
 
 
-    <div class="uk-padding-small">
+    <div class="uk-padding-small uk-container uk-container-small uk-sideborder">
+      <div class="uk-margin"></div>
       <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center px-md-4 pt-3 pb-2 mb-3 border-bottom">
         <h2 class="uk-h3 tm-heading-fragment"><?php echo $component->name; ?></h2>
         <hr>
