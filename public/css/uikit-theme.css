@@ -1155,6 +1155,115 @@ a.uk-link-reset,
     padding-right: 0;
   }
 }
+.uk-table-striped tbody tr:nth-of-type(odd), .uk-table-striped tr:nth-of-type(odd) {
+  background: #f8f8f8;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.uk-table-divider > :first-child > tr:not(:first-child), .uk-table-divider > :not(:first-child) > tr, .uk-table-divider > tr:not(:first-child) {
+  border-top: 1px solid #e5e5e5;
+}
+
+.uk-table tbody tr {
+  transition: background-color 0.1s linear;
+}
+
+.uk-table-hover tbody tr:hover, .uk-table-hover tr:hover {
+  background: #ffd;
+}
+
+.uk-table-small td, .uk-table-small th {
+  padding: 10px 12px;
+}
+
+.budgetable {
+  width: auto;
+  margin: auto;
+  border-right: 1px solid #e5e5e5;
+  border-left: 1px solid #e5e5e5;
+}
+
+.datetrigwrap {
+  display: block;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.headdate, .headdate:focus {
+  border: none;
+  background: none;
+  outline: none;
+  float: right;
+  padding: 0px !important;
+}
+
+.tthd:nth-child(2) {
+  padding-bottom: 1px;
+}
+
+.subtotal {
+  box-shadow: 0px -6px 9px -8px black;
+}
+
+.bg-subtotal {
+  background-color: rgba(175, 185, 193, 0.5803921569) !important;
+  color: #343434;
+}
+
+.currentdate {
+  background: #fff9c4 !important;
+  outline: auto;
+  outline-color: #6d6d6d;
+  outline-style: dashed;
+}
+
+.daytotal {
+  font-weight: 500;
+  letter-spacing: 1px;
+  font-style: oblique;
+}
+
+.table-button-right {
+  display: none;
+  float: right;
+  color: rgba(255, 255, 255, 0.15);
+  font-size: 1rem;
+}
+
+.droptabledata .uk-icon {
+  display: none;
+  transition: all ease 1.2s;
+  opacity: 0;
+}
+
+.droptabledata:hover > .table-button-right {
+  color: #555;
+  cursor: pointer;
+  z-index: 9;
+  display: block;
+  position: relative;
+  margin-right: -24px;
+  background: #ffffff;
+  padding: 3px;
+  outline: 1px solid #dee2e6;
+  margin-top: -8px;
+  box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.25);
+  opacity: 1;
+}
+
+.droptabledata {
+  min-width: 200px;
+}
+
+.tftable td {
+  transition: all 0.1s ease-in-out;
+  border: 1px solid #edece3;
+}
+
 /* ========================================================================
    Component: Icon
  ========================================================================== */
@@ -1535,7 +1644,7 @@ button.uk-icon:not(:disabled) {
   border: 1px solid #e5e5e5;
   /* 4 */
   padding: 0 10px;
-  background: #f8f8f8;
+  background: #fff;
   color: #666;
 }
 
@@ -1586,7 +1695,7 @@ button.uk-icon:not(:disabled) {
 .uk-select:focus,
 .uk-textarea:focus {
   outline: none;
-  background-color: #ebebeb;
+  background-color: #fff;
   color: #666;
 }
 
@@ -2095,6 +2204,10 @@ select.uk-form-width-xsmall {
 .uk-button-default {
   background-color: #f8f8f8;
   color: #333;
+}
+
+.uk-modal .uk-button-default {
+  border: 1px solid #e5e5e5;
 }
 
 /* Hover */
@@ -3797,7 +3910,7 @@ select.uk-form-width-xsmall {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   /* 4 */
-  padding: 15px 15px;
+  padding: 0px 0px;
   /* 5 */
   background: rgba(0, 0, 0, 0.6);
   /* 6 */
@@ -3902,31 +4015,33 @@ select.uk-form-width-xsmall {
  ========================================================================== */
 .uk-modal-body {
   display: flow-root;
-  padding: 20px 20px;
+  padding: 20px 3%;
 }
 
 .uk-modal-header {
   display: flow-root;
-  padding: 10px 20px;
-  background: #f8f8f8;
+  padding: 10px 3%;
+  background: #fff;
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .uk-modal-footer {
   display: flow-root;
-  padding: 10px 20px;
+  padding: 10px 3%;
   background: #f8f8f8;
+  border-top: 1px solid #e5e5e5;
 }
 
 /* Phone landscape and bigger */
 @media (min-width: 640px) {
   .uk-modal-body {
-    padding: 30px 30px;
+    padding: 30px 3%;
   }
   .uk-modal-header {
-    padding: 15px 30px;
+    padding: 15px 3%;
   }
   .uk-modal-footer {
-    padding: 15px 30px;
+    padding: 15px 3%;
   }
 }
 /*
@@ -10212,7 +10327,7 @@ h3 {
   display: flex;
   flex-wrap: wrap;
   padding-left: 0;
-  margin-top: 0px;
+  margin: 0px;
   margin-bottom: 12px;
   list-style: none;
 }
@@ -10304,6 +10419,19 @@ h3 {
 .uk-sideborder {
   border-left: 1px solid #e5e5e5;
   border-right: 1px solid #e5e5e5;
+}
+
+@media screen and (max-width: 968px) {
+  .menu-minimized .col-sidenav {
+    width: 0px !important;
+  }
+  .menu-minimized .nav-rail {
+    margin-left: 0px !important;
+  }
+  .col-main {
+    margin-left: 0px !important;
+    width: 100%;
+  }
 }
 
 /*# sourceMappingURL=uikit-theme.css.map */

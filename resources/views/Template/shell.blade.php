@@ -158,7 +158,7 @@ uk-sticky="show-on-up: true" style="z-index: 9;">
         <ul class="uk-nav uk-dropdown-nav">
                   <li class=""><a class="uk-width-1-1 uk-flex-between" href="{{ route('home')}}">Diary <span class="" uk-icon="home"></span></a></li>
                   <li class="uk-nav-divider"></li>
-                  <li class=""><a class="uk-width-1-1 uk-flex-between" href="{{ route('home')}}">Diary <span class="" uk-icon="home"></span></a></li>
+                  <li class=""><a class="uk-width-1-1 uk-flex-between" href="{{ route('budger')}}">Budger <span class="" uk-icon="home"></span></a></li>
                   <li class="uk-nav-divider"></li>
                   <!-- <li class="uk-active"><a href="#">Active</a></li>
                   <li><a href="#">Item</a></li>
@@ -297,5 +297,7 @@ uk-sticky="show-on-up: true" style="z-index: 9;">
 
 {{-- vendors and page scripts file   --}}
   @include('Template.scripts')
+
+  @yield('page-scripts')
 </body>
 </html>

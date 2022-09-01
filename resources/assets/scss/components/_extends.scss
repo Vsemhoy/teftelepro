@@ -103,7 +103,7 @@ top: 0px;
   display: flex;
   flex-wrap: wrap;
   padding-left: 0;
-  margin-top: 0px;
+  margin: 0px;
   margin-bottom: 12px;
   list-style: none;
 
@@ -191,4 +191,18 @@ top: 0px;
 .uk-sideborder {
   border-left: 1px solid #e5e5e5;
   border-right: 1px solid #e5e5e5;
+}
+
+@media screen and (max-width: 968px){
+  .menu-minimized .col-sidenav {
+      width: 0px !important;
+
+  }
+  .menu-minimized .nav-rail{
+    margin-left:  0px !important;
+  }
+  .col-main {
+    margin-left:  0px !important;
+    width: 100%;
+  }
 }

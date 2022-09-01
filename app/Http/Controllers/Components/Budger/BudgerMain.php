@@ -59,8 +59,10 @@ class BudgerMain extends BaseController
   public $Template_Objects;
   public $Goods_Objects;
   public $Categories_Objects;
+  public $items;
 
   public $URL;
+  
 
   //http://link/foo.php?id[]=1&id[]=2&id[]=3
 
@@ -155,6 +157,18 @@ class BudgerMain extends BaseController
     $this->tableLength = self::countDaysBetweenDates($this->get_startMonth, $this->get_lastMonth);
     $this->currentCurr = 1;
 
+
+    $accounts = "";
+    $counter = 0;
+    foreach ($this->Accounts AS $acco)
+    {
+      $accounts .= $acco->id;
+      if ($counter < count($this->Accounts) - 1){
+        $accounts .= ",";
+      }
+      $counter++;
+    }
+    $this->items = self::LoadItemsToChart($USER, $accounts, $this->_params_startMonth, $this->_btn_next_month_date);
     // require_once( JPATH_SITE . "/components/com_teftelebudget/tmpl/_templates/tpl_events.php" );
 
   }
@@ -365,12 +379,12 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false){
   $date4total = $dateyear_ . "-" . $dateObj->format('m') . "-01";
   $result .= "<tr class='bg-subtotal subtotal'>
   <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
-  for ($r = 0; $r < count($accountsToloadArr); $r++ ){
+  foreach ($accountsToloadArr AS $account){
     $result .=  "<td class='mtotalio'><small>COM_TFBUDGET_COMMON_TYPE_INCOMS<span class='incoms'></span></small></br><small>COM_TFBUDGET_COMMON_TYPE_EXPENSES<span class='expences'></span></small></br><small>COM_TFBUDGET_TABLE_DIFFERENCE<span class='difference'></span></small></td>
-    <td class='mtotals'>COM_TFBUDGET_COMMON_NAME_BALANCE<span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($accountsToloadArr[$r]) . "'>";
+    <td class='mtotals'>COM_TFBUDGET_COMMON_NAME_BALANCE<span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'>";
     $ttv = 0;
-        foreach ($total_Objects AS $total){
-          if ($total->setdate == $date4total && $total->account ==  $accountsToloadArr[$r]){
+        foreach ($this->items AS $total){
+          if ($total->setdate == $date4total && $total->account ==  $account->id){
               $ttv = $total->value;
           }
         }
@@ -400,20 +414,20 @@ public function renderWholeTable(){
     $secondcounter = 0;
 
   
-  
-    $result .= "<table class='table table-bordered table-hover tftable'>
+    $result .= "<p>" . count($this->Accounts) . "</p>";
+    $result .= "<table class='uk-table uk-table-striped uk-table-hover uk-table-small budgetable'>
     <thead>
     <tr>
       <th scope='col' class='tthd'>_DATE</th>
       <th scope='col' class='tthd'>
       <span class='datetrigwrap'>
         <input class='headdate' type='month' id='dateflash' 
-            name='flash_date' value='{ $this->get_startMonth_filter }
+            name='flash_date' value='" . $this->get_startMonth_filter . "' />
             </span></th>";
     if (count($this->Accounts)){
-      foreach ($his->Accounts AS $accid){
-        $result .=  "<th scope='col' acc='" . trim($accid) . "' decimal='" . $accounts[trim($accid)]->decimals . "'>" . $accounts[trim($accid)]->name . "</th>
-        <th class='daytotals' scope='col' accfor='" . trim($accid) . "'>" . Text::_('COM_TFBUDGET_TABLE_HEAD_TOTAL') . "</th>";
+      foreach ($this->Accounts AS $accid){
+        $result .=  "<th scope='col' acc='" . trim($accid->id) . "' decimal='" . $accid->decimals . "'>" . $accid->name . "</th>
+        <th class='daytotals' scope='col' accfor='" . trim($accid->id) . "'>" . "TOTAL" . "</th>";
       }
     }
     if (count($this->Accounts) > 1){
@@ -441,10 +455,10 @@ public function renderWholeTable(){
     $week = date('w', strtotime($this->get_lastMonth) - ($x * 60 * 60 * 24) + $secondcounter);
     $daynum = date('d', strtotime($this->get_lastMonth) - ($x * 60 * 60 * 24) + $secondcounter);
     $idconstructorrow = $x;
-  
-  if ($x == 0){
-    $this->tableTotalSectton($date, $this->Accounts);
-  };
+    if ($x == 0){
+      //$result .= "HELLLO";
+      $result .= $this->tableTotalSectton($date, $this->Accounts);
+    };
   
     $cdateclass = "";
     $cdateIden = "";
@@ -455,12 +469,13 @@ public function renderWholeTable(){
     if ($week == 0 || $week == 6){
       $cdateclass .= " weekend";
     }
-    
+   //$result .= $this->tableLength;
     $result .=  "<tr class='budrow {$cdateclass}' id='dragrow_{$idconstructorrow}' date='{$date}'>
     <td class='tf_datetd'  title='{$date}' scope='row'>{$shortDate}</td>
     <td  class='tf_daytd'>" . $this->weekdayNames[$week] . "</td>";
-    for ($t = 0; $t < count($this->Accounts); $t++){
-      $accountid = trim($this->Accounts[$t]);
+    $t = 0;
+    foreach ($this->Accounts AS $account){
+      $accountid = $account->id;
       $idconstructorcol = $t;
       $result .=  "<td id='dragarea_" . $idconstructorrow . "_" . $idconstructorcol . "' 
       class='droptabledata' ondrop='drop(event)' ondragover='allowDrop(event)'
@@ -468,11 +483,11 @@ public function renderWholeTable(){
       if (empty($empty)) {
          // echo $randvalue[$t];
        };
-  
-       $result .=  "</span><span class='rect table-button-right' onclick='tf_create(1, this);'>
+  // onclick='tf_create(1, this);'
+       $result .=  "</span><span  class='rect table-button-right event_trigger' uk-icon='icon: plus'>
        <i class='bi-plus-lg' title='Add new item' title='edit' data-bs-toggle='modal' data-bs-target='#EditorWindow'>
        </i></span>";
-       foreach ($item_Objects AS $_object){
+       foreach ($this->items AS $_object){
         if ($_object->datein == $date){
           if ($_object->account == $accountid){
             if (trim($_object->type) < 3){
@@ -532,13 +547,14 @@ public function renderWholeTable(){
       }
       $result .=  "</td>";
       $result .=  "<td class='daytotals' for='{$accountid}' date='{$date}'></td>";
+      $t++;
     };
     if (count($this->Accounts) > 1){
       $result .=  "<td class='totalofrow'></td>";
     };
     $result .=  "</tr>";
   if ($daynum == 1){
-    $this->tableTotalSectton($date, $this->Accounts, true);
+    $result .= $this->tableTotalSectton($date, $this->Accounts, true);
   };
   };
 

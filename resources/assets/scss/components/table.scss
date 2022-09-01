@@ -313,3 +313,99 @@ $inverse-table-hover-row-background:                     $inverse-table-row-acti
 // @mixin hook-inverse-table-divider(){}
 // @mixin hook-inverse-table-striped(){}
 // @mixin hook-inverse-table-hover(){}
+
+.uk-table-striped tbody tr:nth-of-type(odd), .uk-table-striped tr:nth-of-type(odd) {
+  background: #f8f8f8;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #e5e5e5;
+}
+.uk-table-divider>:first-child>tr:not(:first-child), .uk-table-divider>:not(:first-child)>tr, .uk-table-divider>tr:not(:first-child) {
+  border-top: 1px solid #e5e5e5;
+}
+.uk-table tbody tr {
+  transition: background-color .1s linear;
+}
+.uk-table-hover tbody tr:hover, .uk-table-hover tr:hover {
+  background: #ffd;
+}
+.uk-table-small td, .uk-table-small th {
+  padding: 10px 12px;
+}
+.budgetable {
+  width: auto;
+  margin: auto;
+  border-right: 1px solid #e5e5e5;
+  border-left: 1px solid #e5e5e5;
+}
+
+
+.datetrigwrap {
+  display: block;
+  width: 30px;
+  height: 30px;
+  overflow: hidden;
+  margin-left: auto;
+  margin-right: auto;
+}
+.headdate, .headdate:focus {
+  border: none;
+  background: none;
+  outline: none;
+  float: right;
+  padding: 0px !important;
+}
+.tthd:nth-child(2) {
+  padding-bottom: 1px;
+}
+
+.subtotal {
+  box-shadow: 0px -6px 9px -8px black;
+}
+.bg-subtotal {
+  background-color: #afb9c194 !important;
+    color: #343434;
+}
+.currentdate {
+  background: #fff9c4 !important;
+  outline: auto;
+  outline-color: #6d6d6d;
+  outline-style: dashed;
+}
+.daytotal {
+  font-weight: 500;
+  letter-spacing: 1px;
+  font-style: oblique;
+}
+
+.table-button-right {
+  display: none;
+  float: right;
+  color: rgb(255 255 255 / 15%);
+  font-size: 1rem;
+}
+.droptabledata  .uk-icon {
+  display:  none;
+  transition: all ease 1.2s;
+  opacity: 0;
+}
+.droptabledata:hover > .table-button-right {
+  color: #555;
+  cursor: pointer;
+  z-index: 9;
+  display: block;
+  position: relative;
+  margin-right: -24px;
+  background: #ffffff;
+  padding: 3px;
+  outline: 1px solid #dee2e6;
+  margin-top: -8px;
+  box-shadow: 1px 1px 5px rgb(0 0 0 / 25%);
+  opacity: 1;
+}
+.droptabledata {
+  min-width: 200px;
+}
+.tftable td {
+  transition: all 0.1s ease-in-out;
+  border: 1px solid #edece3;
+}

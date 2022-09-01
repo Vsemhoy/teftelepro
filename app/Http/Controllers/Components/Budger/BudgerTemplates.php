@@ -146,7 +146,7 @@ $result .= '<div class="list-group-item py-1 tf_item dragtemplate ' . $transclas
 </div>
 </div>';
 return $result;
-};
+}
 
 
 function tpl_in_calendar_event_transfer($id, $name, $text, $date, $account, $targeter, $accname, $acccolor, $accurrency, $eventtype, $amount, $freq  = 0, $ordered = 0){
@@ -232,7 +232,7 @@ function tpl_in_calendar_event_transfer($id, $name, $text, $date, $account, $tar
   $result .= $accname;
   $result .= '</div>';
   return $result;
-};
+}
 
 
 function tpl_group_items($id, $parent, $name, $level, $icon, $whiteicon, $comment, $color, $itemcount, $type, $typename, $archieved) {
@@ -279,7 +279,7 @@ function tpl_group_items($id, $parent, $name, $level, $icon, $whiteicon, $commen
    </div></div>";
   // $block .= tpl_group_items_modal('Edit Note Category', $name, $id, $comment, $icon, $whiteicon, $color);
      return $block;
- };
+ }
 
 
 
@@ -299,7 +299,7 @@ function tpl_group_items($id, $parent, $name, $level, $icon, $whiteicon, $commen
     return '</div>
     </div>';
   };
-};
+}
 
 
 function account_item_render($id, $name, $amount, $comment, $language, $accesstype){
@@ -321,7 +321,7 @@ function account_item_render($id, $name, $amount, $comment, $language, $accessty
  <span>' . $accesstype . '</span>
  </div>
  </div>';
-};
+}
 
 
 
@@ -344,7 +344,7 @@ function account_item_render($id, $name, $amount, $comment, $language, $accessty
     return '</div>
     </div>';
   };
-};
+}
 
 
 
@@ -368,7 +368,7 @@ function tpl_youAreGuestMessage() {
  </div>
 </div>';
 return $block;
-};
+}
 
 
 
@@ -415,18 +415,18 @@ function getMenuItems($current, $db, $user){
   } else {
     return true;
   }
-};
+}
 
 
-  $current = '';
-  $user = Factory::getUser();
-  $db   = Factory::getDbo();
-  $app  = Factory::getApplication();
-  $input = $app->input;
-  if (!empty($input->get('mit', '', 'CMD'))){
-   $current = $input->get('mit', '', 'CMD');
-  };
-  $addition_menu_items = getMenuItems($current, $db, $user->id);
+  // $current = '';
+  // $user = Factory::getUser();
+  // $db   = Factory::getDbo();
+  // $app  = Factory::getApplication();
+  // $input = $app->input;
+  // if (!empty($input->get('mit', '', 'CMD'))){
+  //  $current = $input->get('mit', '', 'CMD');
+  // };
+  // $addition_menu_items = getMenuItems($current, $db, $user->id);
 
 
 function renderdiarycard(){
@@ -465,5 +465,62 @@ function renderEditorZone(){
   $result = '';
 }
 
+
+public static function renderEventModal()
+{
+  $result = "<div id='modal_event' class='uk-flex-top' uk-modal>
+  <div class='uk-modal-dialog uk-margin-auto-vertical'>
+  <button class='uk-modal-close-default' type='button' uk-close></button>
+  <div class='uk-modal-header'>
+      <h2 class='uk-modal-title'>Modal Title</h2>
+  </div>
+  <div class='uk-modal-body'>
+  <form>
+  <fieldset class='uk-fieldset'>
+
+      <legend class='uk-legend'>Legend</legend>
+
+      <div class='uk-margin'>
+          <input class='uk-input' type='text' placeholder='Input'>
+      </div>
+
+      <div class='uk-margin'>
+          <select class='uk-select'>
+              <option>Option 01</option>
+              <option>Option 02</option>
+          </select>
+      </div>
+
+      <div class='uk-margin'>
+          <textarea class='uk-textarea' rows='5' placeholder='Textarea'></textarea>
+      </div>
+
+      <div class='uk-margin uk-grid-small uk-child-width-auto uk-grid'>
+          <label><input class='uk-radio' type='radio' name='radio2' checked> A</label>
+          <label><input class='uk-radio' type='radio' name='radio2'> B</label>
+      </div>
+
+      <div class='uk-margin uk-grid-small uk-child-width-auto uk-grid'>
+          <label><input class='uk-checkbox' type='checkbox' checked> A</label>
+          <label><input class='uk-checkbox' type='checkbox'> B</label>
+      </div>
+
+      <div class='uk-margin'>
+          <input class='uk-range' type='range' value='2' min='0' max='10' step='0.1'>
+      </div>
+
+  </fieldset>
+</form>
+  </div>
+  <div class='uk-modal-footer uk-text-right'>
+      <button class='uk-button uk-button-default uk-modal-close' type='button'>Cancel</button>
+      <button class='uk-button uk-button-primary' type='button'>Save</button>
+  </div>
+</div>
+</div>";
+  return $result;
+}
+
 };
+
 ?>

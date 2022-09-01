@@ -161,6 +161,12 @@ $button-link-disabled-color:                     $global-muted-color !default;
     background-color: $button-default-background;
     color: $button-default-color;
     @if(mixin-exists(hook-button-default)) {@include hook-button-default();}
+    
+}
+.uk-modal {
+  .uk-button-default {
+    border: 1px solid #e5e5e5;
+  }
 }
 
 /* Hover */

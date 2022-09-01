@@ -40,10 +40,10 @@ $form-line-height:                               $form-height !default;
 $form-padding-horizontal:                        10px !default;
 $form-padding-vertical:                          round($form-padding-horizontal * 0.6) !default;
 
-$form-background:                                $global-muted-background !default;
+$form-background:                                #fff;
 $form-color:                                     $global-color !default;
 
-$form-focus-background:                          darken($form-background, 5%) !default;
+$form-focus-background:                          #fff;
 $form-focus-color:                               $global-color !default;
 
 $form-disabled-background:                       $global-muted-background !default;
