@@ -95,9 +95,21 @@ top: 0px;
   color: #adb5bd;
 }
 
-
+.uk-mt-half {
+  margin-top: 10px !important;
+}
+.uk-mb-0 {
+  margin-bottom: 0px !important;
+}
+.text-white {
+  color: white;
+}
 .flex-column {
   flex-direction: column !important;
+}
+
+.uk-drag .uk-sortable {
+  outline: dotted 3px #9e9e9e;
 }
 .nav {
   display: flex;

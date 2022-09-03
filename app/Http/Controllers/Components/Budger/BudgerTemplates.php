@@ -474,45 +474,125 @@ public static function renderEventModal()
   <div class='uk-modal-header'>
       <h2 class='uk-modal-title'>Modal Title</h2>
   </div>
+  <div>
+  <div>
+    <div class='uk-button-group uk-column-1-3 uk-width-1-1' style='column-gap: 0px;'>
+        <button class='uk-button uk-button-primary uk-width-1-3'>Incom</button>
+        <button class='uk-button uk-button-danger uk-width-1-3'>Expense</button>
+        <button class='uk-button uk-button-secondary uk-width-1-3'>Transfer</button>
+    </div>
+  </div>
+  </div>
   <div class='uk-modal-body'>
-  <form>
-  <fieldset class='uk-fieldset'>
+    <form>
+    <fieldset class='uk-fieldset'>
 
-      <legend class='uk-legend'>Legend</legend>
+        <!--legend class='uk-legend'>Legend</legend -->
 
-      <div class='uk-margin'>
-          <input class='uk-input' type='text' placeholder='Input'>
-      </div>
+        <div class='uk-margin uk-mb-0'>
+            <input class='uk-input' type='text' placeholder='Name' id='tf_name'>
+        </div>
 
-      <div class='uk-margin'>
-          <select class='uk-select'>
+        <div class='uk-margin uk-mb-0'>
+            <textarea class='uk-textarea' rows='7' placeholder='Description' id='tf_description'></textarea>
+        </div>
+
+        <div class='uk-margin uk-mb-0 uk-inline uk-width-1-1' title='Amount of money'>
+          <span class='uk-form-icon uk-form-icon' uk-icon='icon: database' ></span>
+          <input class='uk-input' type='number' placeholder='Amount' inputmode='decimal' id='tf_amount'>
+        </div>
+
+        <div class='uk-margin uk-mb-0 uk-inline uk-width-1-1' title='Event date'>
+          <span class='uk-form-icon uk-form-icon' uk-icon='icon: calendar' ></span>
+          <input class='uk-input' type='date' placeholder='Date' id='tf_datedate'>
+        </div>
+
+        <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Account'>
+          <span class='small' >Account</span>
+            <select class='uk-select' id='tf_account' placeholder='Account'>
+                <option>Option 01</option>
+                <option>Option 02</option>
+            </select>
+        </div>
+
+        <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Target account'>
+          <span class='small' >Account</span>
+            <select class='uk-select' id='tf_account' placeholder='Target account'>
+                <option>Option 01</option>
+                <option>Option 02</option>
+            </select>
+        </div>
+
+        <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Category of event'>
+        <span class='small' >Category</span>
+          <select class='uk-select' id='tf_group' placeholder='Account'>
               <option>Option 01</option>
               <option>Option 02</option>
           </select>
       </div>
 
-      <div class='uk-margin'>
-          <textarea class='uk-textarea' rows='5' placeholder='Textarea'></textarea>
-      </div>
 
-      <div class='uk-margin uk-grid-small uk-child-width-auto uk-grid'>
-          <label><input class='uk-radio' type='radio' name='radio2' checked> A</label>
-          <label><input class='uk-radio' type='radio' name='radio2'> B</label>
-      </div>
 
-      <div class='uk-margin uk-grid-small uk-child-width-auto uk-grid'>
-          <label><input class='uk-checkbox' type='checkbox' checked> A</label>
-          <label><input class='uk-checkbox' type='checkbox'> B</label>
-      </div>
 
-      <div class='uk-margin'>
-          <input class='uk-range' type='range' value='2' min='0' max='10' step='0.1'>
-      </div>
-
-  </fieldset>
-</form>
+    </fieldset>
+  </form>
   </div>
+  <div>
+    <div class='uk-button-group uk-column-1-1 uk-width-1-1' style='column-gap: 0px;'>
+        <button class='uk-button uk-button-default uk-width-1-2'>Additiona options</button>
+        <button class='uk-button uk-button-default uk-width-1-2'>Sequence management</button>
+    </div>
+  </div>
+  <div class='uk-modal-body' id='mod_options_body'>
+    <form>
+      <fieldset class='uk-fieldset'>
+
+      <div class='uk-margin uk-mb-0 uk-grid-small uk-child-width-auto uk-grid'>
+        <label><input class='uk-checkbox' type='checkbox' checked> Repeat event</label>
+    </div>
+
+    <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1 uk-column-1-2' title='Main repeat options'>
+    <span class='small' >Repeat period</span>
+      <select class='uk-select' id='tf_repeatperiod' placeholder='Period of repeating'>
+          <option>Every month</option>
+          <option>Every week</option>
+          <option>Every day</option>
+          <option>Every Year</option>
+      </select>
+      <span class='small' >Repeat times</span>
+      <input class='uk-input' type='number' placeholder='5 times...' min='1' max='36' step='1' inputmode='decimal' id='tf_repeattimes'>
+  </div>
+
+  <div class='uk-margin uk-mb-0 uk-width-1-1 uk-column-1-2' title='Additional repeat options'>
+
+    <span class='small' >Every time Change amount for</span>
+    <input class='uk-input' type='number' placeholder='+100' min='0' max='36000000' step='1' inputmode='decimal' id='tf_amountchanger'>
+
+    <span class='small' >Stop repeating when reached</span>
+    <input class='uk-input' type='number' placeholder='1000000' min='0' max='36000000' step='1' inputmode='decimal' id='tf_amoungoal'>
+</div>
+
+      </fieldset>
+    </form>
+  </div>
+
+  <div class='uk-modal-body' id='mod_manage_body'>
+    <form>
+      <fieldset class='uk-fieldset'>
+
+      <div class='uk-margin uk-mb-0 uk-grid-small uk-child-width-auto uk-grid'>
+        <p>Remove all subsequent events</p>
+        <p>Change all subsequent events (change name)</p>
+        <p>Change all subsequent events (change amount)</p>
+    </div>
+
+
+      </fieldset>
+    </form>
+  </div>
+
   <div class='uk-modal-footer uk-text-right'>
+      <button class='uk-button uk-button-default' type='button'>Disable</button>
       <button class='uk-button uk-button-default uk-modal-close' type='button'>Cancel</button>
       <button class='uk-button uk-button-primary' type='button'>Save</button>
   </div>

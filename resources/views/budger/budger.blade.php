@@ -26,7 +26,17 @@
     $cont = new BudgerMain($user->id);
     ?>
 
+<div class="uk-section uk-section-primary uk-padding-small">
+    <div class="uk-container uk-container-small uk-light">
+    <h3 class="uk-card-title uk-light text-white">Budget events</h3>
+    <p uk-margin>
 
+      <button class="uk-button uk-button-default">Add event</button>
+      <button class="uk-button uk-button-default">Collapse all</button>
+      <button class="uk-button uk-button-default" disabled>Disabled</button>
+      </p>
+    </div>
+</div>
 
 <div class="section-l w-100 bg-white" style="overflow: auto;" id="main-tf-1">
 
