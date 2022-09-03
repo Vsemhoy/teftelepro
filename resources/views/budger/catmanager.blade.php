@@ -39,66 +39,84 @@
 
 
 <div class="uk-section uk-section-default">
-    <div class="uk-container uk-container-small">
+    <div class="uk-container uk-container-small" id="domContainer">
 
 
-<div class="uk-child-width-1-1" uk-grid>
-    <div>
-        <h4><span href="" class="uk-icon-link" uk-icon="shrink"></span>  <span class='groupname'>Group 1</span> <span class='uk-text-muted counts'>[44]</span></h4>
+<div class="uk-child-width-1-1" uk-grid  uk-sortable="handle: .uk-sortable-handle">
+    <div class='catBox'>
+      
+        <h4><span class="uk-icon-link uk-sortable-handle" uk-icon="move"></span>  <span class='groupname'>Group 1</span> 
+          <span class='uk-text-muted counts'>[44]</span>
+          <span class="btn-collapse">collapse</span>
+          <span class="btn-addcategory">create one<span>
+        </h4>
         <div uk-sortable="group: sortable-group">
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 1</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 2</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 3</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 4</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
         </div>
     </div>
 
-    <div>
-    <h4><span href="" class="uk-icon-link" uk-icon="expand"></span>  <span class='groupname'>Group 1</span> <span class='uk-text-muted counts'>[12]</span></h4>
+    <div class='catBox'>
+    <h4><span class="uk-icon-link uk-sortable-handle" uk-icon="move"></span>  <span class='groupname'>Group 1</span> 
+    <span class='uk-text-muted counts'>[12]</span>
+    <span class="btn-collapse">collapse</span>
+    <span class="btn-addcategory">create one<span>
+  </h4>
         <div uk-sortable="group: sortable-group">
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 1</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 2</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 3</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 4</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
         </div>
     </div>
 
-    <div>
-    <h4><span href="" class="uk-icon-link" uk-icon="expand"></span>  <span class='groupname'>Group 1</span> <span class='uk-text-muted counts'>[12]</span></h4>
+    <div class='catBox'>
+    <h4><span class="uk-icon-link uk-sortable-handle" uk-icon="move"></span>  
+    <span class='groupname'>Group 1</span> <span class='uk-text-muted counts'>[12]</span>
+    <span class="btn-collapse">collapse</span>
+    <span class="btn-addcategory">create one<span>
+  </h4>
         <div uk-sortable="group: sortable-group">
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 1</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 2</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 3</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
-            <div class="uk-margin">
-                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small">Item 4</div>
+            <div class="uk-margin card-box">
+                <div class="uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small"><span class='cardName'>Item</span></div>
             </div>
         </div>
     </div>
 
-    <div>
-        <h4>Empty Group</h4>
+    <div class='catBox'>
+    <h4><span class="uk-icon-link uk-sortable-handle" uk-icon="move"></span>  
+    <span class='groupname'>Group 1</span> <span class='uk-text-muted counts'>[12]</span>
+    <span class="btn-collapse">collapse</span>
+    <span class="btn-addcategory">create one<span>
+  </h4>
+
         <div uk-sortable="group: sortable-group">
     </div>
 </div>
@@ -111,35 +129,148 @@
 @section('page-scripts')
 <script>
 
-let modalWindow = document.querySelector("#modal_event");
-let modalTriggers  = document.querySelectorAll(".event_trigger");
-let doubleTriggers = document.querySelectorAll(".droptabledata");
+// let modalWindow = document.querySelector("#modal_event");
+
+// let doubleTriggers = document.querySelectorAll(".droptabledata");
 
 // --------------------------- DOM -------------------
-function DOM() {
-  
-  modalTriggers  = document.querySelectorAll(".event_trigger");
-  doubleTriggers = document.querySelectorAll(".droptabledata");
-  
-  Array.from(modalTriggers).forEach(i => i.addEventListener("click", function(i){
-    openEventModal(i);
-    buildEventModal(i);
-  }));
 
-  Array.from(doubleTriggers).forEach(i => i.addEventListener("dblclick", function(i){
-    openEventModal(i);
-    buildEventModal(i);
-  }));
+function DOMreload(){
+  let data = document.querySelector('#domContainer').innerHTML;
+  document.querySelector('#domContainer').innerHTML = "";
+  document.querySelector('#domContainer').insertAdjacentHTML('afterBegin', data);
+
+
+  DOM();
+  refreshCounters();
+}
+
+function DOM() {
+
+  let collapseTriggers = document.querySelectorAll(".btn-collapse");
+  let addCatTriggers = document.querySelectorAll(".btn-addcategory");
+  let groupNames = document.querySelectorAll(".groupname");
+  let categoryNames = document.querySelectorAll(".cardName");
+  let abs = document.querySelectorAll(".card-box");
+  let domContainer = document.querySelector("#domContainer").innerHTML;
+
+
+  for (let i = 0 ; i < collapseTriggers.length; i++){
+    collapseTriggers[i].addEventListener("click", function(){
+      if (!collapseTriggers[i].parentNode.parentNode.classList.contains("collapsed"))
+      {
+        collapseTriggers[i].parentNode.parentNode.classList.add("collapsed");
+      }
+      else 
+      {
+        collapseTriggers[i].parentNode.parentNode.classList.remove("collapsed");
+      }
+      setTimeout(() => {
+        }, 500);
+    });
+  }
+
+  for (let i = 0 ; i < addCatTriggers.length; i++){
+    addCatTriggers[i].addEventListener("click", function(){
+      let block = "<div class='uk-margin card-box' style='user-select: none;'><div class='uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small'><span class='cardName'>NEW CATEGORY*</span></div></div>";
+        addCatTriggers[i].parentNode.parentNode.querySelectorAll(".uk-sortable")[0].insertAdjacentHTML('afterBegin', block);
+        DOMreload();
+    });
+  }
+
+  for (let i = 0 ; i < groupNames.length; i++){
+    groupNames[i].addEventListener("dblclick", function(elem){
+      let text = groupNames[i].innerHTML;
+      let block = "<input type='text' maxlength='64' id='newGroupName' class='group-name-editor' value='" + text + "'/> "
+      if (groupNames[i].classList.contains("edited"))
+      {
+
+      }
+      else 
+      {
+        groupNames[i].parentNode.classList.add("group-edited");
+        groupNames[i].classList.add("edited");
+        groupNames[i].innerHTML = block;
+        let tg =  document.querySelector("#newGroupName");
+
+        tg.addEventListener("focusout", function(){
+          if (tg != null){
+          let text = tg.value;
+          
+          console.log("You clicker!");
+          groupNames[i].parentNode.classList.remove("group-edited");
+          tg.parentNode.classList.remove("edited");
+          tg.remove();
+          groupNames[i].innerHTML = text;
    
+        }
+        })
+      }
+    });
+  }
+  
+  for (let i = 0 ; i < categoryNames.length; i++){
+    categoryNames[i].addEventListener("dblclick", function(elem){
+      let text = categoryNames[i].innerHTML;
+      let block = "<input type='text' maxlength='32' id='newCategoryName' class='group-name-editor' value='" + text + "'/> "
+      if (categoryNames[i].classList.contains("edited"))
+      {
+
+      }
+      else 
+      {
+        categoryNames[i].classList.add("edited");
+        categoryNames[i].innerHTML = block;
+        let tg =  document.querySelector("#newCategoryName");
+
+        tg.addEventListener("focusout", function(){
+          if (tg != null){
+          let text = tg.value;
+          
+          console.log("You clicker!");
+          tg.parentNode.classList.remove("edited");
+          tg.remove();
+          categoryNames[i].innerHTML = text;
+        }
+        })
+      }
+    });
+  }
+
+
+  for (let i = 0 ; i < abs.length; i++){
+  abs[i].addEventListener('mouseout', function(){
+    if (domContainer != document.querySelector("#domContainer").innerHTML && !document.querySelector("html").classList.contains("uk-drag")){
+      refreshCounters();
+      console.log("HELLO");
+      domContainer = document.querySelector("#domContainer").innerHTML;
+    }
+  })
+};
+
+  // Array.from(doubleTriggers).forEach(i => i.addEventListener("dblclick", function(i){
+  //   openEventModal(i);
+  //   buildEventModal(i);
+  // }));
+
  }
  // --------------------------- DOM -------------------
 
- function openEventModal(elem){
-   UIkit.modal(modalWindow).show();
- }
- function BuildEventModal(){}
 
  DOM();
+
+function refreshCounters(){
+  let groups =  document.querySelectorAll(".catBox");
+  for (let i = 0 ; i < groups.length; i++){
+    let c = groups[i].querySelectorAll(".card-box") == null ? 0 : groups[i].querySelectorAll(".card-box").length;
+    groups[i].querySelectorAll(".counts")[0].innerHTML = "[" + c + "]";
+  }
+}
+
+
+
+
+
 
 
 </script>

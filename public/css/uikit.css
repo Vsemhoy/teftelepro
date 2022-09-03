@@ -10302,6 +10302,39 @@ h3 {
   margin-left: 60px;
 }
 
+.btn-collapse, .btn-addcategory {
+  float: right;
+  background: white;
+  padding-bottom: 3px;
+  outline: 1px dotted #cbcbcb;
+  padding-left: 6px;
+  color: #2a2a2a;
+  padding-right: 6px;
+  box-shadow: 1px 2px 6px #c7c7c7;
+  cursor: pointer;
+  font-size: smaller;
+  letter-spacing: 1px;
+  margin-right: 6px;
+}
+
+.btn-collapse:hover, .btn-addcategory:hover {
+  background: rgb(238, 238, 238);
+  box-shadow: 1px 5px 6px #919191;
+}
+
+.btn-collapse:active, .btn-addcategory:active {
+  background: rgb(212, 212, 212);
+  box-shadow: 1px 1px 4px #bebebe;
+}
+
+.collapsed {
+  border-bottom: 1px solid #e1e1e1;
+}
+
+.collapsed .uk-sortable {
+  display: none;
+}
+
 .nav-bg a {
   color: white;
   transition: all ease 0s;
@@ -10336,6 +10369,11 @@ h3 {
 }
 
 .uk-drag .uk-sortable {
+  background-image: linear-gradient(45deg, #ffffff 37.5%, #e8e8e8 37.5%, #e8e8e8 50%, #ffffff 50%, #ffffff 87.5%, #e8e8e8 87.5%, #e8e8e8 100%);
+  background-size: 5.66px 5.66px;
+}
+
+.uk-drag .uk-sortable .uk-sortable {
   outline: dotted 3px #9e9e9e;
 }
 
@@ -10448,6 +10486,25 @@ h3 {
     margin-left: 0px !important;
     width: 100%;
   }
+}
+.group-name-editor {
+  border: none;
+  border-bottom: #03a9f4 1px solid;
+  outline: none;
+  font-size: inherit;
+  color: #03a9f4;
+}
+
+.group-edited input {
+  width: -webkit-fill-available;
+}
+
+.group-edited .uk-icon, .group-edited .counts, .group-edited .btn-collapse, .group-edited .btn-addcategory {
+  display: none;
+}
+
+.cardName {
+  font-size: larger;
 }
 
 /*# sourceMappingURL=uikit.css.map */
