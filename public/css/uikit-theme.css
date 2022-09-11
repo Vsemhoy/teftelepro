@@ -10240,8 +10240,7 @@ h3 {
 .col-sidenav {
   overflow: auto;
   float: left;
-  background-color: rgba(0, 80, 149, 0.58);
-  backdrop-filter: blur(4px);
+  background-color: rgba(0, 122, 193, 0.82);
   position: fixed;
   z-index: 1;
   transition: all ease 0.3s;
@@ -10302,7 +10301,7 @@ h3 {
   margin-left: 60px;
 }
 
-.btn-collapse, .btn-addcategory {
+.btn-collapse, .btn-addItem, .btn-colorize {
   float: right;
   background: white;
   padding-bottom: 3px;
@@ -10317,12 +10316,12 @@ h3 {
   margin-right: 6px;
 }
 
-.btn-collapse:hover, .btn-addcategory:hover {
+.btn-collapse:hover, .btn-addItem:hover, .btn-colorize:hover {
   background: rgb(238, 238, 238);
   box-shadow: 1px 5px 6px #919191;
 }
 
-.btn-collapse:active, .btn-addcategory:active {
+.btn-collapse:active, .btn-addItem:active, .btn-colorize:active {
   background: rgb(212, 212, 212);
   box-shadow: 1px 1px 4px #bebebe;
 }
@@ -10499,12 +10498,25 @@ h3 {
   width: -webkit-fill-available;
 }
 
-.group-edited .uk-icon, .group-edited .counts, .group-edited .btn-collapse, .group-edited .btn-addcategory {
+.group-edited .uk-icon, .group-edited .counts, .group-edited .btn-collapse, .group-edited .btn-addItem {
   display: none;
 }
 
 .cardName {
   font-size: larger;
+}
+
+.catBox {
+  transition: all ease 0.6s;
+}
+
+.uk-drag .catBox {
+  transition: none;
+}
+
+.temper {
+  opacity: 0.5;
+  filter: blur(9px);
 }
 
 /*# sourceMappingURL=uikit-theme.css.map */

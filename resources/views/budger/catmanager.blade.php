@@ -30,8 +30,8 @@
     <h3 class="uk-card-title uk-light text-white">Category manager</h3>
     <p uk-margin>
 
-      <button class="uk-button uk-button-default">Add category</button>
-      <button class="uk-button uk-button-default">Collapse all</button>
+      <button class="uk-button uk-button-default" id='addGroupButton'>Add group</button>
+      <button class="uk-button uk-button-default" data-collapsed='false' id='collapesAllButton'>Collapse all</button>
       <button class="uk-button uk-button-default" disabled>Disabled</button>
       </p>
     </div>
@@ -39,16 +39,25 @@
 
 
 <div class="uk-section uk-section-default">
-    <div class="uk-container uk-container-small" id="domContainer">
+    <div class="uk-container uk-container-small">
 
 
-<div class="uk-child-width-1-1" uk-grid  uk-sortable="handle: .uk-sortable-handle">
+<div class="uk-child-width-1-1" uk-grid  uk-sortable="handle: .uk-sortable-handle"  id="domContainer">
+
+<?php
+$items = [];
+array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
+array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
+array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
+array_push($items, BudgerTemplates::renderGroupItem("", "ANNA pasta gora", "", ""));
+array_push($items, BudgerTemplates::renderGroupItem("", "ANNA pasta gora", "", ""));
+ echo BudgerTemplates::renderGroupContainer("rand", "Hero Wooo", null, null, $items); ?>
     <div class='catBox'>
       
         <h4><span class="uk-icon-link uk-sortable-handle" uk-icon="move"></span>  <span class='groupname'>Group 1</span> 
           <span class='uk-text-muted counts'>[44]</span>
           <span class="btn-collapse">collapse</span>
-          <span class="btn-addcategory">create one<span>
+          <span class="btn-addItem">create one<span>
         </h4>
         <div uk-sortable="group: sortable-group">
             <div class="uk-margin card-box">
@@ -70,7 +79,7 @@
     <h4><span class="uk-icon-link uk-sortable-handle" uk-icon="move"></span>  <span class='groupname'>Group 1</span> 
     <span class='uk-text-muted counts'>[12]</span>
     <span class="btn-collapse">collapse</span>
-    <span class="btn-addcategory">create one<span>
+    <span class="btn-addItem">create one<span>
   </h4>
         <div uk-sortable="group: sortable-group">
             <div class="uk-margin card-box">
@@ -92,7 +101,7 @@
     <h4><span class="uk-icon-link uk-sortable-handle" uk-icon="move"></span>  
     <span class='groupname'>Group 1</span> <span class='uk-text-muted counts'>[12]</span>
     <span class="btn-collapse">collapse</span>
-    <span class="btn-addcategory">create one<span>
+    <span class="btn-addItem">create one<span>
   </h4>
         <div uk-sortable="group: sortable-group">
             <div class="uk-margin card-box">
@@ -114,13 +123,36 @@
     <h4><span class="uk-icon-link uk-sortable-handle" uk-icon="move"></span>  
     <span class='groupname'>Group 1</span> <span class='uk-text-muted counts'>[12]</span>
     <span class="btn-collapse">collapse</span>
-    <span class="btn-addcategory">create one<span>
+    <span class="btn-addItem">create one<span>
   </h4>
 
         <div uk-sortable="group: sortable-group">
     </div>
 </div>
 
+    </div>
+</div>
+
+<!-- This is the modal -->
+<div id="modal-example" uk-modal>
+    <div class="uk-modal-dialog uk-modal-body">
+        <h2 class="uk-modal-title">Headline</h2>
+        <div class="uk-margin">
+        <label class='uk-h4'>Choose base color:</label>
+        
+        <input type="color" id="colorPicker" class='uk-input' value="#316596"/></div>
+        <div class="uk-margin">
+        <label>Count of instances: <span id="clrscount"></span></label>
+        <input type="range" class='uk-range' id="colorSteps" max="128" min="2" step="1" value="12">
+        </div>
+        <div class="uk-margin">
+        <label>Color step: <span id="clrstplbl"></span></label>
+        <input id="colorStep" class='uk-range' type="range" id="colorSteps" max="120" min="1" step="1" value="10">
+      </div>
+        <p class="uk-text-right">
+            <button class="uk-button uk-button-default uk-modal-close" type="button">Cancel</button>
+            <button class="uk-button uk-button-primary" type="button">Save</button>
+        </p>
     </div>
 </div>
 
@@ -148,11 +180,15 @@ function DOMreload(){
 function DOM() {
 
   let collapseTriggers = document.querySelectorAll(".btn-collapse");
-  let addCatTriggers = document.querySelectorAll(".btn-addcategory");
+  let addItemTriggers = document.querySelectorAll(".btn-addItem");
+
   let groupNames = document.querySelectorAll(".groupname");
   let categoryNames = document.querySelectorAll(".cardName");
-  let abs = document.querySelectorAll(".card-box");
+  let cardBoxes = document.querySelectorAll(".card-box");
+  let menuTrigger = document.querySelectorAll(".itemMenu");
   let domContainer = document.querySelector("#domContainer").innerHTML;
+  let groupContainer = "";
+  // let eventBlocker = false;
 
 
   for (let i = 0 ; i < collapseTriggers.length; i++){
@@ -170,11 +206,12 @@ function DOM() {
     });
   }
 
-  for (let i = 0 ; i < addCatTriggers.length; i++){
-    addCatTriggers[i].addEventListener("click", function(){
-      let block = "<div class='uk-margin card-box' style='user-select: none;'><div class='uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small'><span class='cardName'>NEW CATEGORY*</span></div></div>";
-        addCatTriggers[i].parentNode.parentNode.querySelectorAll(".uk-sortable")[0].insertAdjacentHTML('afterBegin', block);
+  for (let i = 0 ; i < addItemTriggers.length; i++){
+    addItemTriggers[i].addEventListener("click", function(){
+      let block = `<?php echo BudgerTemplates::renderGroupItem("", "", "", ""); ?>`;
+        addItemTriggers[i].parentNode.parentNode.querySelectorAll(".uk-sortable")[0].insertAdjacentHTML('afterBegin', block);
         DOMreload();
+        saveNewItem();
     });
   }
 
@@ -192,19 +229,28 @@ function DOM() {
         groupNames[i].classList.add("edited");
         groupNames[i].innerHTML = block;
         let tg =  document.querySelector("#newGroupName");
-
+        tg.focus();
         tg.addEventListener("focusout", function(){
           if (tg != null){
           let text = tg.value;
-          
-          console.log("You clicker!");
           groupNames[i].parentNode.classList.remove("group-edited");
           tg.parentNode.classList.remove("edited");
           tg.remove();
-          groupNames[i].innerHTML = text;
-   
+          groupNames[i].innerHTML = text.trim();
         }
-        })
+        });
+        tg.addEventListener("keyup", function(e){
+          if (e.key == 'Enter'){
+            if (tg != null){
+              let text = tg.value;
+              groupNames[i].parentNode.classList.remove("group-edited");
+              tg.parentNode.classList.remove("edited");
+              // tg.remove();
+              if (text == ""){ text = "No name";}
+              groupNames[i].innerHTML = text.trim();
+            };
+          };
+        });
       }
     });
   }
@@ -222,28 +268,77 @@ function DOM() {
         categoryNames[i].classList.add("edited");
         categoryNames[i].innerHTML = block;
         let tg =  document.querySelector("#newCategoryName");
-
+        tg.focus();
         tg.addEventListener("focusout", function(){
           if (tg != null){
-          let text = tg.value;
-          
-          console.log("You clicker!");
+          let text = tg.value;      
           tg.parentNode.classList.remove("edited");
           tg.remove();
-          categoryNames[i].innerHTML = text;
+          if (text == ""){ text = "No name";}
+          categoryNames[i].innerHTML = text.trim();
         }
-        })
+        });
+        tg.addEventListener("keyup", function(e){
+          if (e.key == 'Enter'){
+            if (tg != null){
+              let text = tg.value;      
+              tg.parentNode.classList.remove("edited");
+              // tg.remove();
+              if (text == ""){ text = "No name";}
+              categoryNames[i].innerHTML = text.trim();
+            };
+          };
+        });
       }
     });
   }
 
+  /// Trigger item Menu button
+  for (let i = 0; i < menuTrigger.length; i++)
+  {
+    menuTrigger[i].addEventListener("mouseover", function(){
+      //eventBlock = true; 
+      let left = menuTrigger[i].getBoundingClientRect().left;
+      let top = menuTrigger[i].getBoundingClientRect().top;
 
-  for (let i = 0 ; i < abs.length; i++){
-  abs[i].addEventListener('mouseout', function(){
+
+      if (document.querySelector('#itemMenu') != null){
+        document.querySelector('#itemMenu').remove();
+      }
+      let block = `<?php echo budgerTemplates::renderCategoryItemMenu(); ?>`;
+      document.body.insertAdjacentHTML('beforeEnd', block);
+      block = document.querySelector('#itemMenu');
+      block.style.position = "absolute";
+      let width = block.getBoundingClientRect().width - menuTrigger[i].getBoundingClientRect().width;
+      block.style.left = ( left - width ) + "px";
+      block.style.top = top + "px";
+      let id = (menuTrigger[i].parentNode.parentNode.parentNode.id).replace(/\D/g, '');
+      block.setAttribute('data-target', id);
+
+      block.addEventListener("mouseleave", function(){
+        setTimeout(() => {
+          document.querySelector('#itemMenu').remove();
+          }, 500);
+      });
+    });
+  }
+
+
+  for (let i = 0 ; i < cardBoxes.length; i++){
+  cardBoxes[i].addEventListener('mouseout', function(){
+    if (groupContainer == ""){
+      groupContainer = cardBoxes[i].parentNode.parentNode.innerHTML;
+      return;
+    }
     if (domContainer != document.querySelector("#domContainer").innerHTML && !document.querySelector("html").classList.contains("uk-drag")){
       refreshCounters();
-      console.log("HELLO");
       domContainer = document.querySelector("#domContainer").innerHTML;
+      // Handle Items moving 
+      if (groupContainer != cardBoxes[i].parentNode.parentNode.innerHTML){
+        // Do if container's boxes order changed
+        reorderItems(cardBoxes[i].parentNode.parentNode);
+        groupContainer = cardBoxes[i].parentNode.parentNode.innerHTML;
+      }
     }
   })
 };
@@ -253,12 +348,189 @@ function DOM() {
   //   buildEventModal(i);
   // }));
 
+    // -------- DATABASE MANAGE FUNCTIONS ------- //
+  function saveNewItem()
+  {
+    let counter = 0;
+    let requestCode = 101;
+    let outFormat = "number";
+    let block = document.querySelector("#__NEWITEM__");
+    block.classList.add("temper");
+//    setTimeout(() => {   }, 5000);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          block.remove();
+          return 0;
+        };
+        block.classList.remove("temper");
+        block.setAttribute('id','item_' + this.responseText);
+        setTimeout(() => {
+          reorderItems(block.parentNode.parentNode);
+        }, 1000);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.remove();
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, true);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
+    let data = {};
+    data.code = requestCode;
+    data.name = "New item";
+    xhttp.send(JSON.stringify(data));
+  }
+
+
+  // Save data if items reordered
+  function reorderItems(container)
+  {
+    // if (eventBlock == true){ return; }
+    let objects = [];
+    let items = container.querySelectorAll('.uk-sortable')[0].querySelectorAll(".card-box");
+    if (items.length > 0){
+      //alert(container.id);
+      for (let i = 0; i < items.length; i++){
+        //alert(items[i].id);
+        let object = {};
+        items[i].setAttribute('data-order', i + 1);
+        object.id = (items[i].id).replace(/\D/g, '');
+        object.order = i + 1;
+        objects.push(object);
+      }
+      // AJAX 
+      let requestCode = 201;
+      let outFormat = "number";
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          if (this.responseText == -1){ 
+            alert("You are not registered!");
+            return 0;
+          } else if (this.responseText == 0){
+            alert("Restricted process!");
+            return 0;
+           } else {
+            alert(this.responseText);
+           }
+        }
+        else if (this.status > 200)
+        {
+          if (counter < 1){
+            alert("Oops! There is some problems with the server connection.");
+            block.remove();
+            counter++;
+          }
+        }
+      };
+      xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, true);
+      // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+      xhttp.send(JSON.stringify(objects));
+      // AJAX END
+    }
+  }
+
  }
- // --------------------------- DOM -------------------
+ // --------------------------- DOM END -------------------
+
+function DOMmanager(){
+  // Define variables
+  let addGroupTrigger = document.querySelector("#addGroupButton");
+  let collapseAllButton = document.querySelector("#collapesAllButton");
+  
+  collapseAllButton.addEventListener("click", function(){
+    let catBoxes = document.querySelectorAll(".catBox");
+    let condition = collapseAllButton.getAttribute("data-collapsed");
+    //alert(condition);
+    for (let i = 0; i < catBoxes.length; i++)
+    {
+      
+      if (condition == 'false')
+      {
+        catBoxes[i].classList.add("collapsed");
+          collapseAllButton.setAttribute("data-collapsed", true);
+        }
+        else 
+        {
+          catBoxes[i].classList.remove("collapsed");
+          collapseAllButton.setAttribute("data-collapsed", false);
+        }
+    }
+  });
+
+
+
+
+    // Template definitions
+    // Add new group of categories function
+    let grouperTemplate = `<?php echo BudgerTemplates::renderGroupContainer("", "New group", null, null, null); ?>`;
+    addGroupTrigger.addEventListener("click", function(){
+      document.querySelector('#domContainer').insertAdjacentHTML('afterBegin', grouperTemplate);
+      DOMreload();
+      saveNewGroup();
+    });
+
+
+        // -------- DATABASE MANAGE FUNCTIONS ------- //
+  function saveNewGroup()
+  {
+    let counter = 0;
+    let requestCode = 100;
+    let outFormat = "number";
+    let block = document.querySelector("#__NEWGROUP__");
+    block.classList.add("temper");
+    setTimeout(() => {   }, 5000);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        //document.getElementById("demo").innerHTML =
+        if (this.responseText == -1){ alert("You are not registered!");
+          block.remove();
+          return 0;
+        };
+        block.classList.remove("temper");
+        block.setAttribute('id','group_' + this.responseText);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.remove();
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, true);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
+    let data = {};
+    data.code = requestCode;
+    data.name = "New group";
+    xhttp.send(JSON.stringify(data));
+  }
+
+  
+
+}
 
 
  DOM();
+ DOMmanager();
 
+ // Refresh counters of categories in groups
 function refreshCounters(){
   let groups =  document.querySelectorAll(".catBox");
   for (let i = 0 ; i < groups.length; i++){
@@ -268,10 +540,81 @@ function refreshCounters(){
 }
 
 
+function GenerateColorArray(color, stepCount, stepInt){
+  stepCount = (stepCount > 1) ? stepCount : 2;
+  stepInt = (stepInt > 1) ? stepInt : 2;
+  let pallette = document.querySelector("#pallette");
+  pallette.innerHTML = "";
+  //pallette.style.backgroundColor = color;
+  
+  let stepIntRed = stepInt;
+  let stepIntGrn = stepInt;
+  let stepIntBlu = stepInt;
+  let colorString = "";
 
-
-
-
+  let result = [];
+  
+  for (let i = 0 ; i < stepCount; i++)
+  {
+    let colorinstance = color.substring(1);
+    let colors = colorinstance.match(/.{1,2}/g);
+    let red = parseInt(colors[0], 16);
+    let green = parseInt(colors[1], 16);
+    let blue = parseInt(colors[2], 16);
+    
+    if (red + (stepIntRed * stepCount) > 256){
+      stepIntRed = (255 - red) / stepCount;
+      //console.log(red + " to " + stepIntRed);
+    }
+    if (green + (stepIntGrn * stepCount) > 256){
+      stepIntGrn = (255 - green) / stepCount;
+      //console.log(green + "  to " + stepIntGrn);
+    }
+    if (blue + (stepIntBlu * stepCount) > 256){
+      stepIntBlu = ( 255 - blue) / stepCount;
+      //console.log(blue + "  to " + stepIntBlu);
+    }
+    
+    console.log(i * stepIntRed);
+    let redn = red + parseInt((i * stepIntRed));
+    if (redn < 256 && redn >= 0){
+      red = parseInt(red + (i * stepIntRed));
+    }
+    let greend = parseInt(green + (i * stepIntGrn));
+        if (greend < 256 && greend >= 0){
+              green = parseInt(green + (i * stepIntGrn));
+        }
+    let blueb = parseInt(blue + (i * stepIntBlu));
+        if (blueb < 256 && blueb >= 0){
+              blue = parseInt(blue + (i * stepIntBlu));
+        }
+    //console.log(i + " red: " + red + "; green: " + green + "; blue: " + blue);
+    
+    if (!(redn > 255 && greend > 255 && blueb > 255)){
+      let redhex = red.toString(16).toUpperCase();
+      if (redhex.length == 1){
+        redhex = "0" + redhex;
+      };
+      let greenhex = green.toString(16).toUpperCase();
+      if (greenhex.length == 1){
+        greenhex = "0" + greenhex;
+      };
+      let bluehex = blue.toString(16).toUpperCase();
+          if (bluehex.length == 1){
+        bluehex = "0" + bluehex;
+      };
+      
+      let finalColor = "#" + redhex + greenhex + bluehex; 
+      result.push(finalColor);
+      // colorString += finalColor + ", ";
+      // let block = '<div class="colorInstance" style="background-color: ' + finalColor + ';" ></div>';
+      // pallette.insertAdjacentHTML("beforeend", block);
+    };
+  };
+  // let colstr = document.querySelector("#colstr");
+  // colstr.innerHTML = colorString;
+  return result;
+};
 
 </script>
 @endsection

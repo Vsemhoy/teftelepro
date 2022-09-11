@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Components\Home\HomeController;
 use App\Http\Controllers\MainController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Components\Budger\BudgerAjax;
 
 /*
 |--------------------------------------------------------------------------
@@ -90,6 +91,7 @@ Route::prefix('budger')->group(function () {
     return view('budger.commstat');
   })->name('budger.commstat');
 
+  Route::post('/ajaxcall', [BudgerAjax::class, 'ajaxcall']);
 });
 
 

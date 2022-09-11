@@ -601,6 +601,85 @@ public static function renderEventModal()
   return $result;
 }
 
+// masterColor can be null, Icon can be null, and Items can be null, but need an array
+public static function renderGroupContainer($id, $name, $masterColor, $icon, $items, $order = 0) 
+{
+  $iterator = 0;
+  if (isset($items) && count($items) > 0){ $iterator = count($items); };
+  if ($id != ""){ 
+    if ($id == "rand") { 
+      $id = "group_" . rand(1000000,32000000);
+    } else {
+      $id = "group_" . $id; 
+    }
+  } else {
+    $id = "__NEWGROUP__";
+  }
+
+  $result  = "<div class='catBox uk-first-column' style='' id='" . $id . "' data-order='" . $order . "'>
+  <h4>
+  <span class='uk-icon-link uk-sortable-handle uk-icon' uk-icon='move' style='user-select: none;'>
+  <svg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
+    <polygon points='4,5 1,5 1,9 2,9 2,6 4,6'>
+    </polygon><polygon points='1,16 2,16 2,18 4,18 4,19 1,19'></polygon><polygon points='14,16 14,19 11,19 11,18 13,18 13,16'></polygon><rect fill='none' stroke='#000' x='5.5' y='1.5' width='13' height='13'></rect><rect x='1' y='11' width='1' height='3'></rect><rect x='6' y='18' width='3' height='1'></rect></svg></span>  
+  <span class='groupname'>" . $name . "</span> 
+  <span class='uk-text-muted counts'>[" . $iterator . "]</span>
+  <span class='btn-colorize' uk-toggle='target: #modal-example'>colorize</span>
+  <span class='btn-collapse'>collapse</span>
+  <span class='btn-addItem'>create one<span>
+</span></span></h4>
+      <div uk-sortable='group: sortable-group' class='uk-sortable uk-sortable-empty' style=''>";
+      if ($iterator != 0){
+        foreach ($items AS $item)
+        {
+          $result .= $item;
+        }
+      }
+$result .= "      </div>
+  </div>";
+  return $result;
+}
+
+
+public static function renderGroupItem($id, $name, $color, $isArchieved, $order = 0)
+{
+  $addClass = "";
+  if ($id == "rand"){ 
+    $id = "item_" . rand(1000000,32000000); 
+  } else if ($id != ""){
+    $id = "item_" . $id;
+  } else {
+    $id = "__NEWITEM__";
+  }
+  if ($name == "") { $name = "New item"; }
+  if ($color == "" || $color == null){ } else { $color = "style='background-color: " . $color . "'"; }
+  if ($isArchieved == true){
+    $addClass .= " archieved hidden";
+  }
+
+  $result = "<div class='uk-margin card-box' id='" . $id . "' " . $color . " data-order='" . $order . "'>
+  <div class='uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small'>
+  <span class='cardName'>" . $name . "</span><div class='uk-align-right'>
+  <span class='itemMenu '><span class='' uk-icon='settings'></span>
+  </span></div>
+    </div>
+  </div>";
+  return $result;
+}
+
+
+public static function renderCategoryItemMenu(){
+  $result = "<div id='itemMenu' data-target='' class='uk-dropdown uk-open' style=''>
+  <ul class='uk-nav uk-dropdown-nav'>
+      <li><a href='' class='btnChangeColor'>Change color</a></li>
+      <li><a href='' class='btnArchieve'>Archieve</a></li>
+      <li><a href='' class='btnUnArchieve'>Restore</a></li>
+      <li><a href='' class='btnRemove'>Remove forever</a></li>
+  </ul>
+</div>";
+return $result;
+}
+
 };
 
 ?>
