@@ -669,12 +669,12 @@ public static function renderGroupItem($id, $name, $color, $isArchieved, $order 
 
 
 public static function renderCategoryItemMenu(){
-  $result = "<div id='itemMenu' data-target='' class='uk-dropdown uk-open' style=''>
+  $result = "<div id='itemMenu' data-target='' class='uk-dropdown uk-open menu-inverted' style=''>
   <ul class='uk-nav uk-dropdown-nav'>
-      <li><a href='' class='btnChangeColor'>Change color</a></li>
-      <li><a href='' class='btnArchieve'>Archieve</a></li>
-      <li><a href='' class='btnUnArchieve'>Restore</a></li>
-      <li><a href='' class='btnRemove'>Remove forever</a></li>
+     <!-- <li><a href='' data-event='opensettings' class='btnChangeColor'>Change color</a></li> -->
+      <li  data-event='archieve' ><a class=''>Archieve</a></li>
+      <li  data-event='restore'  ><a class=''>Restore</a></li>
+      <li  data-event='remove'   ><a class=''>Remove forever</a></li>
   </ul>
 </div>";
 return $result;

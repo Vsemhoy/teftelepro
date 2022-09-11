@@ -282,3 +282,12 @@ background-size: 5.66px 5.66px;
   opacity: 0.5;
   filter: blur(9px);
 }
+.menu-opened {
+  outline: 1px solid rgb(3 169 244 / 29%);
+  > div {
+    box-shadow: 0 5px 15px rgb(12 167 209 / 49%);
+  }
+}
+.menu-inverted {
+  box-shadow: 0 5px 15px rgb(12 167 209 / 49%);
+}

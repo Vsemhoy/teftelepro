@@ -308,18 +308,37 @@ function DOM() {
       let block = `<?php echo budgerTemplates::renderCategoryItemMenu(); ?>`;
       document.body.insertAdjacentHTML('beforeEnd', block);
       block = document.querySelector('#itemMenu');
-      block.style.position = "absolute";
+      block.style.position = "fixed";
       let width = block.getBoundingClientRect().width - menuTrigger[i].getBoundingClientRect().width;
       block.style.left = ( left - width ) + "px";
       block.style.top = top + "px";
       let id = (menuTrigger[i].parentNode.parentNode.parentNode.id).replace(/\D/g, '');
+      let parentItem = menuTrigger[i].parentNode.parentNode.parentNode;
+      parentItem.classList.add('menu-opened');
       block.setAttribute('data-target', id);
+      let buttons = block.querySelectorAll(".uk-nav")[0].childNodes;
+      for (let y = 0; y < buttons.length; y++){
+
+        buttons[y].addEventListener('click', function(elem){
+          if (buttons[y].getAttribute('data-event') == 'archieve'){
+  
+          } else if (buttons[y].getAttribute('data-event') == 'restore'){
+  
+          } else if (buttons[y].getAttribute('data-event') == 'remove'){
+            removeItem(id);
+            document.querySelector('#itemMenu').remove();
+          }
+          parentItem.classList.remove('menu-opened');
+        });
+      }
 
       block.addEventListener("mouseleave", function(){
         setTimeout(() => {
           document.querySelector('#itemMenu').remove();
-          }, 500);
+          parentItem.classList.remove('menu-opened');
+          }, 10);
       });
+
     });
   }
 
@@ -368,7 +387,7 @@ function DOM() {
         block.setAttribute('id','item_' + this.responseText);
         setTimeout(() => {
           reorderItems(block.parentNode.parentNode);
-        }, 1000);
+        }, 100);
       }
       else if (this.status > 200)
       {
@@ -379,7 +398,7 @@ function DOM() {
         }
       }
     };
-    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, true);
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
     // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
@@ -420,7 +439,8 @@ function DOM() {
             alert("Restricted process!");
             return 0;
            } else {
-            alert(this.responseText);
+            // ok, moved
+            console.log(this.responseText);
            }
         }
         else if (this.status > 200)
@@ -439,6 +459,56 @@ function DOM() {
       xhttp.send(JSON.stringify(objects));
       // AJAX END
     }
+  }
+
+
+  // Remove Item from DATABASE
+  function removeItem(itemId){
+    let counter = 0;
+    let requestCode = 901;
+    let outFormat = "number";
+    let block = document.querySelector("#item_" + itemId);
+    block.classList.add("temper");
+//    setTimeout(() => {   }, 5000);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ 
+          alert("You cannot remove this item!");
+          block.classList.remove("temper");
+          return 0;
+        };
+          let parent = block.parentNode.parentNode;
+          block.remove();
+          //reorderItems(parent);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.classList.remove("temper");
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, true);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
+    let data = {};
+    data.code = requestCode;
+    data.id = itemId;
+    xhttp.send(JSON.stringify(data));
+  }
+
+
+
+  function archieveItem(itemId){
+
+  }
+  function restoreItem(itemId){
+
   }
 
  }

@@ -58,19 +58,35 @@ class BudgerAjax extends BaseController
       return self::saveNewCategory($data, $user);
     }
     
-    /// ------- CREATE NEW ITEMS ------------ ///
+    /// ------- ENDOF CREATE NEW ITEMS ------------ ///
 
 
 
     /// ------- REORDER ITEMS ------------ ///
     if ($code == 201){
+      // returns number -1 if not success, 1 if success
       return self::reorderCategoriesInRow($data, $user);
     }
+    
+    
+    /// ------- ENDOF REORDER ITEMS ------------ ///
 
+
+
+    /// ------- REMOVE ITEMS ------------ ///
+    if ($code == 901)
+    {
+      // returns number -1 if not success, 1 if success
+      return self::removeCategoryItem($data, $user);
+    }
+
+    /// ------- ENDOF REMOVE ITEMS ------------ ///
 
 
     /// ------- CREATE NEW ITEMS ------------ ///
-    /// ------- CREATE NEW ITEMS ------------ ///
+
+
+
     /// ------- CREATE NEW ITEMS ------------ ///
 
   }
@@ -93,5 +109,11 @@ class BudgerAjax extends BaseController
     return "MOVED!";
     return rand(1000000,32000000);
     
+  }
+
+  public static function  removeCategoryItem($json, $user)
+  {
+    return "REMOVED!";
+
   }
 }

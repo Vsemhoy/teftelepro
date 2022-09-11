@@ -10519,4 +10519,15 @@ h3 {
   filter: blur(9px);
 }
 
+.menu-opened {
+  outline: 1px solid rgba(3, 169, 244, 0.29);
+}
+.menu-opened > div {
+  box-shadow: 0 5px 15px rgba(12, 167, 209, 0.49);
+}
+
+.menu-inverted {
+  box-shadow: 0 5px 15px rgba(12, 167, 209, 0.49);
+}
+
 /*# sourceMappingURL=uikit.css.map */
