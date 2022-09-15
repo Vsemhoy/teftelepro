@@ -291,3 +291,22 @@ background-size: 5.66px 5.66px;
 .menu-inverted {
   box-shadow: 0 5px 15px rgb(12 167 209 / 49%);
 }
+
+.not-archieved-list 
+{
+  .card-box {
+    display: block;
+  }
+  .archieved{
+    display: none !important;
+  }
+}
+
+.archieved-list .card-box{
+  .card-box {
+    display: none;
+  }
+  .archieved{
+    display: block !important;
+  }
+}

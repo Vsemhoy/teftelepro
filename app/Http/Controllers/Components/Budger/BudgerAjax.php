@@ -74,12 +74,25 @@ class BudgerAjax extends BaseController
 
 
     /// ------- REMOVE ITEMS ------------ ///
-    if ($code == 901)
+    if ($code == 901) // remove category item
     {
       // returns number -1 if not success, 1 if success
       return self::removeCategoryItem($data, $user);
     }
 
+
+    if ($code == 911) // archieve category item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::archieveCategoryItem($data, $user);
+    }
+
+
+    if ($code == 910) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::restoreCategoryItem($data, $user);
+    }
     /// ------- ENDOF REMOVE ITEMS ------------ ///
 
 
@@ -114,6 +127,18 @@ class BudgerAjax extends BaseController
   public static function  removeCategoryItem($json, $user)
   {
     return "REMOVED!";
+    // Check if there any attached events. If not, remove;
+  }
 
+  public static function  archieveCategoryItem($json, $user)
+  {
+    return "ARCHIEVED ITEM FROM JAX!";
+    // Check if there any attached events. If not, remove;
+  }
+
+  public static function  restoreCategoryItem($json, $user)
+  {
+    return "RESTORED TOT!";
+    // Check if there any attached events. If not, remove;
   }
 }

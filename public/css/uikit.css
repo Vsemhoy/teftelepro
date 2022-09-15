@@ -10530,4 +10530,18 @@ h3 {
   box-shadow: 0 5px 15px rgba(12, 167, 209, 0.49);
 }
 
+.not-archieved-list .card-box {
+  display: block;
+}
+.not-archieved-list .archieved {
+  display: none !important;
+}
+
+.archieved-list .card-box .card-box {
+  display: none;
+}
+.archieved-list .card-box .archieved {
+  display: block !important;
+}
+
 /*# sourceMappingURL=uikit.css.map */
