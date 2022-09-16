@@ -24,15 +24,19 @@
     // }
     //$com = Controller::getComponent('budger');
     //$cont = new BudgerMain($user->id);
+    $BM = new BudgerMain();
+    $list = $BM->LoadGroupList_ALL_keyId($user->id);
+    print_r($list);
     ?>
 <div class="uk-section uk-section-primary uk-padding-small">
     <div class="uk-container uk-container-small uk-light">
-    <h3 class="uk-card-title uk-light text-white">Category manager</h3>
+    <h3 class="uk-card-title uk-light text-white">Category manager: <span>active items</span></h3>
     <p uk-margin>
 
       <button class="uk-button uk-button-default" id='addGroupButton'>Add group</button>
       <button class="uk-button uk-button-default" data-collapsed='false' id='collapesAllButton'>Collapse all</button>
-      <button class="uk-button uk-button-default" disabled>Disabled</button>
+      <button class="uk-button uk-button-primary" >Show archieved</button>
+        
       </p>
     </div>
 </div>
@@ -45,22 +49,28 @@
 <div class="uk-child-width-1-1 not-archieved-list" uk-grid  uk-sortable="handle: .uk-sortable-handle"  id="domContainer">
 
 <?php
-$items = [];
-array_push($items, BudgerTemplates::renderGroupItem("rand", "dfDDDSSF pasta gora", "", ""));
-array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
-array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA FDS gora", "", ""));
-array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
-array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
- echo BudgerTemplates::renderGroupContainer("rand", "Hero Wooo", null, null, $items); ?>
+foreach ($list AS $key => $value)
+{
+  echo BudgerTemplates::renderGroupContainer($key, $value->name, null, null, null);
+}
+
+// $items = [];
+// array_push($items, BudgerTemplates::renderGroupItem("rand", "dfDDDSSF pasta gora", "", ""));
+// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
+// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA FDS gora", "", ""));
+// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
+// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
+//  echo BudgerTemplates::renderGroupContainer("rand", "Hero Wooo", null, null, $items); ?>
     
-    <?php
-$items = [];
-array_push($items, BudgerTemplates::renderGroupItem("rand", "fasdf pasta gora", "", ""));
-array_push($items, BudgerTemplates::renderGroupItem("rand", "GGDFDF pasta gora", "", ""));
-array_push($items, BudgerTemplates::renderGroupItem("rand", "fdsahgah pasta gora", "", ""));
-array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA DFD gora", "", ""));
-array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA DF gora", "", ""));
- echo BudgerTemplates::renderGroupContainer("rand", "Hero Wooo", null, null, $items); ?>
+//     <?php
+// $items = [];
+// array_push($items, BudgerTemplates::renderGroupItem("rand", "fasdf pasta gora", "", ""));
+// array_push($items, BudgerTemplates::renderGroupItem("rand", "GGDFDF pasta gora", "", ""));
+// array_push($items, BudgerTemplates::renderGroupItem("rand", "fdsahgah pasta gora", "", ""));
+// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA DFD gora", "", ""));
+// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA DF gora", "", ""));
+//  echo BudgerTemplates::renderGroupContainer("rand", "Hero Wooo", null, null, $items); 
+ ?>
     </div>
 </div>
 
@@ -116,11 +126,16 @@ function DOM() {
   let groupNames = document.querySelectorAll(".groupname");
   let categoryNames = document.querySelectorAll(".cardName");
   let cardBoxes = document.querySelectorAll(".card-box");
-  let categoryBoxes = document.querySelectorAll(".catBox");
   let menuTrigger = document.querySelectorAll(".itemMenu");
   let domContainer = document.querySelector("#domContainer").innerHTML;
+  let groupOrderString = "";
   let groupContainer = "";
   // let eventBlocker = false;
+
+  let categoryBoxes = document.querySelectorAll(".catBox");
+    for (let y = 0; y < categoryBoxes.length; y++){
+      groupOrderString += categoryBoxes[y].id;
+    };
 
 
   for (let i = 0 ; i < collapseTriggers.length; i++){
@@ -178,6 +193,8 @@ function DOM() {
               groupNames[i].parentNode.classList.remove("group-edited");
               tg.parentNode.classList.remove("edited");
               // tg.remove();
+              let element = groupNames[i].parentNode.parentNode;
+              UpdateGroupName(text, element);
               if (text == ""){ text = "No name";}
               groupNames[i].innerHTML = text.trim();
             };
@@ -290,6 +307,12 @@ function DOM() {
         reorderItems(cardBoxes[i].parentNode.parentNode);
         groupContainer = cardBoxes[i].parentNode.parentNode.innerHTML;
       }
+      let categoryBoxes = document.querySelectorAll('.catBox');
+      let groupOrderString = "";
+            for (let y = 0; y < categoryBoxes.length; y++){
+              groupOrderString += categoryBoxes[y].id;
+            };
+      saveGroupOrder(groupOrderString);
     }
   })
 };
@@ -343,14 +366,13 @@ function DOM() {
     data.code = requestCode;
     data.name = "New item";
     xhttp.send(JSON.stringify(data));
-
-    
   }
 
 
   // Save data if items reordered
   function reorderItems(container)
   {
+    console.log("reorderee");
     // if (eventBlock == true){ return; }
     let objects = [];
     let items = container.querySelectorAll('.uk-sortable')[0].querySelectorAll(".card-box");
@@ -382,7 +404,7 @@ function DOM() {
            } else {
             // ok, moved
             console.log(this.responseText + "reordered");
-            saveGroupOrder();
+            
            }
         }
         else if (this.status > 200)
@@ -404,11 +426,52 @@ function DOM() {
     }
   }
 
+  function UpdateGroupName(name, group){
+    counter = 0;
+    let requestCode = 130;
+    let outFormat = "number";
 
-  function reorderGroups()
-  {
-    console.log("YOURE");
+//    setTimeout(() => {   }, 5000);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          return 0;
+        };
+        alert(this.responseText);
+        return 1;
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.remove();
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
+   data = {};
+   data.name = name;
+   data.id = group.id;
+    data.archieved = 0;
+    if (group.classList.contains('archieved')){
+      data.archieved = 1;
+    }
+    data.type = 1;
+    if (group.classList.contains('type_exp')){
+      data.type = 2;
+    }
+    data.color = group.getAttribute("data-color");
+    data.code = requestCode;
+    xhttp.send(JSON.stringify(data));
   }
+ 
+
 
   // Remove Item from DATABASE
   function removeItem(itemId){
@@ -593,7 +656,17 @@ function DOMmanager(){
         };
         block.classList.remove("temper");
         block.setAttribute('id','group_' + this.responseText);
-        saveGroupOrder();
+
+        setTimeout(() => {
+            let categoryBoxes = document.querySelectorAll(".catBox");
+            let groupOrderString = "";
+          for (let y = 0; y < categoryBoxes.length; y++){
+            groupOrderString += categoryBoxes[y].id;
+          };
+          saveGroupOrder(groupOrderString);
+        }, 1000);
+        DOMreload
+
       }
       else if (this.status > 200)
       {
@@ -604,7 +677,7 @@ function DOMmanager(){
         }
       }
     };
-    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, true);
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
     // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
@@ -633,20 +706,36 @@ function refreshCounters(){
   }
 }
 
-function saveGroupOrder(){
-    let categoryBoxes = document.querySelectorAll(".catBox");
-    //console.log("hello");
-    let data = [];
-    for (let y = 0; y < categoryBoxes.length; y++){
-      let object = {};
-      object.id = categoryBoxes[y].id;
-      object.name = categoryBoxes[y].querySelectorAll('.groupname')[0].innerHTML;
-      object.order = y + 1;
-      data.push(object);
-    };
+
+
+      let ctb = document.querySelectorAll('.catBox');
+      let lastGroupOrder = "";
+            for (let y = 0; y < ctb.length; y++){
+              lastGroupOrder += ctb[y].id;
+            };
+function saveGroupOrder(string){ 
+  console.log(string);
+  console.log(lastGroupOrder);
+
+    if (string != lastGroupOrder){
+      lastGroupOrder = string;
+      let categoryBoxes = document.querySelectorAll(".catBox");
+      //console.log("hello");
+      let data = [];
+      for (let y = 0; y < categoryBoxes.length; y++){
+        let object = {};
+        object.id = categoryBoxes[y].id;
+        object.name = categoryBoxes[y].querySelectorAll('.groupname')[0].innerHTML;
+        object.order = y + 1;
+        data.push(object);
+      };
+
+      console.log(JSON.stringify(data) + " CALLED saveGroupOrder");
+      DOMreload();
+      
+    }
   
   
-    alert(JSON.stringify(data));
   }
 
 function GenerateColorArray(color, stepCount, stepInt){

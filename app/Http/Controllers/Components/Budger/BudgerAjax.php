@@ -9,6 +9,7 @@ use App\Http\Controllers\Objects\SidemenuItem;
 use App\Http\Controllers\Base\Input;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\DB;
 
 
 
@@ -63,7 +64,7 @@ class BudgerAjax extends BaseController
 
 
     /// ------- REORDER ITEMS ------------ ///
-    if ($code == 201){
+    if ($code == 120){
       // returns number -1 if not success, 1 if success
       return self::reorderCategoriesInRow($data, $user);
     }
@@ -72,23 +73,32 @@ class BudgerAjax extends BaseController
     /// ------- ENDOF REORDER ITEMS ------------ ///
 
 
+    if ($code == 130){
+      // returns number -1 if not success, 1 if success
+      return self::renameCategoryGroup($data, $user);
+    }
+    if ($code == 131){
+      // returns number -1 if not success, 1 if success
+      return self::renameCategory($data, $user);
+    }
+
 
     /// ------- REMOVE ITEMS ------------ ///
-    if ($code == 901) // remove category item
+    if ($code == 191) // remove category item
     {
       // returns number -1 if not success, 1 if success
       return self::removeCategoryItem($data, $user);
     }
 
 
-    if ($code == 911) // archieve category item
+    if ($code == 192) // archieve category item
     {
       // returns number -1 if not success, 1 if success
       return self::archieveCategoryItem($data, $user);
     }
 
 
-    if ($code == 910) // restore category Item
+    if ($code == 190) // restore category Item
     {
       // returns number -1 if not success, 1 if success
       return self::restoreCategoryItem($data, $user);
@@ -104,10 +114,17 @@ class BudgerAjax extends BaseController
 
   }
 
-  
+  /// CODE 100
   public static function  saveNewCategoryGroup($json, $user)
   {
-    return rand(1000000,32000000);
+    $name = Input::filterMe("STRING", $json->name );
+    $newId = DB::table(env('TB_BUD_GROUPS'))->insertGetId(
+      ['name' => $name,
+      'user' => $user->id,
+      'type' => '2'
+      ]
+    );
+    return $newId;
   }
   
   public static function  saveNewCategory($json, $user)
@@ -116,12 +133,38 @@ class BudgerAjax extends BaseController
     
   }
 
+  // CODE 120
   public static function  reorderCategoriesInRow($json, $user)
   {
     //return($json[0]);
     return "MOVED!";
     return rand(1000000,32000000);
     
+  }
+
+  // CODE 130
+  public static function  renameCategoryGroup($json, $user)
+  {
+    //return($user->id);
+    $id   = Input::filterMe("INT", $json->id );
+    $name = Input::filterMe("STRING", $json->name, 64 );
+    $color = Input::filterMe("STRING", $json->color, 12 );
+    $type = Input::filterMe("INT", $json->type );
+    $archieved = Input::filterMe("INT", $json->archieved );
+    $affected = DB::table(env('TB_BUD_GROUPS'))
+    ->where('id', $id)
+    ->where('user', $user->id)
+    ->update([
+        'name'          => $name,
+        'color'         => $color,
+        'type'          => $type,
+        'is_archieved'  => $archieved
+    ]);
+    if (!empty($affected)){
+      return 1;
+    } else {
+      return -1;
+    }
   }
 
   public static function  removeCategoryItem($json, $user)

@@ -219,17 +219,31 @@ class BudgerMain extends BaseController
 
   /* ----------------------- get Groups ------------------------ */
   public static function LoadGroupList_ALL_keyId($user){
-    $result = DB::select('select * from ' . env('TB_BUD_CATEGORIES') . ' where user = :user AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_GROUPS') . ' where user = :user ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
   public static function LoadGroupList_NotArchieved($user){
-    $result = DB::select('select * from ' . env('TB_BUD_CATEGORIES') . ' where user = :user AND archieved = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_GROUPS') . ' where user = :user AND archieved = 0 ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
   public static function LoadGroupList_Archieved($user){
-    $result = DB::select('select * from ' . env('TB_BUD_CATEGORIES') . ' where user = :user AND archieved = 1 ORDER BY ordered ASC', ['user' => $user, ]);
+    $result = DB::select('select * from ' . env('TB_BUD_GROUPS') . ' where user = :user AND archieved = 1 ORDER BY ordered ASC', ['user' => $user, ]);
     return Utils::arrayToIndexed($result);
   }
+
+
+  // public static function LoadGroupList_ALL_keyId($user){
+  //   $result = DB::select('select * from ' . env('TB_BUD_GROUPS') . ' where user = :user AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+  //   return Utils::arrayToIndexed($result);
+  // }
+  // public static function LoadGroupList_NotArchieved($user){
+  //   $result = DB::select('select * from ' . env('TB_BUD_GROUPS') . ' where user = :user AND archieved = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+  //   return Utils::arrayToIndexed($result);
+  // }
+  // public static function LoadGroupList_Archieved($user){
+  //   $result = DB::select('select * from ' . env('TB_BUD_GROUPS') . ' where user = :user AND archieved = 1 ORDER BY ordered ASC', ['user' => $user, ]);
+  //   return Utils::arrayToIndexed($result);
+  // }
 
 /* ----------------------- get totals ------------------------ */
   public static function LoadAllTotals($user, $startmonth, $lastmonth, $accounts){
@@ -295,9 +309,10 @@ class BudgerMain extends BaseController
     if (is_array($accounts)){
       $accounts = Utils::arrayToCommaSeparated($accounts);
     }
-    $result = DB::select('select * from ' . env('TB_BUD_EVENTS') . ' where user = :user AND is_removed = 0 AND account IN (' . 
-    $accounts . ') AND date_in BETWEEN ' . $startmonth . ' AND ' . $lastmonth . ' ORDER BY ordered ASC', ['user' => $user, ]);
-    return Utils::arrayToIndexed($result);
+    $result = null;
+    // $result = DB::select('select * from ' . env('TB_BUD_EVENTS') . ' where user = :user AND is_removed = 0 AND account IN (' . 
+    // $accounts . ') AND date_in BETWEEN ' . $startmonth . ' AND ' . $lastmonth . ' ORDER BY ordered ASC', ['user' => $user, ]);
+    //return Utils::arrayToIndexed($result);
     // $db = parent::getDbo();
     // $query = $db->getQuery(true);
     // $query->select('*');

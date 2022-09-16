@@ -616,7 +616,7 @@ public static function renderGroupContainer($id, $name, $masterColor, $icon, $it
     $id = "__NEWGROUP__";
   }
 
-  $result  = "<div class='catBox uk-first-column' style='' id='" . $id . "' data-order='" . $order . "'>
+  $result  = "<div class='catBox uk-first-column type_exp' data-color='' style='' id='" . $id . "' data-order='" . $order . "'>
   <h4>
   <span class='uk-icon-link uk-sortable-handle uk-icon' uk-icon='move' style='user-select: none;'>
   <svg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>

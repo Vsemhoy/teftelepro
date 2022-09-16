@@ -44,14 +44,17 @@ class Input
   //const RAW              = FILTER_UNSAFE_RAW;
 
 
-  public static function filterMe($filter, $input)
+  public static function filterMe($filter, $input, $length = 0)
   {
     if ($filter == 'INT')
     {
       return self::INT($input);
     }
-    elseif ($filter == 'STRING')
+    elseif ($filter == 'STRING' || $filter == 'TEXT')
     {
+      if ($length != 0){
+        return substr( self::STRING($input), 0 , $length);
+      }
       return self::STRING($input);
     }
     elseif ($filter == 'RAW')
