@@ -10301,29 +10301,32 @@ h3 {
   margin-left: 60px;
 }
 
-.btn-collapse, .btn-addItem, .btn-colorize {
+.btn-collapse, .btn-addItem, .btn-colorize, .btn-remove, .btn-archieve {
   float: right;
-  background: white;
   padding-bottom: 3px;
-  outline: 1px dotted #cbcbcb;
   padding-left: 6px;
   color: #2a2a2a;
   padding-right: 6px;
-  box-shadow: 1px 2px 6px #c7c7c7;
   cursor: pointer;
   font-size: smaller;
   letter-spacing: 1px;
   margin-right: 6px;
 }
 
-.btn-collapse:hover, .btn-addItem:hover, .btn-colorize:hover {
-  background: rgb(238, 238, 238);
-  box-shadow: 1px 5px 6px #919191;
+.btn-remove, .btn-archieve {
+  opacity: 0;
 }
 
-.btn-collapse:active, .btn-addItem:active, .btn-colorize:active {
-  background: rgb(212, 212, 212);
-  box-shadow: 1px 1px 4px #bebebe;
+.catBox:hover .btn-remove, .catBox:hover .btn-archieve {
+  opacity: 1;
+}
+
+.btn-collapse:hover, .btn-addItem:hover, .btn-colorize:hover, .btn-remove:hover, .btn-archieve:hover {
+  color: rgb(0, 77, 179);
+}
+
+.btn-collapse:active, .btn-addItem:active, .btn-colorize:active, .btn-remove:active, .btn-archieve:active {
+  color: rgb(0, 43, 100);
 }
 
 .collapsed {
@@ -10542,6 +10545,30 @@ h3 {
 }
 .archieved-list .card-box .archieved {
   display: block !important;
+}
+
+.type_exp {
+  border-left: rgba(255, 0, 76, 0.23) 4px solid;
+}
+.type_exp .uk-card {
+  border-left: rgba(255, 0, 76, 0.23) 5px solid;
+  border-radius: 5px;
+}
+
+.type_inc {
+  border-left: rgba(0, 175, 14, 0.3) 6px solid;
+}
+.type_inc .uk-card {
+  border-left: rgba(0, 175, 14, 0.3) 5px solid;
+  border-radius: 5px;
+}
+
+.type_trn {
+  border-left: rgba(0, 162, 175, 0.5) 2px solid;
+}
+.type_trn .uk-card {
+  border-left: rgba(0, 162, 175, 0.5) 5px solid;
+  border-radius: 5px;
 }
 
 /*# sourceMappingURL=uikit.css.map */

@@ -602,7 +602,7 @@ public static function renderEventModal()
 }
 
 // masterColor can be null, Icon can be null, and Items can be null, but need an array
-public static function renderGroupContainer($id, $name, $masterColor, $icon, $items, $order = 0) 
+public static function renderGroupContainer($id, $name, $masterColor, $icon, $items, $type = 2, $order = 0) 
 {
   $iterator = 0;
   if (isset($items) && count($items) > 0){ $iterator = count($items); };
@@ -615,8 +615,19 @@ public static function renderGroupContainer($id, $name, $masterColor, $icon, $it
   } else {
     $id = "__NEWGROUP__";
   }
+  $classType = 'type_exp';
+  if ($type == 1){
+    $classType = 'type_inc';
+  } else if ($type == 2){
+    
+    $classType = 'type_exp';
+  } else if ($type == 3){
+    $classType = 'type_trn';
+    
+  }
 
-  $result  = "<div class='catBox uk-first-column type_exp' data-color='' style='' id='" . $id . "' data-order='" . $order . "'>
+  $result  = "<div class='catBox uk-first-column " . $classType . "' data-type='" . $type . "' 
+  data-color='' style='' id='" . $id . "' data-order='" . $order . "'>
   <h4>
   <span class='uk-icon-link uk-sortable-handle uk-icon' uk-icon='move' style='user-select: none;'>
   <svg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
@@ -624,9 +635,32 @@ public static function renderGroupContainer($id, $name, $masterColor, $icon, $it
     </polygon><polygon points='1,16 2,16 2,18 4,18 4,19 1,19'></polygon><polygon points='14,16 14,19 11,19 11,18 13,18 13,16'></polygon><rect fill='none' stroke='#000' x='5.5' y='1.5' width='13' height='13'></rect><rect x='1' y='11' width='1' height='3'></rect><rect x='6' y='18' width='3' height='1'></rect></svg></span>  
   <span class='groupname'>" . $name . "</span> 
   <span class='uk-text-muted counts'>[" . $iterator . "]</span>
-  <span class='btn-colorize' uk-toggle='target: #modal-example'>colorize</span>
-  <span class='btn-collapse'>collapse</span>
-  <span class='btn-addItem'>create one<span>
+<!--  <span class='btn-colorize' uk-toggle='target: #modal-example'>colorize</span> -->
+<span class='btn-remove' title='remove group'><span uk-icon='trash'></span></span>
+<span class='btn-archieve' title='toggle archieve group'><span uk-icon='lock'></span></span>
+
+  <div class='btn-colorize'>
+  <div uk-form-custom='target: true'>
+      <select class='typeChanger'>
+          <option 
+          ";
+          if ($type == 1){   $result .= "selected "; };
+          $result .= "value='1'>Incom</option>
+          <option 
+          ";
+          if ($type == 2){   $result .= "selected "; };
+          $result .= "value='2'>Expense</option>
+          <option 
+          ";
+          if ($type == 3){   $result .= "selected "; };
+          $result .= "value='3'>Transfer</option>
+      </select>
+      <span></span>
+  </div>
+</div>
+
+  <span class='btn-collapse' title='toggle collapse'><span uk-icon='shrink'></span></span>
+  <span class='btn-addItem' title='add new item'><span uk-icon='plus'></span><span>
 </span></span></h4>
       <div uk-sortable='group: sortable-group' class='uk-sortable uk-sortable-empty' style=''>";
       if ($iterator != 0){

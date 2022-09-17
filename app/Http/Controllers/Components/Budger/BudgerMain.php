@@ -232,10 +232,10 @@ class BudgerMain extends BaseController
   }
 
 
-  // public static function LoadGroupList_ALL_keyId($user){
-  //   $result = DB::select('select * from ' . env('TB_BUD_GROUPS') . ' where user = :user AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
-  //   return Utils::arrayToIndexed($result);
-  // }
+  public static function LoadCategoryList_ALL_keyId($user){
+    $result = DB::select('select * from ' . env('TB_BUD_CATEGORIES') . ' where user = :user ORDER BY ordered ASC', ['user' => $user, ]);
+    return Utils::arrayToIndexed($result);
+  }
   // public static function LoadGroupList_NotArchieved($user){
   //   $result = DB::select('select * from ' . env('TB_BUD_GROUPS') . ' where user = :user AND archieved = 0 ORDER BY ordered ASC', ['user' => $user, ]);
   //   return Utils::arrayToIndexed($result);

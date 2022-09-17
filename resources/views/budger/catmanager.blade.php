@@ -25,8 +25,12 @@
     //$com = Controller::getComponent('budger');
     //$cont = new BudgerMain($user->id);
     $BM = new BudgerMain();
-    $list = $BM->LoadGroupList_ALL_keyId($user->id);
-    print_r($list);
+
+    $groups = null;
+    if ($user != null){
+      $groups = $BM->LoadGroupList_ALL_keyId($user->id);
+      $categs = $BM->LoadCategoryList_ALL_keyId($user->id);
+    }
     ?>
 <div class="uk-section uk-section-primary uk-padding-small">
     <div class="uk-container uk-container-small uk-light">
@@ -49,27 +53,31 @@
 <div class="uk-child-width-1-1 not-archieved-list" uk-grid  uk-sortable="handle: .uk-sortable-handle"  id="domContainer">
 
 <?php
-foreach ($list AS $key => $value)
-{
-  echo BudgerTemplates::renderGroupContainer($key, $value->name, null, null, null);
-}
+if ($user != null){
 
-// $items = [];
-// array_push($items, BudgerTemplates::renderGroupItem("rand", "dfDDDSSF pasta gora", "", ""));
-// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
-// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA FDS gora", "", ""));
-// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
-// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA pasta gora", "", ""));
-//  echo BudgerTemplates::renderGroupContainer("rand", "Hero Wooo", null, null, $items); ?>
-    
-//     <?php
-// $items = [];
-// array_push($items, BudgerTemplates::renderGroupItem("rand", "fasdf pasta gora", "", ""));
-// array_push($items, BudgerTemplates::renderGroupItem("rand", "GGDFDF pasta gora", "", ""));
-// array_push($items, BudgerTemplates::renderGroupItem("rand", "fdsahgah pasta gora", "", ""));
-// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA DFD gora", "", ""));
-// array_push($items, BudgerTemplates::renderGroupItem("rand", "ANNA DF gora", "", ""));
-//  echo BudgerTemplates::renderGroupContainer("rand", "Hero Wooo", null, null, $items); 
+  foreach ($groups AS $key => $value)
+  {
+    $groupId =  $value->id;
+    $items = [];
+    foreach ($categs AS $keyq => $volk)
+    {
+      if ($volk->grouper == $groupId){
+        $row = BudgerTemplates::renderGroupItem($volk->id, $volk->name, $volk->color, $volk->archieved, $volk->ordered);
+        array_push($items, $row);
+      }
+    }
+
+    echo BudgerTemplates::renderGroupContainer($key, $value->name, $value->color, null, $items, $value->type, $value->ordered);
+  }
+}
+else {
+  ?>
+<div class="uk-alert-danger" uk-alert>
+    <a class="uk-alert-close" uk-close></a>
+    <p>You are not logged in!</p>
+</div>
+  <?php 
+};
  ?>
     </div>
 </div>
@@ -122,11 +130,13 @@ function DOM() {
 
   let collapseTriggers = document.querySelectorAll(".btn-collapse");
   let addItemTriggers = document.querySelectorAll(".btn-addItem");
+  let removeGroupTriggers = document.querySelectorAll(".btn-remove");
 
   let groupNames = document.querySelectorAll(".groupname");
   let categoryNames = document.querySelectorAll(".cardName");
   let cardBoxes = document.querySelectorAll(".card-box");
   let menuTrigger = document.querySelectorAll(".itemMenu");
+  let typeChanger = document.querySelectorAll(".typeChanger");
   let domContainer = document.querySelector("#domContainer").innerHTML;
   let groupOrderString = "";
   let groupContainer = "";
@@ -148,8 +158,7 @@ function DOM() {
       {
         collapseTriggers[i].parentNode.parentNode.classList.remove("collapsed");
       }
-      setTimeout(() => {
-        }, 500);
+
     });
   }
 
@@ -176,6 +185,7 @@ function DOM() {
         groupNames[i].classList.add("edited");
         groupNames[i].innerHTML = block;
         let tg =  document.querySelector("#newGroupName");
+        let element = groupNames[i].parentNode.parentNode;
         tg.focus();
         tg.addEventListener("focusout", function(){
           if (tg != null){
@@ -184,6 +194,7 @@ function DOM() {
           tg.parentNode.classList.remove("edited");
           tg.remove();
           groupNames[i].innerHTML = text.trim();
+          UpdateGroupName(text, element);
         }
         });
         tg.addEventListener("keyup", function(e){
@@ -193,10 +204,10 @@ function DOM() {
               groupNames[i].parentNode.classList.remove("group-edited");
               tg.parentNode.classList.remove("edited");
               // tg.remove();
-              let element = groupNames[i].parentNode.parentNode;
-              UpdateGroupName(text, element);
+              
               if (text == ""){ text = "No name";}
               groupNames[i].innerHTML = text.trim();
+              UpdateGroupName(text, element);
             };
           };
         });
@@ -206,6 +217,7 @@ function DOM() {
   
   for (let i = 0 ; i < categoryNames.length; i++){
     categoryNames[i].addEventListener("dblclick", function(elem){
+      let id = categoryNames[i].parentNode.parentNode.id;
       let text = categoryNames[i].innerHTML;
       let block = "<input type='text' maxlength='32' id='newCategoryName' class='group-name-editor' value='" + text + "'/> "
       if (categoryNames[i].classList.contains("edited"))
@@ -225,6 +237,7 @@ function DOM() {
           tg.remove();
           if (text == ""){ text = "No name";}
           categoryNames[i].innerHTML = text.trim();
+          updateNameOfItem(id, text);
         }
         });
         tg.addEventListener("keyup", function(e){
@@ -235,6 +248,7 @@ function DOM() {
               // tg.remove();
               if (text == ""){ text = "No name";}
               categoryNames[i].innerHTML = text.trim();
+              updateNameOfItem(id, text);
             };
           };
         });
@@ -294,6 +308,7 @@ function DOM() {
 
   for (let i = 0 ; i < cardBoxes.length; i++){
   cardBoxes[i].addEventListener('mouseout', function(){
+    let counter = 0;
     if (groupContainer == ""){
       groupContainer = cardBoxes[i].parentNode.parentNode.innerHTML;
       return;
@@ -304,8 +319,11 @@ function DOM() {
       // Handle Items moving 
       if (groupContainer != cardBoxes[i].parentNode.parentNode.innerHTML){
         // Do if container's boxes order changed
-        reorderItems(cardBoxes[i].parentNode.parentNode);
-        groupContainer = cardBoxes[i].parentNode.parentNode.innerHTML;
+        if (counter == 0){
+          reorderItems(cardBoxes[i].parentNode.parentNode);
+          groupContainer = cardBoxes[i].parentNode.parentNode.innerHTML;
+          counter++;
+        }
       }
       let categoryBoxes = document.querySelectorAll('.catBox');
       let groupOrderString = "";
@@ -318,8 +336,44 @@ function DOM() {
 };
 
 
+  for (let i = 0; i  < typeChanger.length; i++){
+    typeChanger[i].addEventListener('change', function(elem){
+      let body = typeChanger[i].parentNode.parentNode.parentNode.parentNode;
+      body.setAttribute('data-type', typeChanger[i].value);
+      if (typeChanger[i].value == 1){
+        body.classList.remove('type_trn');
+        body.classList.remove('type_exp');
+        body.classList.add('type_inc');
+      } else if (typeChanger[i].value == 2){
+        body.classList.remove('type_trn');
+        body.classList.remove('type_inc');
+        body.classList.add('type_exp');
+      } else if (typeChanger[i].value == 3){
+        body.classList.remove('type_exp');
+        body.classList.remove('type_inc');
+        body.classList.add('type_trn');
+      } 
+      let groupOrderString = "";
+      saveGroupOrder(groupOrderString);
+      reorderItems(body);
+    })
+  }
 
 
+  for (let i = 0; i < removeGroupTriggers.length; i++){
+    removeGroupTriggers[i].addEventListener("click", function(){
+      group = removeGroupTriggers[i].parentNode.parentNode;
+      items = group.querySelectorAll('.card-box');
+      if (items.length > 0){
+
+        alert("Before do this, you must remove or transfer all containing items");
+      }
+      else 
+      {
+        removeGroup(group);
+      }
+    })
+  }
 
   // Array.from(doubleTriggers).forEach(i => i.addEventListener("dblclick", function(i){
   //   openEventModal(i);
@@ -334,6 +388,14 @@ function DOM() {
     let outFormat = "number";
     let block = document.querySelector("#__NEWITEM__");
     block.classList.add("temper");
+
+    let parent = block.parentNode.parentNode;
+    let type = parent.getAttribute('data-type');
+    let archieved = 0;
+    if (parent.classList.contains('archieved')){
+      archieved = 1;
+    }
+    let group = parent.id;
 //    setTimeout(() => {   }, 5000);
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -342,11 +404,12 @@ function DOM() {
           block.remove();
           return 0;
         };
+        console.log(this.responseText);
         block.classList.remove("temper");
         block.setAttribute('id','item_' + this.responseText);
         setTimeout(() => {
           reorderItems(block.parentNode.parentNode);
-        }, 100);
+        }, 30);
       }
       else if (this.status > 200)
       {
@@ -365,19 +428,28 @@ function DOM() {
     let data = {};
     data.code = requestCode;
     data.name = "New item";
+    data.archieved = archieved;
+    data.type = type;
+    data.group = group;
     xhttp.send(JSON.stringify(data));
+
   }
+
 
 
   // Save data if items reordered
   function reorderItems(container)
   {
-    console.log("reorderee");
+    //console.log("reorderee");
     // if (eventBlock == true){ return; }
+    let counter = 0;
     let objects = [];
     let items = container.querySelectorAll('.uk-sortable')[0].querySelectorAll(".card-box");
     if (items.length > 0){
       let parentId = items[0].parentNode.parentNode.id;
+      let type = items[0].parentNode.parentNode.getAttribute('data-type');
+      let archieved = 0;
+      if (items[0].parentNode.parentNode.classList.contains("archieved")){ archieved = 1 ;}
       //alert(container.id);
       for (let i = 0; i < items.length; i++){
         //alert(items[i].id);
@@ -385,21 +457,24 @@ function DOM() {
         items[i].setAttribute('data-order', i + 1);
         object.id = (items[i].id).replace(/\D/g, '');
         object.group = parentId;
+        object.type = type;
+        object.archieved = archieved;
         object.name = items[i].querySelectorAll(".cardName")[0].innerHTML;
         object.order = i + 1;
         objects.push(object);
       }
       // AJAX 
-      let requestCode = 201;
+      let requestCode = 120;
       let outFormat = "number";
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
+          //console.log(this.responseText);
           if (this.responseText == -1){ 
             alert("You are not registered!");
             return 0;
           } else if (this.responseText == 0){
-            alert("Restricted process!");
+            console.log("Reorder items code 0");
             return 0;
            } else {
             // ok, moved
@@ -411,7 +486,6 @@ function DOM() {
         {
           if (counter < 1){
             alert("Oops! There is some problems with the server connection.");
-            block.remove();
             counter++;
           }
         }
@@ -438,14 +512,13 @@ function DOM() {
         if (this.responseText == -1){ alert("You are not registered!");
           return 0;
         };
-        alert(this.responseText);
+        console.log(this.responseText);
         return 1;
       }
       else if (this.status > 200)
       {
         if (counter < 1){
           alert("Oops! There is some problems with the server connection.");
-          block.remove();
           counter++;
         }
       }
@@ -473,10 +546,44 @@ function DOM() {
  
 
 
+
+  function updateNameOfItem(id, text){
+    counter = 0;
+    let requestCode = 131;
+    let outFormat = "number";
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          return 0;
+        };
+        console.log(this.responseText);
+        return 1;
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
+   data = {};
+   data.name = text;
+   data.id = id;
+    data.code = requestCode;
+    xhttp.send(JSON.stringify(data));
+  }
+
   // Remove Item from DATABASE
   function removeItem(itemId){
     let counter = 0;
-    let requestCode = 901;
+    let requestCode = 191;
     let outFormat = "number";
     let block = document.querySelector("#item_" + itemId);
     block.classList.add("temper");
@@ -488,7 +595,10 @@ function DOM() {
           alert("You cannot remove this item!");
           block.classList.remove("temper");
           return 0;
-        };
+        } else if (this.responseText == 0){
+
+          alert("Detach all attached events before removing");
+        }
           let parent = block.parentNode.parentNode;
           block.remove();
           //reorderItems(parent);
@@ -520,7 +630,7 @@ function DOM() {
     let requestCode = 911;
     let outFormat = "number";
     let block = document.querySelector("#item_" + itemId);
-    alert(itemId);
+    //alert(itemId);
     block.classList.add("temper");
 //    setTimeout(() => {   }, 5000);
     var xhttp = new XMLHttpRequest();
@@ -589,6 +699,47 @@ function DOM() {
     // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+    let data = {};
+    data.code = requestCode;
+    data.id = itemId;
+    xhttp.send(JSON.stringify(data));
+  }
+
+
+  function removeGroup(block){
+    let counter = 0;
+    let requestCode = 193;
+    let outFormat = "number";
+    block.classList.add("temper");
+    itemId = block.id;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ 
+          alert("You cannot remove this item!");
+          block.classList.remove("temper");
+          return 0;
+        } else if (this.responseText == 0){
+
+          alert("Detach all attached categories before removing this");
+        }
+          block.remove();
+          //reorderItems(parent);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.classList.remove("temper");
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, true);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
     let data = {};
     data.code = requestCode;
     data.id = itemId;
@@ -664,7 +815,7 @@ function DOMmanager(){
             groupOrderString += categoryBoxes[y].id;
           };
           saveGroupOrder(groupOrderString);
-        }, 1000);
+        }, 300);
         DOMreload
 
       }
@@ -690,7 +841,6 @@ function DOMmanager(){
 
   
 
-
 }
 
 
@@ -713,10 +863,12 @@ function refreshCounters(){
             for (let y = 0; y < ctb.length; y++){
               lastGroupOrder += ctb[y].id;
             };
-function saveGroupOrder(string){ 
-  console.log(string);
-  console.log(lastGroupOrder);
 
+
+function saveGroupOrder(string){ 
+  //console.log(string);
+  //console.log(lastGroupOrder);
+  let counter = 0;
     if (string != lastGroupOrder){
       lastGroupOrder = string;
       let categoryBoxes = document.querySelectorAll(".catBox");
@@ -727,10 +879,47 @@ function saveGroupOrder(string){
         object.id = categoryBoxes[y].id;
         object.name = categoryBoxes[y].querySelectorAll('.groupname')[0].innerHTML;
         object.order = y + 1;
+        object.archieved = 0;
+        if (categoryBoxes[y].classList.contains('archieved')){
+          object.archieved = 1;
+        }
+        object.type = categoryBoxes[y].getAttribute('data-type');
         data.push(object);
+        categoryBoxes[y].setAttribute('data-order', y + 1);
       };
 
-      console.log(JSON.stringify(data) + " CALLED saveGroupOrder");
+      let requestCode = 121;
+      let outFormat = "number";
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          //console.log(this.responseText);
+          if (this.responseText == -1){ 
+            alert("You are not registered!");
+            return 0;
+          } else if (this.responseText == 0){
+            console.log("Items reordered");
+            return 0;
+           } else {
+            // ok, moved
+            console.log(this.responseText + "reordered");
+            
+           }
+        }
+        else if (this.status > 200)
+        {
+          if (counter < 1){
+            alert("Oops! There is some problems with the server connection. e");
+            counter++;
+          }
+        }
+      };
+      xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, true);
+      // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+      xhttp.send(JSON.stringify(data));
+      //console.log(JSON.stringify(data) + " CALLED saveGroupOrder");
       DOMreload();
       
     }

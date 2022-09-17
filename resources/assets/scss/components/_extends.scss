@@ -77,27 +77,33 @@ top: 0px;
 //   height: calc(100vh - 40px);
 //   box-shadow: rgb(0 54 108 / 70%) 0px 0px 200px inset;
 // }
-.btn-collapse, .btn-addItem, .btn-colorize {
+.btn-collapse, .btn-addItem, .btn-colorize, .btn-remove, .btn-archieve {
   float: right;
-  background: white;
+
   padding-bottom: 3px;
-  outline: 1px dotted #cbcbcb;
+
   padding-left: 6px;
   color: #2a2a2a;
   padding-right: 6px;
-  box-shadow: 1px 2px 6px #c7c7c7;
+
   cursor: pointer;
   font-size: smaller;
   letter-spacing: 1px;
   margin-right: 6px;
 }
-.btn-collapse:hover, .btn-addItem:hover, .btn-colorize:hover {
-  background: rgb(238, 238, 238);
-  box-shadow: 1px 5px 6px #919191;
+.btn-remove, .btn-archieve {
+  opacity: 0;
 }
-.btn-collapse:active, .btn-addItem:active, .btn-colorize:active {
-  background: rgb(212, 212, 212);
-  box-shadow: 1px 1px 4px #bebebe;
+.catBox:hover {
+  .btn-remove, .btn-archieve {
+    opacity: 1;
+  }
+}
+.btn-collapse:hover, .btn-addItem:hover, .btn-colorize:hover, .btn-remove:hover, .btn-archieve:hover {
+  color: rgb(0, 77, 179);
+}
+.btn-collapse:active, .btn-addItem:active, .btn-colorize:active, .btn-remove:active, .btn-archieve:active {
+  color: rgb(0, 43, 100);
 }
 
 .collapsed {
@@ -308,5 +314,27 @@ background-size: 5.66px 5.66px;
   }
   .archieved{
     display: block !important;
+  }
+}
+
+.type_exp {
+  border-left: rgb(255 0 76 / 23%) 4px solid;
+  .uk-card {
+    border-left: rgb(255 0 76 / 23%) 5px solid;
+    border-radius: 5px;
+  }
+}
+.type_inc {
+  border-left: rgb(0 175 14 / 30%) 6px solid;
+  .uk-card {
+    border-left: rgb(0 175 14 / 30%) 5px solid;
+    border-radius: 5px;
+  }
+}
+.type_trn {
+  border-left: rgb(0 162 175 / 50%) 2px solid;
+  .uk-card {
+    border-left: rgb(0 162 175 / 50%) 5px solid;
+    border-radius: 5px;
   }
 }

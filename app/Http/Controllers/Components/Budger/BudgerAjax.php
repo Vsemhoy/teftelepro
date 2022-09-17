@@ -69,6 +69,11 @@ class BudgerAjax extends BaseController
       return self::reorderCategoriesInRow($data, $user);
     }
     
+
+    if ($code == 121){
+      // returns number -1 if not success, 1 if success
+      return self::reorderGroups($data, $user);
+    }
     
     /// ------- ENDOF REORDER ITEMS ------------ ///
 
@@ -103,6 +108,13 @@ class BudgerAjax extends BaseController
       // returns number -1 if not success, 1 if success
       return self::restoreCategoryItem($data, $user);
     }
+
+
+    if ($code == 193) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::removeGroup($data, $user);
+    }
     /// ------- ENDOF REMOVE ITEMS ------------ ///
 
 
@@ -127,20 +139,93 @@ class BudgerAjax extends BaseController
     return $newId;
   }
   
+  // CODE 101
   public static function  saveNewCategory($json, $user)
   {
-    return rand(1000000,32000000);
-    
+    $name   = Input::filterMe("STRING", $json->name, 64 );
+    $group  = Input::filterMe("INT", $json->group );
+    $type   = Input::filterMe("INT", $json->type );
+    $archieved  =  Input::filterMe("INT", $json->archieved );
+
+
+    $newId  = DB::table(env('TB_BUD_CATEGORIES'))->insertGetId(
+      ['name' => $name,
+      'user' => $user->id,
+      'type' => $type,
+      'archieved' => $archieved, 
+      'grouper'  => $group
+      ]
+    );
+    return $newId; 
   }
 
   // CODE 120
   public static function  reorderCategoriesInRow($json, $user)
   {
     //return($json[0]);
-    return "MOVED!";
-    return rand(1000000,32000000);
-    
+    //return "MOVED! catinrow ";
+    $affected;
+    if (count($json) > 0)
+    {
+      foreach ($json AS $data){
+        $name       = Input::filterMe("STRING", $data->name, 64 );
+        $group      = Input::filterMe("INT", $data->group );
+        $type       = Input::filterMe("INT", $data->type );
+        $id         = Input::filterMe("INT", $data->id );
+        $order         = Input::filterMe("INT", $data->order );
+        $archieved  = Input::filterMe("INT", $data->archieved );
+
+        $affected = DB::table(env('TB_BUD_CATEGORIES'))
+        ->where('id', $id)
+        ->where('user', $user->id)
+        ->update([
+            'name' => $name,
+            'type' => $type,
+            'ordered' => $order,
+            'grouper' => $group,
+            'archieved' => $archieved
+        ]);
+      }
+    }
+    if (!empty($affected)){
+      return 1;
+    } else {
+      return 0;
+    }
   }
+  // CODE 121
+  public static function  reorderGroups($json, $user)
+  {
+    //return($json);
+    $affected;
+    if (count($json) > 0)
+    {
+      foreach ($json AS $data){
+       // $name       = Input::filterMe("STRING", $data->name, 64 );
+        $type       = Input::filterMe("INT", $data->type );
+        $id         = Input::filterMe("INT", $data->id );
+        $order      = Input::filterMe("INT", $data->order );
+        $archieved  = Input::filterMe("INT", $data->archieved );
+
+        $affected = DB::table(env('TB_BUD_GROUPS'))
+        ->where('id', $id)
+        ->where('user', $user->id)
+        ->update([
+            'type' => $type,
+            'ordered' => $order,
+            'archieved' => $archieved
+        ]);
+      }
+    }
+    if (!empty($affected)){
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+
+
 
   // CODE 130
   public static function  renameCategoryGroup($json, $user)
@@ -151,6 +236,7 @@ class BudgerAjax extends BaseController
     $color = Input::filterMe("STRING", $json->color, 12 );
     $type = Input::filterMe("INT", $json->type );
     $archieved = Input::filterMe("INT", $json->archieved );
+    if ($name == ""){ $name = "empty name";};
     $affected = DB::table(env('TB_BUD_GROUPS'))
     ->where('id', $id)
     ->where('user', $user->id)
@@ -158,19 +244,51 @@ class BudgerAjax extends BaseController
         'name'          => $name,
         'color'         => $color,
         'type'          => $type,
-        'is_archieved'  => $archieved
+        'archieved'  => $archieved
     ]);
     if (!empty($affected)){
       return 1;
     } else {
-      return -1;
+      return 0;
     }
   }
 
+  // CODE 131
+  public static function  renameCategory($json, $user)
+  {
+    //return($user->id);
+    $id   = Input::filterMe("INT", $json->id );
+    $name = Input::filterMe("STRING", $json->name, 64 );
+    if ($name == ""){ $name = "empty name";};
+    //return($name);
+      $affected = DB::table(env('TB_BUD_CATEGORIES'))
+      ->where('id', $id)
+      ->where('user', $user->id)
+      ->update([
+          'name' => $name //, 'type' => '2', 'ordered' => '1' //, 'grouper' => '1' 
+      ]);
+      
+      return $affected;
+      if (!empty($affected)){
+        return 1;
+      } else {
+        return 0;
+      }
+  }
+
+
   public static function  removeCategoryItem($json, $user)
   {
-    return "REMOVED!";
+    $id   = Input::filterMe("INT", $json->id );
+    $item = DB::table(env('TB_BUD_EVENTS'))->where('category', $id)->where('user', '=', $user->id )->first();
     // Check if there any attached events. If not, remove;
+    if (!empty($item)){
+      return 0;
+    }
+    else {
+      $deleted = DB::table(env('TB_BUD_CATEGORIES'))->where('id', '=', $id )->where('user', '=', $user->id )->delete();
+      return 1;
+    }
   }
 
   public static function  archieveCategoryItem($json, $user)
@@ -183,5 +301,20 @@ class BudgerAjax extends BaseController
   {
     return "RESTORED TOT!";
     // Check if there any attached events. If not, remove;
+  }
+
+  // CODE 193
+  public static function  removeGroup($json, $user)
+  {
+    $id   = Input::filterMe("INT", $json->id );
+    $item = DB::table(env('TB_BUD_CATEGORIES'))->where('grouper', $id)->where('user', '=', $user->id )->first();
+    // Check if there any attached events. If not, remove;
+    if (!empty($item)){
+      return 0;
+    }
+    else {
+      $deleted = DB::table(env('TB_BUD_GROUPS'))->where('id', '=', $id )->where('user', '=', $user->id )->delete();
+      return 1;
+    }
   }
 }
