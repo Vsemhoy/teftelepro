@@ -18,7 +18,7 @@ top: 0px;
 
 .nav-rail {
   position: fixed;
-  
+  z-index: 9;
   transition: all ease 0.3s;
   padding: 0px;
   opacity: 0;
@@ -337,4 +337,32 @@ background-size: 5.66px 5.66px;
     border-left: rgb(0 162 175 / 50%) 5px solid;
     border-radius: 5px;
   }
+}
+
+select {
+  .opt-header {
+    font-weight: bold;
+  }
+}
+
+.uk-margin-sm {
+  margin-bottom: 6px;
+}
+.uk-card-sm {
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+  background-color: white;
+}
+.itemTypeMarker {
+  padding: 12px;
+  font-size: small;
+}
+.uktm-1{
+  background: #3985d1;
+}
+.uktm-2{
+  background: #d68528;
+}
+.uktm-3{
+  background: #b82b2b;
 }

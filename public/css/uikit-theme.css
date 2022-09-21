@@ -2231,6 +2231,40 @@ select.uk-form-width-xsmall {
   color: #fff;
 }
 
+.uk-button-incom {
+  background-color: #2abf87;
+  color: #fff;
+}
+
+.uk-button-expense {
+  background-color: #e94676;
+  color: #fff;
+}
+
+.uk-button-transfer {
+  background-color: #00a2af;
+  color: #fff;
+}
+
+.uk-button-incom:hover {
+  background-color: #25a574;
+  color: #fff;
+}
+
+.uk-button-expense:hover {
+  background-color: #ca3e68;
+  color: #fff;
+}
+
+.uk-button-transfer:hover {
+  background-color: #0095a0;
+  color: #fff;
+}
+
+.uk-button-incom:active, .uk-button-expense:active, .uk-button-transfer:active {
+  box-shadow: inset 0px 0px 9px rgba(0, 0, 0, 0.32);
+}
+
 /* Hover */
 .uk-button-primary:hover {
   background-color: #0f7ae5;
@@ -8388,7 +8422,7 @@ iframe[data-uk-cover] {
  */
 [class*=uk-align] {
   display: block;
-  margin-bottom: 30px;
+  margin-bottom: 0px;
 }
 
 * + [class*=uk-align] {
@@ -10253,6 +10287,7 @@ h3 {
 
 .nav-rail {
   position: fixed;
+  z-index: 9;
   transition: all ease 0.3s;
   padding: 0px;
   opacity: 0;
@@ -10569,6 +10604,37 @@ h3 {
 .type_trn .uk-card {
   border-left: rgba(0, 162, 175, 0.5) 5px solid;
   border-radius: 5px;
+}
+
+select .opt-header {
+  font-weight: bold;
+}
+
+.uk-margin-sm {
+  margin-bottom: 6px;
+}
+
+.uk-card-sm {
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+  background-color: white;
+}
+
+.itemTypeMarker {
+  padding: 12px;
+  font-size: small;
+}
+
+.uktm-1 {
+  background: #3985d1;
+}
+
+.uktm-2 {
+  background: #d68528;
+}
+
+.uktm-3 {
+  background: #b82b2b;
 }
 
 /*# sourceMappingURL=uikit-theme.css.map */

@@ -466,7 +466,7 @@ function renderEditorZone(){
 }
 
 
-public static function renderEventModal()
+public static function renderEventModal($accounts = null, $categories = null)
 {
   $result = "<div id='modal_event' class='uk-flex-top' uk-modal>
   <div class='uk-modal-dialog uk-margin-auto-vertical'>
@@ -477,9 +477,9 @@ public static function renderEventModal()
   <div>
   <div>
     <div class='uk-button-group uk-column-1-3 uk-width-1-1' style='column-gap: 0px;'>
-        <button class='uk-button uk-button-primary uk-width-1-3'>Incom</button>
-        <button class='uk-button uk-button-danger uk-width-1-3'>Expense</button>
-        <button class='uk-button uk-button-secondary uk-width-1-3'>Transfer</button>
+        <button class='uk-button uk-button-incom uk-width-1-3'>Incom</button>
+        <button class='uk-button uk-button-expense uk-width-1-3'>Expense</button>
+        <button class='uk-button uk-button-transfer uk-width-1-3'>Transfer</button>
     </div>
   </div>
   </div>
@@ -525,10 +525,35 @@ public static function renderEventModal()
 
         <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Category of event'>
         <span class='small' >Category</span>
-          <select class='uk-select' id='tf_group' placeholder='Account'>
-              <option>Option 01</option>
-              <option>Option 02</option>
-          </select>
+          <select class='uk-select' id='tf_group' placeholder='Account'>";
+            if ($categories != null){
+              foreach ($categories AS $value){
+                if (!empty($value->data)){
+                  if ($value->archieved == 0){
+                    $result .= "<option class='opt-header' disabled>" . $value->name . "</option>";
+
+                  }
+  
+                  foreach ($value->data AS $dat)
+                  {
+                    $class = "";
+                    if ($dat->type == 1){
+                      $class = "opt-incom";
+                    } else if ($dat->type == 2){
+                      $class = "opt-expense";
+                    } else if ($dat->type == 3){
+                      $class = "opt-transfer";
+                    }
+                    if ($dat->archieved == 1){
+                      $class .= " opt-archieved";
+                    }
+                    $result .= "<option class='" . $class . "' data-type='" . $dat->type . "' value='" . $dat->id . "'>  " . $dat->name . "</option>";
+                  }
+
+                }
+              }
+            }
+          $result .= "</select>
       </div>
 
 
@@ -691,8 +716,8 @@ public static function renderGroupItem($id, $name, $color, $isArchieved, $order 
     $addClass .= " archieved hidden";
   }
 
-  $result = "<div class='uk-margin card-box' id='" . $id . "' " . $color . " data-order='" . $order . "'>
-  <div class='uk-card uk-card-default uk-card-body  uk-box-shadow-medium uk-card-small'>
+  $result = "<div class='uk-margin-sm card-box' id='" . $id . "' " . $color . " data-order='" . $order . "'>
+  <div class='uk-card uk-card-sm uk-card-body  uk-box-shadow-small uk-box-shadow-hover-medium uk-card-small'>
   <span class='cardName'>" . $name . "</span><div class='uk-align-right'>
   <span class='itemMenu '><span class='' uk-icon='settings'></span>
   </span></div>
@@ -712,6 +737,198 @@ public static function renderCategoryItemMenu(){
   </ul>
 </div>";
 return $result;
+}
+
+
+public static function renderAccountItemMenu(){
+  $result = "<div id='itemMenu' data-target='' class='uk-dropdown uk-open menu-inverted' style=''>
+  <ul class='uk-nav uk-dropdown-nav'>
+     <!-- <li><a href='' data-event='opensettings' class='btnChangeColor'>Change color</a></li> -->
+      <li  data-event='activate' ><a class=''>Toggle activate</a></li>
+      <li  data-event='archieve' ><a class=''>Not show in main</a></li>
+      <li  data-event='archieve' ><a class=''>Toggle archieve</a></li>
+      <li  data-event='remove'   ><a class=''>Remove forever</a></li>
+  </ul>
+</div>";
+return $result;
+}
+
+
+public static function renderAccountContainer($id, $name, $items, $order = 0) 
+{
+  $iterator = 0;
+  $cr = $id;
+  if (isset($items) && count($items) > 0){ $iterator = count($items); };
+  if ($id != ""){ 
+    if ($id == "rand") { 
+      $id = "group_" . rand(1000000,32000000);
+    } else {
+      $id = "group_" . $id; 
+    }
+  } else {
+    $id = "__NEWGROUP__";
+  }
+
+
+  $result  = "<div class='catBox uk-first-column' data-currency='" . $cr . "' 
+  data-color='' style='' id='" . $id . "' data-order='" . $order . "'>
+  <h4>
+  <span class='uk-icon-link uk-sortable-handle uk-icon' uk-icon='move' style='user-select: none;'>
+  <svg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
+    <polygon points='4,5 1,5 1,9 2,9 2,6 4,6'>
+    </polygon><polygon points='1,16 2,16 2,18 4,18 4,19 1,19'></polygon><polygon points='14,16 14,19 11,19 11,18 13,18 13,16'></polygon><rect fill='none' stroke='#000' x='5.5' y='1.5' width='13' height='13'></rect><rect x='1' y='11' width='1' height='3'></rect><rect x='6' y='18' width='3' height='1'></rect></svg></span>  
+  <span class='groupname'>" . $name . "</span> 
+  <span class='uk-text-muted counts'>[" . $iterator . "]</span>
+<!--  <span class='btn-colorize' uk-toggle='target: #modal-example'>colorize</span> -->
+<span class='btn-remove' title='remove group'><span uk-icon='trash'></span></span>
+<span class='btn-archieve' title='toggle archieve group'><span uk-icon='lock'></span></span>
+
+  <div class='btn-colorize'>
+  <div uk-form-custom='target: true'>
+      <select class='typeChanger'>
+          <option 
+          ";
+          // if ($type == 1){   $result .= "selected "; };
+          // $result .= "value='1'>Incom</option>
+          // <option 
+          // ";
+          // if ($type == 2){   $result .= "selected "; };
+          // $result .= "value='2'>Expense</option>
+          // <option 
+          // ";
+          // if ($type == 3){   $result .= "selected "; };
+          $result .= "value='3'>Transfer</option>
+      </select>
+      <span></span>
+  </div>
+</div>
+
+  <span class='btn-collapse' title='toggle collapse'><span uk-icon='shrink'></span></span>
+  <span class='btn-addItem' title='add new item'><span uk-icon='plus'></span><span>
+</span></span></h4>
+      <div uk-sortable='group: sortable-group' class='uk-sortable uk-sortable-empty' style=''>";
+      if ($iterator != 0){
+        foreach ($items AS $item)
+        {
+          $result .= $item;
+        }
+      }
+$result .= "      </div>
+  </div>";
+  return $result;
+}
+
+public static function renderAccountItem($id, $name, $type, $descr, $decimals, $order = 0, 
+$isArchieved = 0, $notshow = 0, $isactive = 0)
+{
+  $addClass = "";
+  if ($id == "rand"){ 
+    $id = "item_" . rand(1000000,32000000); 
+  } else if ($id != ""){
+    $id = "item_" . $id;
+  } else {
+    $id = "__NEWITEM__";
+  }
+  if ($name == "") { $name = "New item"; }
+  
+  if ($isArchieved == true){
+    $addClass .= " archieved hidden";
+  }
+
+  $result = "<div class='uk-margin-sm card-box' id='" . $id . "' data-order='" . $order . "'>
+  <div class='uk-card uk-card-sm uk-card-body accard uk-box-shadow-small uk-box-shadow-hover-medium uk-card-small'>
+  <span class='cardName'>" . $name . "</span><div class='uk-align-right'>
+  ";
+  if ($type == 1){
+    $result .= "<span class='itemTypeMarker uktm-1 uk-badge' >standard</span>";
+  } else   if ($type == 2){
+    $result .= "<span class='itemTypeMarker uktm-2 uk-badge'  >debt</span>";
+  } else   if ($type == 3){
+    $result .= "<span class='itemTypeMarker uktm-3 uk-badge' >credit</span>";
+  }
+  $result .= "
+  <span class='notshow d-none' title='Not showed in main list'><span uk-icon='ban'></span></span>
+  <span class='archieved' title='archieved account'><span uk-icon='lock'></span></span>
+  <span class='itemMenu '><span class='' uk-icon='settings'></span></span>
+  </div>
+    <div class='uk-card-body uk-padding-remove'>
+      <p>" . $descr . "</p>
+    </div>
+    </div>
+  </div>";
+  return $result;
+}
+
+public static function renderAccountModal($currencies)
+{
+  $result = "<div id='modal_account' class='uk-flex-top' uk-modal>
+  <div class='uk-modal-dialog uk-margin-auto-vertical'>
+  <button class='uk-modal-close-default' type='button' uk-close></button>
+  <div class='uk-modal-header'>
+      <h2 class='uk-modal-title'>Add new account</h2>
+  </div>
+
+  <div class='uk-modal-body'>
+    <form>
+    <fieldset class='uk-fieldset'>
+
+        <!--legend class='uk-legend'>Legend</legend -->
+
+        <div class='uk-margin uk-mb-0'>
+            <input class='uk-input' type='text' placeholder='Account name' id='tf_name'>
+        </div>
+
+        <div class='uk-margin uk-mb-0'>
+            <textarea class='uk-textarea' rows='7' placeholder='Description' id='tf_description'></textarea>
+        </div>
+
+        <div class='uk-margin uk-mb-0 uk-inline uk-width-1-1' title='Number of symbols after comma'>
+          <span class='uk-form-icon uk-form-icon' uk-icon='icon: database' ></span>
+          <input class='uk-input' type='number' min='0' max='8' placeholder='Number of digits after comma' inputmode='decimal' id='tf_decimal'>
+        </div>
+
+
+        <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Account'>
+          <span class='small' >Type of account</span>
+            <select class='uk-select' id='tf_acctype' placeholder='Account type'>
+                <option value='1'>Standard</option>
+                <option value='2'>Debt</option>
+                <option value='3'>Credit</option>
+            </select>
+        </div>
+
+
+        <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Category of event'>
+        <span class='small' >Currency identifier</span>
+          <select class='uk-select' id='tf_currency' placeholder='Account'>";
+            if ($currencies != null){
+              foreach ($currencies AS $dat){
+
+                $result .= "<option class='' data-literal='" . $dat->literals . "' value='" . $dat->id . "'>  " . $dat->literals . " " . $dat->name . "</option>";
+
+                
+              }
+            }
+          $result .= "</select>
+      </div>
+            <hr>
+      <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Visibility'>
+      <label><input class='uk-checkbox' id='tf_archieved' type='checkbox'> Archieved account</label>
+      </div>
+      <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Visibility'>
+      <label><input class='uk-checkbox' id='tf_hotshow' type='checkbox'> Not show in main page</label>
+      </div>
+    </fieldset>
+  </form>
+  </div>
+  <div class='uk-modal-footer uk-text-right'>
+      <button class='uk-button uk-button-default' id='btn_removeIt' type='button'>Remove</button>
+      <button class='uk-button uk-button-default uk-modal-close' type='button'>Cancel</button>
+      <button class='uk-button uk-button-primary' type='button'>Save</button>
+  </div>
+</div>
+</div>";
+  return $result;
 }
 
 };

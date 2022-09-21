@@ -27,7 +27,7 @@ $align-margin-horizontal-l:                      $global-medium-gutter !default;
 
 [class*='uk-align'] {
     display: block;
-    margin-bottom: $align-margin-vertical;
+    margin-bottom: 0px;
 }
 
 * + [class*='uk-align'] { margin-top: $align-margin-vertical; }

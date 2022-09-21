@@ -149,7 +149,7 @@ class BudgerController extends BaseController
       $menuItem5 = new SidemenuItem("Category Manager", false);
       $menuItem5->itemReference = route("budger.catmanager");
       $menuItem5->itemLetters = "GM";
-      $menuItem5->itemIcon = "bi-collection";
+      $menuItem5->itemIcon = "";
       $menuItem5->itemBadge = "";
       $menuItem5->itemClass = "";
       $menuItem5->badgeClass = "";

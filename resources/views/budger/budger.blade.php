@@ -5,6 +5,7 @@
     <?php
     use App\Http\Controllers\Controller;
     use App\Http\Controllers\Components\Budger\BudgerMain;
+    use App\Http\Controllers\Components\Budger\BudgerData;
     use App\Http\Controllers\Components\Budger\BudgerTemplates;
     use Illuminate\Foundation\Auth\User;
     // $routed = explode('.', Route::currentRouteName())[0];
@@ -109,7 +110,7 @@ Warning:  Undefined variable $urrentCurr in /home/host1334262/teftele.com/htdocs
   </div>
   </div>
 <?php
- echo BudgerTemplates::renderEventModal();
+ echo BudgerTemplates::renderEventModal(null, BudgerData::LoadGroupedCategories($user));
  ?>
 
 

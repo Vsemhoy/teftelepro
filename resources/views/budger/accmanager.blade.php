@@ -1,10 +1,83 @@
-@extends('bootstrap.default')
+<?php 
+    use App\Http\Controllers\Controller;
+    use App\Http\Controllers\Components\Budger\BudgerMain;
+    use App\Http\Controllers\Components\Budger\BudgerData;
+    use App\Http\Controllers\Components\Budger\BudgerTemplates;
+    use App\Http\Controllers\Common\Currency;
+    use Illuminate\Foundation\Auth\User;
+
+    $user = User::where('id', '=', session('LoggedUser'))->first();
+
+    $BD = new BudgerData();
+
+    $accounts = null;
+    $currencies = null;
+    if ($user != null){
+      $accounts = $BD->LoadAccountList($user->id);
+      $currencies = $BD->LoadCurrencies_keyId($user->id);
+    }
+?>
+@extends('Template.shell')
 
 @section('page-content')
-<?php 
-use App\Http\Controllers\Controller;
-$user = Controller::getUser();
+<style>
+  .catBox:first-child {
+    background: #e1effb;
+    border: 3px dotted #2196f3;
+    border-radius: 2px;
+    padding: 12px;
+  }
+  </style>
+<div class="uk-section uk-section-primary uk-padding-small">
+    <div class="uk-container uk-container-small uk-light">
+    <h3 class="uk-card-title uk-light text-white">Account manager: <span>active items</span></h3>
+    <p uk-margin>
+
+      <button class="uk-button uk-button-default" id='addGroupButton'>Add account</button>
+      <button class="uk-button uk-button-default" data-collapsed='false' id='collapesAllButton'>Collapse all</button>
+      <button class="uk-button uk-button-primary" >Show archieved</button>
+        
+      </p>
+    </div>
+</div>
+
+
+<div class="uk-section uk-section-default">
+    <div class="uk-container uk-container-small ">
+      <div class="uk-child-width-1-1 not-archieved-list" uk-grid  uk-sortable="handle: .uk-sortable-handle"  id="domContainer">
+
+      <?php
+      $currentCurr = 0;
+      if ($accounts != null){
+        $currentCurr = $accounts[0]->currency;
+        $accIts = [];
+        
+        foreach ($accounts AS $data)
+        {
+          if ($currentCurr != $data->currency){
+            echo BudgerTemplates::renderAccountContainer($currentCurr,
+             $currencies[$currentCurr]->literals, $accIts);
+            $accIts = [];
+          }
+          array_push($accIts, 
+          BudgerTemplates::renderAccountItem($data->id, $data->name, $data->type, $data->description,
+          $data->decimals, $data->ordered, $data->archieved, $data->notshow, $data->is_active));
+          $currentCurr = $data->currency;
+        }
+        echo BudgerTemplates::renderAccountContainer($currentCurr,
+        $currencies[$currentCurr]->literals, $accIts);
+      }
+      
 ?>
+  </div>
+  </div>
+  </div>
+
+<?php
+  echo BudgerTemplates::renderAccountModal(Currency::getCurrencyList());
+?>
+
+<?php /*
 <style>
    .list-group-item:hover {
  
@@ -160,13 +233,13 @@ endif;
    if ($user->guest){
     //$user->id = 0;
    }
-/* --- GET INSTALLED LANGUAGE LIST --- */
-$languages_obj = AccountModel::LoadLanguages($user->id); // look here
+//--- GET INSTALLED LANGUAGE LIST --- /
+$languages_obj = null // AccountModel::LoadLanguages($user->id); // look here
 //  FIRST HARVEST Currencies to arrange items into Currency-groups
 $curs = AccountModel::LoadCurrencies($user->id);
 //  Get amount of money by each account
-$amounts = AccountModel::LoadMoneyInAccountsToday($user->id);
-$menus   = AccountModel::LoadExistedMenus($user->id);
+$amounts null; //= AccountModel::LoadMoneyInAccountsToday($user->id);
+$menus  null;// = AccountModel::LoadExistedMenus($user->id);
 
 $accountcounter = 0; // LIMIT count of accounts for different user Groups
 $guestAccLimit  = 15;
@@ -706,7 +779,7 @@ var existed_currencies = [
     echo "'" . $value . "',";
   }; ?>
 ];
-   /* ---- DRAG N DROP HANDLERS ------------ */
+   // ---- DRAG N DROP HANDLERS ------------ //
    // 
 
 function allowDrop(ev) {
@@ -718,10 +791,10 @@ function drag(ev) {
 }
 
 function drop(ev) {
-/* 
-  ev.preventDefault();
-  var data = ev.dataTransfer.getData("text");
-  ev.target.appendChild(document.getElementById(data)); */
+/
+
+
+
   var sourceEventId = ev.dataTransfer.getData("text");
   let sourcecell  = $("#" + sourceEventId).parent();
   if ($(sourcecell).hasClass("accard-dragarea")){
@@ -1047,6 +1120,207 @@ var myModal2 = new bootstrap.Modal(document.getElementById('MenuWindow'), {
   keyboard: false
 });
 /* ---- DRAG N DROP HANDLERS END  ------------ */
-</script>
 
+?>
+@endsection
+
+@section('page-scripts')
+<script>
+var activeId = 0;
+
+function DOM(){
+  let cardBoxes = document.querySelectorAll(".card-box");
+  let groupContainer = "";
+  let accards = document.querySelectorAll('.accard');
+  let modalWindow = document.querySelector("#modal_account");
+  let menuTrigger = document.querySelectorAll(".itemMenu");
+
+
+  for (let i = 0; i < accards.length; i++){
+    accards[i].addEventListener('dblclick', function(){
+      //alert("HOHOHO");
+      //UIkit.modal('#modal_account').show();
+      activeId = accards[i].parentNode.id;
+      UIkit.modal(modalWindow).show();
+      modalWindow.querySelectorAll('.uk-modal-title')[0].innerHTML = "Edit account";
+      fillModalWindow();
+    });
+  }
+
+  for (let i = 0 ; i < cardBoxes.length; i++){
+  cardBoxes[i].addEventListener('mouseout', function(){
+    let counter = 0;
+    if (groupContainer == ""){
+      groupContainer = cardBoxes[i].parentNode.parentNode.innerHTML;
+      return;
+    }
+    if (domContainer != document.querySelector("#domContainer").innerHTML && !document.querySelector("html").classList.contains("uk-drag")){
+      refreshCounters();
+      domContainer = document.querySelector("#domContainer").innerHTML;
+      // Handle Items moving 
+      if (groupContainer != cardBoxes[i].parentNode.parentNode.innerHTML){
+        // Do if container's boxes order changed
+        if (counter == 0){
+          //reorderItems(cardBoxes[i].parentNode.parentNode);
+          groupContainer = cardBoxes[i].parentNode.parentNode.innerHTML;
+          counter++;
+          console.log("You reordered");
+        }
+      }
+      let categoryBoxes = document.querySelectorAll('.catBox');
+      let groupOrderString = "";
+            for (let y = 0; y < categoryBoxes.length; y++){
+              groupOrderString += categoryBoxes[y].id;
+            };
+     // saveGroupOrder(groupOrderString);
+    }
+  })
+};
+  
+for (let i = 0; i < menuTrigger.length; i++)
+  {
+    menuTrigger[i].addEventListener("mouseover", function(){
+      //eventBlock = true; 
+      let left = menuTrigger[i].getBoundingClientRect().left;
+      let top = menuTrigger[i].getBoundingClientRect().top;
+
+
+      if (document.querySelector('#itemMenu') != null){
+        document.querySelector('#itemMenu').remove();
+      }
+      let block = `<?php echo budgerTemplates::renderAccountItemMenu(); ?>`;
+      document.body.insertAdjacentHTML('beforeEnd', block);
+      block = document.querySelector('#itemMenu');
+      block.style.position = "fixed";
+      let width = block.getBoundingClientRect().width - menuTrigger[i].getBoundingClientRect().width;
+      block.style.left = ( left - width ) + "px";
+      block.style.top = top + "px";
+      let id = (menuTrigger[i].parentNode.parentNode.parentNode.id).replace(/\D/g, '');
+      let parentItem = menuTrigger[i].parentNode.parentNode.parentNode;
+      //parentItem.classList.add('menu-opened');
+      block.setAttribute('data-target', id);
+      let buttons = block.querySelectorAll(".uk-nav")[0].childNodes;
+      for (let y = 0; y < buttons.length; y++){
+
+        buttons[y].addEventListener('click', function(elem){
+          if (buttons[y].getAttribute('data-event') == 'archieve'){
+            archieveItem(id);
+          } else if (buttons[y].getAttribute('data-event') == 'restore'){
+            restoreItem(id);
+          } else if (buttons[y].getAttribute('data-event') == 'remove'){
+            removeItem(id);
+            document.querySelector('#itemMenu').remove();
+          }
+          //parentItem.classList.remove('menu-opened');
+        });
+      }
+
+      block.addEventListener("mouseleave", function(){
+        setTimeout(() => {
+          document.querySelector('#itemMenu').remove();
+          //parentItem.classList.remove('menu-opened');
+          }, 10);
+      });
+
+    });
+  }
+
+
+  function fillModalWindow(){
+    counter = 0;
+    let requestCode = 250;
+    let outFormat = "json";
+    document.querySelector('#btn_removeIt').classList.remove("uk-hidden");
+//    setTimeout(() => {   }, 5000);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          return 0;
+        };
+        let data = JSON.parse(this.responseText);
+        //alert(this.responseText);
+        document.querySelector('#tf_name').value = data.name;
+        document.querySelector('#tf_description').innerHTML = data.description;
+        document.querySelector('#tf_decimal').value = data.decimals;
+        document.querySelector('#tf_acctype').value = data.type;
+        document.querySelector('#tf_currency').value = data.currency;
+        document.querySelector('#tf_archieved').checked = data.archieved;
+        document.querySelector('#tf_hotshow').checked = data.notshow;
+        return 1;
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          counter++;  
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
+   data = {};
+   data.code = requestCode;
+   data.id = activeId;
+    xhttp.send(JSON.stringify(data));
+  }
+
+}
+
+// -------------------- RESTRICTOR ----------------
+function DOMmanager(){
+  let modalWindow = document.querySelector("#modal_account");
+  let addGroupTrigger = document.querySelector("#addGroupButton");
+  let collapseAllButton = document.querySelector("#collapesAllButton");
+  let removeButton = document.querySelector('#btn_removeIt');
+
+  collapseAllButton.addEventListener("click", function(){
+    let catBoxes = document.querySelectorAll(".catBox");
+    let condition = collapseAllButton.getAttribute("data-collapsed");
+    //alert(condition);
+    for (let i = 0; i < catBoxes.length; i++)
+    {
+      
+      if (condition == 'false')
+      {
+        catBoxes[i].classList.add("collapsed");
+          collapseAllButton.setAttribute("data-collapsed", true);
+        }
+        else 
+        {
+          catBoxes[i].classList.remove("collapsed");
+          collapseAllButton.setAttribute("data-collapsed", false);
+        }
+    }
+  });
+
+  addGroupTrigger.addEventListener('click', function(){
+    activeId = 0;
+    UIkit.modal(modalWindow).show();
+    modalWindow.querySelectorAll('.uk-modal-title')[0].innerHTML = "Create account";
+    document.querySelector('#btn_removeIt').classList.add("uk-hidden");
+  });
+}
+
+
+
+
+DOM();
+DOMmanager();
+
+
+
+
+function refreshCounters(){
+  let groups =  document.querySelectorAll(".catBox");
+  for (let i = 0 ; i < groups.length; i++){
+    let c = groups[i].querySelectorAll(".card-box") == null ? 0 : groups[i].querySelectorAll(".card-box").length;
+    groups[i].querySelectorAll(".counts")[0].innerHTML = "[" + c + "]";
+  }
+}
+
+</script>
 @endsection
