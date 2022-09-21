@@ -88,6 +88,9 @@ class BudgerAjax extends BaseController
     }
 
 
+
+
+
     /// ------- REMOVE ITEMS ------------ ///
     if ($code == 191) // remove category item
     {
@@ -110,11 +113,21 @@ class BudgerAjax extends BaseController
     }
 
 
-    if ($code == 193) // restore category Item
+    if ($code == 193) // remove group of category Items
     {
       // returns number -1 if not success, 1 if success
       return self::removeGroup($data, $user);
     }
+
+    if ($code == 290) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::removeAccount($data, $user);
+    }
+
+
+
+
     /// ------- ENDOF REMOVE ITEMS ------------ ///
 
 
@@ -123,6 +136,14 @@ class BudgerAjax extends BaseController
 
 
     /// ------- CREATE NEW ITEMS ------------ ///
+
+
+    /// ------- LOAD ACC ITEMS ------------ ///
+    if ($code = 250)
+    {
+      // load one account data and fill it to the form
+      return self::loadAccountData($data, $user);
+    }
 
   }
 
@@ -172,7 +193,7 @@ class BudgerAjax extends BaseController
         $group      = Input::filterMe("INT", $data->group );
         $type       = Input::filterMe("INT", $data->type );
         $id         = Input::filterMe("INT", $data->id );
-        $order         = Input::filterMe("INT", $data->order );
+        $order      = Input::filterMe("INT", $data->order );
         $archieved  = Input::filterMe("INT", $data->archieved );
 
         $affected = DB::table(env('TB_BUD_CATEGORIES'))
@@ -277,6 +298,7 @@ class BudgerAjax extends BaseController
   }
 
 
+  // Code about 190 +
   public static function  removeCategoryItem($json, $user)
   {
     $id   = Input::filterMe("INT", $json->id );
@@ -293,14 +315,34 @@ class BudgerAjax extends BaseController
 
   public static function  archieveCategoryItem($json, $user)
   {
-    return "ARCHIEVED ITEM FROM JAX!";
-    // Check if there any attached events. If not, remove;
+    $id   = Input::filterMe("INT", $json->id );
+    $affected = DB::table(env('TB_BUD_CATEGORIES'))
+    ->where('id', $id)
+    ->where('user', $user->id)
+    ->update([
+        'archieved' => '1'//, 'type' => '2', 'ordered' => '1' //, 'grouper' => '1' 
+    ]);
+    if (!empty($affected)){
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
   public static function  restoreCategoryItem($json, $user)
   {
-    return "RESTORED TOT!";
-    // Check if there any attached events. If not, remove;
+    r    $id   = Input::filterMe("INT", $json->id );
+    $affected = DB::table(env('TB_BUD_CATEGORIES'))
+    ->where('id', $id)
+    ->where('user', $user->id)
+    ->update([
+        'archieved' => '1'//, 'type' => '2', 'ordered' => '1' //, 'grouper' => '1' 
+    ]);
+    if (!empty($affected)){
+      return 1;
+    } else {
+      return 0;
+    }
   }
 
   // CODE 193
@@ -317,4 +359,98 @@ class BudgerAjax extends BaseController
       return 1;
     }
   }
+
+  // CODE 250
+  public static function loadAccountData($json, $user)
+  {
+    $id = Input::filterMe("INT", $json->id );
+    if ($id == 0)
+    { return -1;}
+    $item = DB::table(env('TB_BUD_ACCOUNTS'))->where('id', '=', $id )->where('user', '=', $user->id )->first();
+    return json_encode($item);
+  }
+
+
+
+
+
+
+/// ----------------------- CODE 200 ------------------------
+/// ACC MANAGE ------------- ACC ------------------ ACC
+
+
+public static function  saveNewAccount($json, $user)
+{
+  $dec   = Input::filterMe("INT", $json->decimals );
+  $name = Input::filterMe("STRING", $json->name, 64 );
+  $descr = Input::filterMe("STRING", $json->description, 256 );
+  $type = Input::filterMe("INT", $json->type );
+  $currency = Input::filterMe("INT", $json->currency );
+  $archieved = Input::filterMe("INT", $json->archieved );
+  $notshow = Input::filterMe("INT", $json->notshow );
+
+
+  $newId  = DB::table(env('TB_BUD_CATEGORIES'))->insertGetId(
+    [
+      'name'         => $name,
+      'description'  => $descr,
+      'type'         => $type,
+      'currency'     => $currency,
+      'decimals'     => $dec,
+      'archieved'    => $archieved,
+      'notshow'      => $notshow
+    ]
+  );
+  return $newId; 
+}
+
+
+  // CODE 230
+  public static function  updateAccountInfo($json, $user)
+  {
+    $id   = Input::filterMe("INT", $json->id );
+    $dec   = Input::filterMe("INT", $json->decimals );
+    $name = Input::filterMe("STRING", $json->name, 64 );
+    $descr = Input::filterMe("STRING", $json->description, 256 );
+    $type = Input::filterMe("INT", $json->type );
+    $currency = Input::filterMe("INT", $json->currency );
+    $archieved = Input::filterMe("INT", $json->archieved );
+    $notshow = Input::filterMe("INT", $json->notshow );
+    if ($name == ""){ $name = "empty name";};
+    $affected = DB::table(env('TB_BUD_ACCOUNTS'))
+    ->where('id', $id)
+    ->where('user', $user->id)
+    ->update([
+        'name'         => $name,
+        'description'  => $descr,
+        'type'         => $type,
+        'currency'     => $currency,
+        'decimals'     => $dec,
+        'archieved'    => $archieved,
+        'notshow'      => $notshow
+    ]);
+    if (!empty($affected)){
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+
+
+  // CODE 290
+  public static function removeAccount($json, $user)
+  {
+    $id   = Input::filterMe("INT", $json->id );
+    $item = DB::table(env('TB_BUD_EVENTS'))->where('account', $id)->where('user', '=', $user->id )->first();
+    // Check if there any attached events. If not, remove;
+    if (!empty($item)){
+      return 0;
+    }
+    else {
+      $deleted = DB::table(env('TB_BUD_ACCOUNTS'))->where('id', '=', $id )->where('user', '=', $user->id )->delete();
+      return 1;
+    }
+  }
+
 }

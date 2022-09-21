@@ -5,6 +5,7 @@
     <?php
     use App\Http\Controllers\Controller;
     use App\Http\Controllers\Components\Budger\BudgerMain;
+    use App\Http\Controllers\Components\Budger\BudgerData;
     use App\Http\Controllers\Components\Budger\BudgerTemplates;
     use Illuminate\Foundation\Auth\User;
     // $routed = explode('.', Route::currentRouteName())[0];
@@ -24,12 +25,12 @@
     // }
     //$com = Controller::getComponent('budger');
     //$cont = new BudgerMain($user->id);
-    $BM = new BudgerMain();
+    $BD = new BudgerData();
 
     $groups = null;
     if ($user != null){
-      $groups = $BM->LoadGroupList_ALL_keyId($user->id);
-      $categs = $BM->LoadCategoryList_ALL_keyId($user->id);
+      $groups = $BD->LoadGroupList_ALL_keyId($user->id);
+      $categs = $BD->LoadCategoryList_ALL_keyId($user->id);
     }
     ?>
 <div class="uk-section uk-section-primary uk-padding-small">
