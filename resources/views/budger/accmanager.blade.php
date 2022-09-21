@@ -12,8 +12,10 @@
 
     $accounts = null;
     $currencies = null;
+    $currencyOrder = null;
     if ($user != null){
       $accounts = $BD->LoadAccountList($user->id);
+      $currencyOrder = $BD->GetCurrencyOrder($user->id);
       $currencies = $BD->LoadCurrencies_keyId($user->id);
     }
 ?>
@@ -49,23 +51,27 @@
       <?php
       $currentCurr = 0;
       if ($accounts != null){
-        $currentCurr = $accounts[0]->currency;
+        $currentCurr = $currencyOrder[0];
         $accIts = [];
         
-        foreach ($accounts AS $data)
+        foreach ($currencyOrder AS $curen)
         {
-          if ($currentCurr != $data->currency){
-            echo BudgerTemplates::renderAccountContainer($currentCurr,
-             $currencies[$currentCurr]->literals, $accIts);
-            $accIts = [];
+          foreach ($accounts AS $data)
+          {
+            if ($curen == $data->currency){
+              // echo BudgerTemplates::renderAccountContainer($currentCurr,
+              //  $currencies[$currentCurr]->literals, $accIts);
+              array_push($accIts, 
+              BudgerTemplates::renderAccountItem($data->id, $data->name, $data->type, $data->description,
+              $data->decimals, $data->ordered, $data->archieved, $data->notshow, $data->is_active));
+              //$currentCurr = $data->currency;
+            }
           }
-          array_push($accIts, 
-          BudgerTemplates::renderAccountItem($data->id, $data->name, $data->type, $data->description,
-          $data->decimals, $data->ordered, $data->archieved, $data->notshow, $data->is_active));
-          $currentCurr = $data->currency;
+          echo BudgerTemplates::renderAccountContainer($curen,
+          $currencies[$curen]->literals, $accIts);
+          $accIts = [];
         }
-        echo BudgerTemplates::renderAccountContainer($currentCurr,
-        $currencies[$currentCurr]->literals, $accIts);
+
       }
       
 ?>
@@ -1164,6 +1170,7 @@ function DOM(){
           //reorderItems(cardBoxes[i].parentNode.parentNode);
           groupContainer = cardBoxes[i].parentNode.parentNode.innerHTML;
           counter++;
+          saveNewOrder();
           console.log("You reordered");
         }
       }
@@ -1177,6 +1184,44 @@ function DOM(){
   })
 };
   
+
+function saveNewOrder(){
+  let data = [];
+  for (let i = 0; i < cardBoxes.length; i++){
+    let obj = {};
+    obj.id = cardBoxes[i].id;
+    obj.currency = cardBoxes[i].parentNode.parentNode.getAttribute('data-currency');
+    data.push(obj);
+  }
+
+  let counter = 0;
+    let requestCode = 231;
+    let outFormat = "number";
+//    setTimeout(() => {   }, 5000);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          return 0;
+        };
+        return 1;
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          counter++;  
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
+    xhttp.send(JSON.stringify(data));
+}
+
 for (let i = 0; i < menuTrigger.length; i++)
   {
     menuTrigger[i].addEventListener("mouseover", function(){
@@ -1195,7 +1240,7 @@ for (let i = 0; i < menuTrigger.length; i++)
       let width = block.getBoundingClientRect().width - menuTrigger[i].getBoundingClientRect().width;
       block.style.left = ( left - width ) + "px";
       block.style.top = top + "px";
-      let id = (menuTrigger[i].parentNode.parentNode.parentNode.id).replace(/\D/g, '');
+      let id = menuTrigger[i].parentNode.parentNode.parentNode.id;
       let parentItem = menuTrigger[i].parentNode.parentNode.parentNode;
       //parentItem.classList.add('menu-opened');
       block.setAttribute('data-target', id);
@@ -1227,7 +1272,7 @@ for (let i = 0; i < menuTrigger.length; i++)
 
 
   function fillModalWindow(){
-    counter = 0;
+    let counter = 0;
     let requestCode = 250;
     let outFormat = "json";
     document.querySelector('#btn_removeIt').classList.remove("uk-hidden");
@@ -1261,10 +1306,43 @@ for (let i = 0; i < menuTrigger.length; i++)
     // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
-   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
    data = {};
    data.code = requestCode;
    data.id = activeId;
+    xhttp.send(JSON.stringify(data));
+  }
+
+
+  function removeItem(id){
+    let counter = 0;
+    let requestCode = 290;
+    let outFormat = "json";
+    let data = {};
+    data.id = id;
+//    setTimeout(() => {   }, 5000);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          return 0;
+        };
+        document.querySelector('#' + id).remove();
+        //alert(this.responseText);
+        return 1;
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          counter++;  
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
     xhttp.send(JSON.stringify(data));
   }
 
@@ -1276,6 +1354,7 @@ function DOMmanager(){
   let addGroupTrigger = document.querySelector("#addGroupButton");
   let collapseAllButton = document.querySelector("#collapesAllButton");
   let removeButton = document.querySelector('#btn_removeIt');
+  let saveButton = document.querySelector("#saveButton");
 
   collapseAllButton.addEventListener("click", function(){
     let catBoxes = document.querySelectorAll(".catBox");
@@ -1302,7 +1381,126 @@ function DOMmanager(){
     UIkit.modal(modalWindow).show();
     modalWindow.querySelectorAll('.uk-modal-title')[0].innerHTML = "Create account";
     document.querySelector('#btn_removeIt').classList.add("uk-hidden");
+
+    document.querySelector('#tf_name').value            = "";
+    document.querySelector('#tf_description').innerHTML = "";
+    document.querySelector('#tf_decimal').value         = 0;
+    document.querySelector('#tf_acctype').value         = 1;
+    document.querySelector('#tf_currency').value        = 1;
+    document.querySelector('#tf_archieved').checked     = false;
+    document.querySelector('#tf_hotshow').checked       = false;
   });
+
+
+  saveButton.addEventListener('click', function(){
+    if (activeId == 0){
+      saveNewAccount();
+    } 
+    else 
+    {
+      saveAccount(activeId);
+    }
+  });
+
+
+
+  function saveNewAccount(){
+      let name =  document.querySelector('#tf_name').value;
+      let descr =  document.querySelector('#tf_description').value;
+      let decimals =  document.querySelector('#tf_decimal').value;
+      let type =  document.querySelector('#tf_acctype').value;
+      let currency =  document.querySelector('#tf_currency').value;
+      let archieved =  document.querySelector('#tf_archieved').checked ? 1 : 0;
+      let notshow =  document.querySelector('#tf_hotshow').checked ? 1 : 0;
+      let data = {};
+      data.name = name;
+      data.descr = descr;
+      data.decimals = decimals;
+      data.type = type;
+      data.currency = currency;
+      data.archieved = archieved;
+      data.notshow = notshow;
+
+    let counter = 0;
+    let requestCode = 200;
+    let outFormat = "json";
+    document.querySelector('#btn_removeIt').classList.remove("uk-hidden");
+//    setTimeout(() => {   }, 5000);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          return 0;
+        };
+        UIkit.modal(modalWindow).hide();
+        return 1;
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          counter++;  
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
+    xhttp.send(JSON.stringify(data));
+  }
+  
+  function saveAccount(){
+    let name =  document.querySelector('#tf_name').value;
+      let descr =  document.querySelector('#tf_description').value;
+      let decimals =  document.querySelector('#tf_decimal').value;
+      let type =  document.querySelector('#tf_acctype').value;
+      let currency =  document.querySelector('#tf_currency').value;
+      let archieved =  document.querySelector('#tf_archieved').checked ? 1 : 0;
+      let notshow =  document.querySelector('#tf_hotshow').checked ? 1 : 0;
+      let data = {};
+      data.id = activeId;
+      data.name = name;
+      data.descr = descr;
+      data.decimals = decimals;
+      data.type = type;
+      data.currency = currency;
+      data.archieved = archieved;
+      data.notshow = notshow;
+
+    let counter = 0;
+    let requestCode = 230;
+    let outFormat = "json";
+    document.querySelector('#btn_removeIt').classList.remove("uk-hidden");
+//    setTimeout(() => {   }, 5000);
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          return 0;
+        };
+        //alert(this.responseText);
+        UIkit.modal(modalWindow).hide();
+        return 1;
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          counter++;  
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
+    xhttp.send(JSON.stringify(data));
+    
+  }
+
 }
 
 

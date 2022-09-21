@@ -24,6 +24,23 @@ class BudgerData
       return $result;
     }
   
+    public static function GetCurrencyOrder($user, $defaultPage = 0 ){
+      //  FIRST HARVEST LANGUAGES to arrange items into Currency-groups
+      // it was object list associated by id's
+      $list = [];
+      $result = DB::select('select `currency` from ' . env('TB_BUD_ACCOUNTS') . 
+      ' where user = :user AND is_removed = 0 ' . 
+      ' ORDER BY ordered ASC ',
+       ['user' => $user, ]);
+       foreach ($result AS $val){
+        if (!in_array($val->currency, $list)){
+          array_push($list, $val->currency);
+        }
+       }
+       return $list;
+    }
+
+
     public static function LoadAccountList($user, $defaultPage = 0 ){
       //  FIRST HARVEST LANGUAGES to arrange items into Currency-groups
       // it was object list associated by id's
@@ -33,6 +50,7 @@ class BudgerData
        ['user' => $user, ]);
       return $result;
     }
+
 
     public static function LoadAccountListNotShow($user, $defaultPage = 0 ){
       //  FIRST HARVEST LANGUAGES to arrange items into Currency-groups

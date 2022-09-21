@@ -27,6 +27,8 @@ class BudgerAjax extends BaseController
     }
     $user = User::where('id', '=', session('LoggedUser'))->first();
 
+
+
     $code = $request->code;
     $format = $request->format; // can be number, text  or json
     $json =  file_get_contents('php://input');
@@ -119,11 +121,6 @@ class BudgerAjax extends BaseController
       return self::removeGroup($data, $user);
     }
 
-    if ($code == 290) // restore category Item
-    {
-      // returns number -1 if not success, 1 if success
-      return self::removeAccount($data, $user);
-    }
 
 
 
@@ -133,19 +130,41 @@ class BudgerAjax extends BaseController
 
     /// ------- CREATE NEW ITEMS ------------ ///
 
+    if ($code == 200)
+    {
+      // load one account data and fill it to the form
+      return self::saveNewAccount($data, $user);
+    }
 
 
-    /// ------- CREATE NEW ITEMS ------------ ///
+    if ($code == 230)
+    {
+      // load one account data and fill it to the form
+      return self::updateAccountInfo($data, $user);
+    }
 
-
+    if ($code == 231)
+    {
+      // load one account data and fill it to the form
+      return self::reorderAccuonts($data, $user);
+    }
     /// ------- LOAD ACC ITEMS ------------ ///
-    if ($code = 250)
+    if ($code == 250)
     {
       // load one account data and fill it to the form
       return self::loadAccountData($data, $user);
     }
 
+    if ($code == 290) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::removeAccount($data, $user);
+    }
+
   }
+
+
+
 
   /// CODE 100
   public static function  saveNewCategoryGroup($json, $user)
@@ -214,6 +233,10 @@ class BudgerAjax extends BaseController
       return 0;
     }
   }
+
+
+
+
   // CODE 121
   public static function  reorderGroups($json, $user)
   {
@@ -331,7 +354,7 @@ class BudgerAjax extends BaseController
 
   public static function  restoreCategoryItem($json, $user)
   {
-    r    $id   = Input::filterMe("INT", $json->id );
+    $id   = Input::filterMe("INT", $json->id );
     $affected = DB::table(env('TB_BUD_CATEGORIES'))
     ->where('id', $id)
     ->where('user', $user->id)
@@ -360,37 +383,43 @@ class BudgerAjax extends BaseController
     }
   }
 
+
+
+
+
+  
+  
+
+
+
+
+  /// ----------------------- CODE 200 ------------------------
+  /// ACC MANAGE ------------- ACC ------------------ ACC
   // CODE 250
   public static function loadAccountData($json, $user)
   {
+    
     $id = Input::filterMe("INT", $json->id );
     if ($id == 0)
     { return -1;}
     $item = DB::table(env('TB_BUD_ACCOUNTS'))->where('id', '=', $id )->where('user', '=', $user->id )->first();
     return json_encode($item);
   }
+  
+  //  200
+  public static function saveNewAccount($json, $user)
+  {
+    $dec   = Input::filterMe("INT", $json->decimals );
+    $name = Input::filterMe("STRING", $json->name, 32 );
+    $descr = Input::filterMe("STRING", $json->descr, 256 );
+    $type = Input::filterMe("INT", $json->type );
+    $currency = Input::filterMe("INT", $json->currency );
+    $archieved = Input::filterMe("INT", $json->archieved );
+    $notshow = Input::filterMe("INT", $json->notshow );
 
+    if (empty($name)) { $name = 'New Account';};
 
-
-
-
-
-/// ----------------------- CODE 200 ------------------------
-/// ACC MANAGE ------------- ACC ------------------ ACC
-
-
-public static function  saveNewAccount($json, $user)
-{
-  $dec   = Input::filterMe("INT", $json->decimals );
-  $name = Input::filterMe("STRING", $json->name, 64 );
-  $descr = Input::filterMe("STRING", $json->description, 256 );
-  $type = Input::filterMe("INT", $json->type );
-  $currency = Input::filterMe("INT", $json->currency );
-  $archieved = Input::filterMe("INT", $json->archieved );
-  $notshow = Input::filterMe("INT", $json->notshow );
-
-
-  $newId  = DB::table(env('TB_BUD_CATEGORIES'))->insertGetId(
+  $newId  = DB::table(env('TB_BUD_ACCOUNTS'))->insertGetId(
     [
       'name'         => $name,
       'description'  => $descr,
@@ -398,7 +427,8 @@ public static function  saveNewAccount($json, $user)
       'currency'     => $currency,
       'decimals'     => $dec,
       'archieved'    => $archieved,
-      'notshow'      => $notshow
+      'notshow'      => $notshow,
+      'user'         => $user->id
     ]
   );
   return $newId; 
@@ -410,13 +440,14 @@ public static function  saveNewAccount($json, $user)
   {
     $id   = Input::filterMe("INT", $json->id );
     $dec   = Input::filterMe("INT", $json->decimals );
-    $name = Input::filterMe("STRING", $json->name, 64 );
-    $descr = Input::filterMe("STRING", $json->description, 256 );
+    $name = Input::filterMe("STRING", $json->name, 32 );
+    $descr = Input::filterMe("STRING", $json->descr, 256 );
     $type = Input::filterMe("INT", $json->type );
     $currency = Input::filterMe("INT", $json->currency );
     $archieved = Input::filterMe("INT", $json->archieved );
     $notshow = Input::filterMe("INT", $json->notshow );
-    if ($name == ""){ $name = "empty name";};
+    if (empty($name)) { $name = 'Empty Account name';};
+
     $affected = DB::table(env('TB_BUD_ACCOUNTS'))
     ->where('id', $id)
     ->where('user', $user->id)
@@ -436,6 +467,31 @@ public static function  saveNewAccount($json, $user)
     }
   }
 
+
+  // code 231
+  public static function reorderAccuonts($jsonArr, $user){
+    $orderer = 1;
+    $default = 0;
+    foreach ($jsonArr AS $json){
+      $id   = Input::filterMe("INT", $json->id );
+      $currency = Input::filterMe("INT", $json->currency );
+      if ($orderer == 1){
+        $default = $currency;
+      }
+      $isdef = $default == $currency ? 1 : 0;
+      
+      $affected = DB::table(env('TB_BUD_ACCOUNTS'))
+      ->where('id', $id)
+      ->where('user', $user->id)
+      ->update([
+          'ordered'  => $orderer,
+          'currency' => $currency,
+          'is_default' => $isdef
+      ]);
+      $orderer++;
+    }
+    return 1;
+  }
 
 
   // CODE 290

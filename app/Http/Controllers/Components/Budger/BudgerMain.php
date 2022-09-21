@@ -150,7 +150,7 @@ class BudgerMain extends BaseController
     $total_last_date .= "-01";
     // END RESERVE
 
-    $this->Accounts = BudgerData::LoadAccountList_keyId($USER, $this->defaultPage);
+    $this->Accounts = BudgerData::LoadAccountList_ALL_keyId($USER, $this->defaultPage);
     $this->Template_Objects = BudgerData::LoadTemplateList_ALL_keyId($USER);
     $this->Goods_Objects = BudgerData::LoadGoodsList($USER);
     $this->Categories_Objects = BudgerData::LoadGroupList_ALL_keyId($USER);
@@ -273,15 +273,15 @@ public function renderNavigateButtons(){
   $result .= "<i class=' bi-chevron-left'></i>";
   $result .= "<i class=' bi-plus'></i>";
   $result .= "</a>";
-  $result .= "<button type='button' id='f_showEmptyRows' class='btn btn-outline-secondary' title='COM_TFBUDGET_BUTTON_HIDEEMPTY'>";
+  $result .= "<button type='button' id='f_showEmptyRows' class='btn btn-outline-secondary' title='HIDEEMPTY'>";
   $result .= "<i class=' bi-distribute-vertical'></i>";
   $result .= "</button>";
-  $result .= "<button  type='button' id='f_showTotalCols' class='btn btn-outline-secondary' title='COM_TFBUDGET_BUTTON_HIDETOTALS'>";
+  $result .= "<button  type='button' id='f_showTotalCols' class='btn btn-outline-secondary' title='HIDETOTALS'>";
   $result .= "<i class=' bi-grip-vertical'></i>";
   $result .= "</button>";
   $result .= "<button type='button' onclick='databaseRecount();' class='d-none btn btn-outline-danger'>Update Database</button>";
   $result .= "<button type='button' onclick='recounttotals();' class='d-none btn btn-outline-secondary'>RECOUNT TOTALS</button>";
-  $result .= "<button type='button' onclick='tf_create(1, 0);' class='btn btn-outline-secondary' title='COM_TFBUDGET_BUTTON_NEWEVENT'>";
+  $result .= "<button type='button' onclick='tf_create(1, 0);' class='btn btn-outline-secondary' title='NEWEVENT'>";
   $result .= "<i class=' bi-journal-plus'></i>";
   $result .= "</button>";
   $result .= "<a type='button' href='". $this->_btn_expand_nextMonth ."' class='btn btn-outline-secondary'>";
@@ -313,8 +313,8 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false){
   $result .= "<tr class='bg-subtotal subtotal'>
   <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
   foreach ($accountsToloadArr AS $account){
-    $result .=  "<td class='mtotalio'><small>COM_TFBUDGET_COMMON_TYPE_INCOMS<span class='incoms'></span></small></br><small>COM_TFBUDGET_COMMON_TYPE_EXPENSES<span class='expences'></span></small></br><small>COM_TFBUDGET_TABLE_DIFFERENCE<span class='difference'></span></small></td>
-    <td class='mtotals'>COM_TFBUDGET_COMMON_NAME_BALANCE<span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'>";
+    $result .=  "<td class='mtotalio'><small>INCOMS<span class='incoms'></span></small></br><small>EXPENSES<span class='expences'></span></small></br><small>DIFFERENCE<span class='difference'></span></small></td>
+    <td class='mtotals'>BALANCE<span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'>";
     $ttv = 0;
         foreach ($this->items AS $total){
           if ($total->setdate == $date4total && $total->account ==  $account->id){
@@ -325,9 +325,9 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false){
     $result .=  "</span></td>";
   };
   if (count($accountsToloadArr) > 1){
-    $result .=  "<td class='totalofrow_s'><small>COM_TFBUDGET_COMMON_NAME_BALANCE"  . 
-    ": <span class='incoms'></span></small></br><small>COM_TFBUDGET_COMMON_TYPE_EXPENSES" . 
-    ": <span class='expences'></span></small></br><small>COM_TFBUDGET_TABLE_DIFFERENCE<span class='difference'></span></small></td>";
+    $result .=  "<td class='totalofrow_s'><small>BALANCE"  . 
+    ": <span class='incoms'></span></small></br><small>EXPENSES" . 
+    ": <span class='expences'></span></small></br><small>DIFFERENCE<span class='difference'></span></small></td>";
   };
   $result .=  "</tr>";
   return $result;
@@ -364,7 +364,7 @@ public function renderWholeTable(){
       }
     }
     if (count($this->Accounts) > 1){
-      $result .= '<th scope="col" class="headtotal ttfr">' . Text::_('COM_TFBUDGET_TABLE_HEAD_TOTALS') . '</th>';
+      $result .= '<th scope="col" class="headtotal ttfr">' . 'TOTALS' . '</th>';
     };
     $result .= "</tr>
     </thead>

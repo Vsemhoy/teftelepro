@@ -745,7 +745,6 @@ public static function renderAccountItemMenu(){
   <ul class='uk-nav uk-dropdown-nav'>
      <!-- <li><a href='' data-event='opensettings' class='btnChangeColor'>Change color</a></li> -->
       <li  data-event='activate' ><a class=''>Toggle activate</a></li>
-      <li  data-event='archieve' ><a class=''>Not show in main</a></li>
       <li  data-event='archieve' ><a class=''>Toggle archieve</a></li>
       <li  data-event='remove'   ><a class=''>Remove forever</a></li>
   </ul>
@@ -780,31 +779,11 @@ public static function renderAccountContainer($id, $name, $items, $order = 0)
   <span class='groupname'>" . $name . "</span> 
   <span class='uk-text-muted counts'>[" . $iterator . "]</span>
 <!--  <span class='btn-colorize' uk-toggle='target: #modal-example'>colorize</span> -->
-<span class='btn-remove' title='remove group'><span uk-icon='trash'></span></span>
-<span class='btn-archieve' title='toggle archieve group'><span uk-icon='lock'></span></span>
 
-  <div class='btn-colorize'>
-  <div uk-form-custom='target: true'>
-      <select class='typeChanger'>
-          <option 
-          ";
-          // if ($type == 1){   $result .= "selected "; };
-          // $result .= "value='1'>Incom</option>
-          // <option 
-          // ";
-          // if ($type == 2){   $result .= "selected "; };
-          // $result .= "value='2'>Expense</option>
-          // <option 
-          // ";
-          // if ($type == 3){   $result .= "selected "; };
-          $result .= "value='3'>Transfer</option>
-      </select>
-      <span></span>
-  </div>
-</div>
+
 
   <span class='btn-collapse' title='toggle collapse'><span uk-icon='shrink'></span></span>
-  <span class='btn-addItem' title='add new item'><span uk-icon='plus'></span><span>
+  
 </span></span></h4>
       <div uk-sortable='group: sortable-group' class='uk-sortable uk-sortable-empty' style=''>";
       if ($iterator != 0){
@@ -875,11 +854,11 @@ public static function renderAccountModal($currencies)
         <!--legend class='uk-legend'>Legend</legend -->
 
         <div class='uk-margin uk-mb-0'>
-            <input class='uk-input' type='text' placeholder='Account name' id='tf_name'>
+            <input class='uk-input' type='text' max='32' placeholder='Account name' id='tf_name'>
         </div>
 
         <div class='uk-margin uk-mb-0'>
-            <textarea class='uk-textarea' rows='7' placeholder='Description' id='tf_description'></textarea>
+            <textarea class='uk-textarea' rows='7' max='256' placeholder='Description' id='tf_description'></textarea>
         </div>
 
         <div class='uk-margin uk-mb-0 uk-inline uk-width-1-1' title='Number of symbols after comma'>
@@ -924,7 +903,7 @@ public static function renderAccountModal($currencies)
   <div class='uk-modal-footer uk-text-right'>
       <button class='uk-button uk-button-default' id='btn_removeIt' type='button'>Remove</button>
       <button class='uk-button uk-button-default uk-modal-close' type='button'>Cancel</button>
-      <button class='uk-button uk-button-primary' type='button'>Save</button>
+      <button class='uk-button uk-button-primary' id='saveButton' type='button'>Save</button>
   </div>
 </div>
 </div>";

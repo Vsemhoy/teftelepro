@@ -92,8 +92,8 @@ Warning:  Undefined variable $urrentCurr in /home/host1334262/teftele.com/htdocs
 
       <?php 
       $user = 3;
-      $result = DB::select('select * from ' . env('TB_BUD_ACCOUNTS') . ' where user = :user AND notshow = 0 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
-      print_r($result);
+      // $result = DB::select('select * from ' . env('TB_BUD_ACCOUNTS') . ' where user = :user AND notshow = 0 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
+      // print_r($result);
       ?>
 
   
