@@ -59,6 +59,10 @@ Route::prefix('budger')->group(function () {
     return view('budger.base');
   })->name('budger.base');
 
+  Route::get('/flow', function () {
+    return view('budger.flow');
+  })->name('budger.flow');
+
   Route::get('/credits', function () {
     return view('budger.credits');
   })->name('budger.credits');

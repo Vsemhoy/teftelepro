@@ -10637,4 +10637,21 @@ select .opt-header {
   background: #b82b2b;
 }
 
+.bevent-header {
+  justify-content: space-between;
+  border-bottom: 1px solid #d1d1d1;
+}
+
+.tag-incom > div {
+  border-left: 3px solid #2abf87;
+}
+
+.tag-expense > div {
+  border-left: 3px solid #e94676;
+}
+
+.tag-transfer > div {
+  border-left: 3px solid #00a2af;
+}
+
 /*# sourceMappingURL=uikit-theme.css.map */

@@ -25,6 +25,7 @@
     // }
     $com = Controller::getComponent('budger');
     $cont = new BudgerMain($user->id);
+    
     ?>
 
 <div class="uk-section uk-section-primary uk-padding-small">
@@ -79,7 +80,7 @@ Warning:  Undefined variable $urrentCurr in /home/host1334262/teftele.com/htdocs
     </div>
       <div class="p-0">
  <!--  <h2>COM_TEFTELEBUDGET_MSG_HELLO_ACCOUNTS</h2> -->
-
+<p><?php  echo $cont->currentCurrency; ?> - current currency</p>
  <br>
  <?php echo $cont->get_lastMonth; ?>
   <div class="container">

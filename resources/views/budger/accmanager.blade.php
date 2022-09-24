@@ -1134,6 +1134,17 @@ var myModal2 = new bootstrap.Modal(document.getElementById('MenuWindow'), {
 <script>
 var activeId = 0;
 
+
+function DOMreload(){
+  let data = document.querySelector('#domContainer').innerHTML;
+  document.querySelector('#domContainer').innerHTML = "";
+  document.querySelector('#domContainer').insertAdjacentHTML('afterBegin', data);
+
+
+  DOM();
+  refreshCounters();
+}
+
 function DOM(){
   let cardBoxes = document.querySelectorAll(".card-box");
   let groupContainer = "";
@@ -1220,6 +1231,8 @@ function saveNewOrder(){
     xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
    // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
     xhttp.send(JSON.stringify(data));
+    DOMreload();
+    //alert(JSON.stringify(data));
 }
 
 for (let i = 0; i < menuTrigger.length; i++)

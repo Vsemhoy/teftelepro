@@ -75,6 +75,16 @@ class BudgerController extends BaseController
       //$menuItem1->isDivider = $isDiv;
       array_push($this->sideMenu, $menuItem1 );
 
+      $menuItem1 = new SidemenuItem("FLOW", false);
+      $menuItem1->itemReference = route("budger.flow");
+      $menuItem1->itemLetters = "FL";
+      $menuItem1->itemIcon = "";
+      $menuItem1->itemBadge = "120";
+      $menuItem1->itemClass = "";
+      $menuItem1->badgeClass = "";
+      //$menuItem1->isDivider = $isDiv;
+      array_push($this->sideMenu, $menuItem1 );
+
       $menuItem1 = new SidemenuItem("Basic Accounts", false);
       $menuItem1->itemReference = route("budger.base");
       $menuItem1->itemLetters = "BA";

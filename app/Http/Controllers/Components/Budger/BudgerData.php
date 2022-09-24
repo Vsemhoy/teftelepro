@@ -62,9 +62,18 @@ class BudgerData
       return $result;
     }
   
-    public static function LoadAccountList_ALL_keyId($user){
+    public static function GetFirstCurrency($user){
+      $row = DB::table( env('TB_BUD_ACCOUNTS') )
+                ->orderBy('ordered')
+                ->first();
+      return $row->currency;
+    }
+
+    public static function LoadAccountList_Currency_keyId($user, $currency = 0){
       //  FIRST HARVEST LANGUAGES to arrange items into Currency-groups
-      $result = DB::select('select * from ' . env('TB_BUD_ACCOUNTS') . ' where user = :user ORDER BY ordered ASC', ['user' => $user, ]);
+      if ($currency == 0){ $currency = SELF::GetFirstCurrency($user);};
+      $result = DB::select('select * from ' . env('TB_BUD_ACCOUNTS') . 
+      ' where user = :user AND currency = :currency ORDER BY ordered ASC', ['user' => $user, 'currency' => $currency ]);
       return Utils::arrayToIndexed($result);
     }
 

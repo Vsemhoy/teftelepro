@@ -29,7 +29,7 @@ class BudgerMain extends BaseController
   public $get_groups;
   public $get_accounts;
   public $get_currency;
-  public $defaultPage;
+  public $currentCurrency;
 
   // Month & Year
   public $today_MY;
@@ -81,7 +81,7 @@ class BudgerMain extends BaseController
     $this->get_currency = $this->input->get('grp', '', 'INT');
 
     if ($this->get_accounts == ""){
-    $this->defaultPage = 1;
+    $this->currentCurrency = BudgerData::GetFirstCurrency($USER);
     }
 
     $this->today_MY = date("Y-m");
@@ -150,7 +150,7 @@ class BudgerMain extends BaseController
     $total_last_date .= "-01";
     // END RESERVE
 
-    $this->Accounts = BudgerData::LoadAccountList_ALL_keyId($USER, $this->defaultPage);
+    $this->Accounts = BudgerData::LoadAccountList_Currency_keyId($USER, $this->currentCurrency);
     $this->Template_Objects = BudgerData::LoadTemplateList_ALL_keyId($USER);
     $this->Goods_Objects = BudgerData::LoadGoodsList($USER);
     $this->Categories_Objects = BudgerData::LoadGroupList_ALL_keyId($USER);
