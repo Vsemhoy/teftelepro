@@ -2,7 +2,7 @@
 
 @section('page-content')
 <div class="uk-section uk-section-primary uk-padding-small">
-    <div class="uk-container uk-container-small uk-light">
+    <div class="uk-container uk-container-large uk-light">
     <h3 class="uk-card-title uk-light text-white">Account manager: <span>active items</span></h3>
     <p uk-margin>
 
@@ -44,7 +44,7 @@ return $result;
 }
 ?>
 <div class="uk-section uk-section-default">
-    <div class="uk-container uk-container-small ">
+    <div class="uk-container uk-container-large ">
 
 <div uk-filter="target: .js-filter">
   <ul class="uk-subnav uk-subnav-pill">
@@ -55,39 +55,40 @@ return $result;
   </ul>
 
 
-  <div class='bevent-day '>
+  <div class='bevent-day today  uk-margin-bottom'>
     <ul uk-tab class='bevent-header'>
-      <li class="" uk-switcher-item="" ><a class='h-decorate'>Saturday, 13 Feb 2022 (10)</a></li>
+      <li class="" uk-switcher-item="" ><a class='h-decorate'><b>Saturday, 13 Feb 2022</b> (10)</a></li>
       <li class="uk-align-right" ><a href="#">Statistics</a></li>
     </ul>
 
-    <div class='uk-switcher uk-margin-bottom'  >
-    <div js-filter class="bevent-list js-filter uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
-    <?php
-    for ($i = 0; $i < 5 ; $i++){
-      echo renderFlowEventCard($i, 1);
-    };
-    for ($i = 0; $i < 2 ; $i++){
-      echo renderFlowEventCard($i, 2);
-    };
-    for ($i = 0; $i < 4 ; $i++){
-      echo renderFlowEventCard($i, 3);
-    };
-    ?>
-    </div>
-    <div class='bevent-stat' >
-      <p>Here will be stat...</p>
-    </div>
+    <div class='uk-switcher'  >
+      <div js-filter class="bevent-list js-filter uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
+      <?php
+      for ($i = 0; $i < 5 ; $i++){
+        echo renderFlowEventCard($i, 1);
+      };
+      for ($i = 0; $i < 2 ; $i++){
+        echo renderFlowEventCard($i, 2);
+      };
+      for ($i = 0; $i < 4 ; $i++){
+        echo renderFlowEventCard($i, 3);
+      };
+      ?>
+      </div>
+      <div class='bevent-stat' >
+        <p>Here will be stat...</p>
+      </div>
+  </div>
   </div>
 
 
-  <div class='bevent-day '>
+  <div class='bevent-day uk-margin-bottom'>
     <ul uk-tab class='bevent-header'>
       <li class="" uk-switcher-item="" ><a>Saturday, 13 Feb 2022 (10)</a></li>
       <li class="uk-align-right" ><a href="#">Statistics</a></li>
     </ul>
 
-    <div class='uk-switcher uk-margin-bottom'  >
+    <div class='uk-switcher'  >
     <div js-filter class="bevent-list js-filter uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
     <?php
     for ($i = 0; $i < 7 ; $i++){
@@ -102,15 +103,16 @@ return $result;
       <p>Here will be stat...</p>
     </div>
   </div>
+  </div>
 
 
-  <div class='bevent-day '>
+  <div class='bevent-day uk-margin-bottom'>
     <ul uk-tab class='bevent-header'>
       <li class="" uk-switcher-item="" ><a>Saturday, 13 Feb 2022 (10)</a></li>
       <li class="uk-align-right" ><a href="#">Statistics</a></li>
     </ul>
 
-    <div class='uk-switcher uk-margin-bottom'  >
+    <div class='uk-switcher '  >
     <div js-filter class="bevent-list js-filter uk-child-width-1-3@m uk-grid-small uk-grid-match" uk-grid>
     <?php
     for ($i = 0; $i < 4 ; $i++){
@@ -121,6 +123,7 @@ return $result;
     <div class='bevent-stat' >
       <p>Here will be stat...</p>
     </div>
+  </div>
   </div>
 
 

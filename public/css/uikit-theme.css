@@ -10642,6 +10642,13 @@ select .opt-header {
   border-bottom: 1px solid #d1d1d1;
 }
 
+.bevent-day.today {
+  box-shadow: 1px 1px 20px 0px lightgrey;
+  padding: 12px;
+  background: #ffffca;
+  border-radius: 6px;
+}
+
 .tag-incom > div {
   border-left: 3px solid #2abf87;
 }
@@ -10652,6 +10659,65 @@ select .opt-header {
 
 .tag-transfer > div {
   border-left: 3px solid #00a2af;
+}
+
+.categorytag {
+  border: 1px solid #cbcbcb;
+  padding: 0px 12px;
+  border-radius: 6px;
+  background: #efefef;
+}
+
+.budgetable .weekend {
+  background: rgba(255, 0, 0, 0.07);
+}
+.budgetable .daytotals {
+  background: rgba(0, 0, 0, 0.03);
+}
+.budgetable .totalofrow {
+  background: rgba(0, 0, 0, 0.06);
+  border-left: 1px solid #e5e5e5;
+}
+.budgetable .tf_daytd {
+  border-right: 1px solid #e5e5e5;
+}
+
+.uk-button-expense, .uk-button-incom, .uk-button-transfer {
+  opacity: 0.5;
+  transition: all ease 0.3s;
+}
+
+.uk-button-expense.active {
+  box-shadow: 0px 3px 13px 2px #ff074d;
+  z-index: 9;
+  opacity: 1;
+  outline: 1px solid rgba(255, 255, 255, 0.34);
+}
+
+.uk-button-incom.active {
+  box-shadow: 0px 3px 15px 2px #2ed773;
+  z-index: 9;
+  opacity: 1;
+  outline: 1px solid rgba(255, 255, 255, 0.34);
+}
+
+.uk-button-transfer.active {
+  box-shadow: 0px 3px 15px 2px #15d0f1;
+  z-index: 9;
+  opacity: 1;
+  outline: 1px solid rgba(255, 255, 255, 0.34);
+}
+
+.hd-incom {
+  background-color: #ffb9cd;
+}
+
+.hd-expense {
+  background-color: #a3e6bd;
+}
+
+.hd-transfer {
+  background-color: #7ed9e9;
 }
 
 /*# sourceMappingURL=uikit-theme.css.map */

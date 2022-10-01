@@ -348,7 +348,7 @@ public function renderWholeTable(){
 
   
     $result .= "<p>" . count($this->Accounts) . "</p>";
-    $result .= "<table class='uk-table uk-table-striped uk-table-hover uk-table-small budgetable'>
+    $result .= "<table class='uk-table uk-table-divider uk-table-hover uk-table-small budgetable'>
     <thead>
     <tr>
       <th scope='col' class='tthd'>_DATE</th>
