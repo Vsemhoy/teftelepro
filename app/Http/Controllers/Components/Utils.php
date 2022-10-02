@@ -18,6 +18,20 @@ class Utils
     }
   }
 
+  public static function arrayToaArray($array)
+  {
+    if (is_array($array)){
+      $iArray = [];
+      foreach ($array AS $value){
+        array_push($iArray, $value);
+      }
+      return $iArray;
+    } else {
+      $arr = [];
+      return arr;
+    }
+  }
+
 
   public static function arrayToCommaSeparated($array){
     $result = "";

@@ -10,6 +10,7 @@ use App\Http\Controllers\Base\Input;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Components\Utils;
 use App\Http\Controllers\Components\Budger\BudgerData;
+use App\Http\Controllers\Components\Budger\BudgerTemplates;
 use DateTime;
 
 class BudgerMain extends BaseController
@@ -56,7 +57,7 @@ class BudgerMain extends BaseController
   public $tableLength;
   public $currentCurr;
 
-  public $Accounts;
+  public $accounts;
   public $Template_Objects;
   public $Goods_Objects;
   public $Categories_Objects;
@@ -150,10 +151,10 @@ class BudgerMain extends BaseController
     $total_last_date .= "-01";
     // END RESERVE
 
-    $this->Accounts = BudgerData::LoadAccountList_Currency_keyId($USER, $this->currentCurrency);
+    $this->accounts = BudgerData::LoadAccountList_Currency_keyId($USER, $this->currentCurrency);
     $this->Template_Objects = BudgerData::LoadTemplateList_ALL_keyId($USER);
     $this->Goods_Objects = BudgerData::LoadGoodsList($USER);
-    $this->Categories_Objects = BudgerData::LoadGroupList_ALL_keyId($USER);
+    $this->Categories_Objects = BudgerData::LoadCategoryList_ALL_keyId($USER);
 
     $this->tableLength = self::countDaysBetweenDates($this->get_startMonth, $this->get_lastMonth);
     $this->currentCurr = 1;
@@ -161,10 +162,10 @@ class BudgerMain extends BaseController
 
     $accounts = "";
     $counter = 0;
-    foreach ($this->Accounts AS $acco)
+    foreach ($this->accounts AS $acco)
     {
       $accounts .= $acco->id;
-      if ($counter < count($this->Accounts) - 1){
+      if ($counter < count($this->accounts) - 1){
         $accounts .= ",";
       }
       $counter++;
@@ -266,29 +267,33 @@ public static function countDaysBetweenDates($d1, $d2){
 
 public function renderNavigateButtons(){
   $result = "";
-  $result .= "<div class='container'>";
-  $result .= "<div class='btn-group mb-3 m-auto d-table' role='group' aria-label='Basic outlined example'>";
-  $result .= "<a type='button' href='" . $this->_btn_go_prevMonth ."' class='btn btn-outline-secondary'><i class=' bi-chevron-left'></i></a>";
-  $result .= "<a type='button' href='". $this->_btn_expand_prevMonth ."'  class='btn btn-outline-secondary'>";
-  $result .= "<i class=' bi-chevron-left'></i>";
-  $result .= "<i class=' bi-plus'></i>";
+  $result .= "<div class='uk-container'>";
+  $result .= "<div class='uk-button-group bud-navigation' >";
+  $result .= "<a type='uk-button ' href='" . $this->_btn_go_prevMonth ."' class='uk-button uk-button-default'>
+  <span uk-icon='chevron-left'></span></a>";
+  $result .= "<a type='button' href='". $this->_btn_expand_prevMonth ."'  class='uk-button uk-button-default'>";
+  $result .= "<span uk-icon='chevron-double-left'></span>";
   $result .= "</a>";
-  $result .= "<button type='button' id='f_showEmptyRows' class='btn btn-outline-secondary' title='HIDEEMPTY'>";
-  $result .= "<i class=' bi-distribute-vertical'></i>";
+  $result .= "<button type='button' id='f_showEmptyRows' class='uk-button uk-button-default' title='HIDEEMPTY'>";
+  $result .= "<span uk-icon='more'></span>";
   $result .= "</button>";
-  $result .= "<button  type='button' id='f_showTotalCols' class='btn btn-outline-secondary' title='HIDETOTALS'>";
-  $result .= "<i class=' bi-grip-vertical'></i>";
+  $result .= "<button  type='button' id='f_showTotalCols' class='uk-button uk-button-default' title='HIDETOTALS'>";
+  $result .= "<span uk-icon='more-vertical'></span>";
   $result .= "</button>";
-  $result .= "<button type='button' onclick='databaseRecount();' class='d-none btn btn-outline-danger'>Update Database</button>";
-  $result .= "<button type='button' onclick='recounttotals();' class='d-none btn btn-outline-secondary'>RECOUNT TOTALS</button>";
-  $result .= "<button type='button' onclick='tf_create(1, 0);' class='btn btn-outline-secondary' title='NEWEVENT'>";
-  $result .= "<i class=' bi-journal-plus'></i>";
+  //$result .= "<button type='button' onclick='databaseRecount();' class='uk-button uk-button-default'>Update Database</button>";
+ // $result .= "<button type='button' onclick='recounttotals();' class='uk-button uk-button-default'>RECOUNT TOTALS</button>";
+
+  $result .= "<button type='button' href='#modal-container' uk-toggle class='uk-button uk-button-default' title='Navigator'>";
+  $result .= "<span uk-icon='server'></span>";
   $result .= "</button>";
-  $result .= "<a type='button' href='". $this->_btn_expand_nextMonth ."' class='btn btn-outline-secondary'>";
-  $result .= "<i class=' bi-plus'></i>";
-  $result .= "<i class=' bi-chevron-right'></i>";
+  $result .= "<button type='button' onclick='tf_create(1, 0);' class='uk-button uk-button-default' title='NEWEVENT'>";
+  $result .= "<span uk-icon='file-text'></span>";
+  $result .= "</button>";
+  $result .= "<a type='button' href='". $this->_btn_expand_nextMonth ."' class='uk-button uk-button-default'>";
+  $result .= "<span uk-icon='chevron-double-right'></span>";
   $result .= "</a>";
-  $result .= "<a type='button'href='". $this->_btn_go_nextMonth ."'  class='btn btn-outline-secondary'><i class=' bi-chevron-right'></i></a>";
+  $result .= "<a type='button'href='". $this->_btn_go_nextMonth ."'  class='uk-button uk-button-default'>
+  <span uk-icon='chevron-right'></span></a>";
   $result .= "</div>";
   $result .= "</div>";
   $result .= "<br>";
@@ -317,7 +322,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false){
     <td class='mtotals'>BALANCE<span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'>";
     $ttv = 0;
         foreach ($this->items AS $total){
-          if ($total->setdate == $date4total && $total->account ==  $account->id){
+          if ($total->date_in == $date4total && $total->account ==  $account->id){
               $ttv = $total->value;
           }
         }
@@ -347,7 +352,6 @@ public function renderWholeTable(){
     $secondcounter = 0;
 
   
-    $result .= "<p>" . count($this->Accounts) . "</p>";
     $result .= "<table class='uk-table uk-table-divider uk-table-hover uk-table-small budgetable'>
     <thead>
     <tr>
@@ -357,13 +361,13 @@ public function renderWholeTable(){
         <input class='headdate' type='month' id='dateflash' 
             name='flash_date' value='" . $this->get_startMonth_filter . "' />
             </span></th>";
-    if (count($this->Accounts)){
-      foreach ($this->Accounts AS $accid){
-        $result .=  "<th scope='col' acc='" . trim($accid->id) . "' decimal='" . $accid->decimals . "'>" . $accid->name . "</th>
+    if (count($this->accounts)){
+      foreach ($this->accounts AS $accid){
+        $result .=  "<th scope='col' account='" . trim($accid->id) . "' decimal='" . $accid->decimals . "'>" . $accid->name . "</th>
         <th class='daytotals' scope='col' accfor='" . trim($accid->id) . "'>" . "TOTAL" . "</th>";
       }
     }
-    if (count($this->Accounts) > 1){
+    if (count($this->accounts) > 1){
       $result .= '<th scope="col" class="headtotal ttfr">' . 'TOTALS' . '</th>';
     };
     $result .= "</tr>
@@ -390,7 +394,7 @@ public function renderWholeTable(){
     $idconstructorrow = $x;
     if ($x == 0){
       //$result .= "HELLLO";
-      $result .= $this->tableTotalSectton($date, $this->Accounts);
+      $result .= $this->tableTotalSectton($date, $this->accounts);
     };
   
     $cdateclass = "";
@@ -407,12 +411,12 @@ public function renderWholeTable(){
     <td class='tf_datetd'  title='{$date}' scope='row'>{$shortDate}</td>
     <td  class='tf_daytd'>" . $this->weekdayNames[$week] . "</td>";
     $t = 0;
-    foreach ($this->Accounts AS $account){
+    foreach ($this->accounts AS $account){
       $accountid = $account->id;
       $idconstructorcol = $t;
       $result .=  "<td id='dragarea_" . $idconstructorrow . "_" . $idconstructorcol . "' 
       class='droptabledata' ondrop='drop(event)' ondragover='allowDrop(event)'
-      acc='{$accountid}' date='{$date}' ><span class='daytotal'>";
+      account='{$accountid}' date='{$date}' ><span class='daytotal'>";
       if (empty($empty)) {
          // echo $randvalue[$t];
        };
@@ -420,52 +424,62 @@ public function renderWholeTable(){
        $result .=  "</span><span  class='rect table-button-right event_trigger' uk-icon='icon: plus'>
        <i class='bi-plus-lg' title='Add new item' title='edit' data-bs-toggle='modal' data-bs-target='#EditorWindow'>
        </i></span>";
+
+      //  $result .= count($this->accounts);
+      //  $result .= "<br>";
+      //  $result .= $this->_params_startMonth;
+      //  $result .= "<br>";
+      //  $result .= $this->_btn_next_month_date;
        foreach ($this->items AS $_object){
-        if ($_object->datein == $date){
+        if ($_object->date_in == $date){
           if ($_object->account == $accountid){
             if (trim($_object->type) < 3){
   
-              if (!empty($_object->groups)) {
-                $_grpname      = $groups_Objects[$_object->groups]->name;
-                $_gpricon      = $groups_Objects[$_object->groups]->icon;
-                $_grpcolor     = $groups_Objects[$_object->groups]->color; 
-                $_grpwhiteicon = $groups_Objects[$_object->groups]->whiteicon; 
+              if (!empty($this->Categories_Objects)) {
+                if ($this->Categories_Objects[$_object->category]){
+
+                  $_grpname      = $this->Categories_Objects[$_object->category]->name;
+                  $_gpricon      = $this->Categories_Objects[$_object->category]->icon;
+                  $_grpcolor     = $this->Categories_Objects[$_object->category]->color; 
+                  $_grpwhiteicon = $this->Categories_Objects[$_object->category]->whiteicon; 
+                }
               };
-              if (empty($_object->groups) || !isset($_grpname)) {
+              if (empty($this->Categories_Objects) || !isset($_grpname)) {
                   $_grpname      = '';
                   $_gpricon      = '';
                   $_grpcolor     = '';
                   $_grpwhiteicon = '';
                 };
-  
-              echo tpl_in_calendar_event( // $group, $groupname, $icon, $iconcolor, $iconpath, 
+
+              $result .= BudgerTemplates::tpl_in_calendar_event( // $group, $groupname, $icon, $iconcolor, $iconpath, 
               $_object->id, 
               $_object->name, 
-              $_object->text, 
-              $_object->datein,
+              $_object->description, 
+              $_object->date_in,
               $_object->account, 
               $_object->type, 
               $_object->value,
-              $_object->groups,
+              $_object->category,
               $_grpname, 
               $_gpricon,
               $_grpcolor, 
               $_grpwhiteicon,
-              $iconpath,
+              "", //$iconpath,
               0, // frequency
               $_object->ordered,
               1,
               $_object->disabled,
-              $_object->accented); // RENDERER
+              $_object->accented,
+              $_object->haschildren); // RENDERER
             } else {
               if (!isset($allAccounts)){
                 $allAccounts = IndexModel::LoadAccountList_ALL_keyId(USERID);
               };
-              echo tpl_in_calendar_event_transfer(
+              $result .= BudgerTemplates::tpl_in_calendar_event_transfer(
                 $_object->id, 
                 $_object->name, 
-                $_object->text, 
-                $_object->datein,
+                $_object->description, 
+                $_object->date_in,
                 $_object->transaccount,
                 $_object->transferred,
                 $allAccounts[$_object->transaccount]->name,
@@ -479,15 +493,15 @@ public function renderWholeTable(){
         }
       }
       $result .=  "</td>";
-      $result .=  "<td class='daytotals' for='{$accountid}' date='{$date}'></td>";
+      $result .=  "<td class='daytotals' for='{$accountid}' date='{$date}'>0</td>";
       $t++;
     };
-    if (count($this->Accounts) > 1){
+    if (count($this->accounts) > 1){
       $result .=  "<td class='totalofrow'></td>";
     };
     $result .=  "</tr>";
   if ($daynum == 1){
-    $result .= $this->tableTotalSectton($date, $this->Accounts, true);
+    $result .= $this->tableTotalSectton($date, $this->accounts, true);
   };
   };
 
@@ -497,12 +511,12 @@ public function renderWholeTable(){
     return $result;
 }
 
-public function renderNoAccounts(){
-  $result .=  "<h3>There is no accounts yet, please make one</h3>";
-  $result .=  "<a href='/index.php/component/teftelebudget/?view=accounts&modal=open'>
-<input type='button' class='btn btn-info' value='CREATE ACCOUNT'/>
-</a>";
-return $result;
-}
+// public function renderNoAccounts(){
+//   $result .=  "<h3>There is no accounts yet, please make one</h3>";
+//   $result .=  "<a href='/index.php/component/teftelebudget/?view=accounts&modal=open'>
+// <input type='button' class='btn btn-info' value='CREATE ACCOUNT'/>
+// </a>";
+// return $result;
+// }
 
 }

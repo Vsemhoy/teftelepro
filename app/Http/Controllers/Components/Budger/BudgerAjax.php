@@ -10,6 +10,7 @@ use App\Http\Controllers\Base\Input;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Components\Budger\BudgerTemplates;
 
 
 
@@ -161,6 +162,19 @@ class BudgerAjax extends BaseController
       return self::removeAccount($data, $user);
     }
 
+
+
+    if ($code == 300) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::createEventInChart($data, $user);
+    }
+
+    if ($code == 390) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::removeEventInChart($data, $user);
+    }
   }
 
 
@@ -510,6 +524,113 @@ class BudgerAjax extends BaseController
   }
 
 
+  // CODE 300
+  public function createEventInChart($json, $user)
+  {
+    $type = Input::filterMe("INT", $json->type );
+    $category = Input::filterMe("INT", $json->category );
+    $account = Input::filterMe("INT", $json->account );
+    $target = Input::filterMe("INT", $json->target );
+    $amount = Input::filterMe("INT", $json->amount );
+    $name = Input::filterMe("STRING", $json->name, 64 );
+    $categoryname = Input::filterMe("STRING", $json->categoryname, 64 );
+    $descr = Input::filterMe("STRING", $json->description, 2000 );
+    $date = Input::filterMe("DATE", $json->date );
+
+    $isRepeat = Input::filterMe("INT", $json->isrepeat );
+    $accented = Input::filterMe("INT", $json->accented );
+    $r_period = Input::filterMe("WORD", $json->repperiod );
+    $r_times = Input::filterMe("INT", $json->reptimes );
+    $r_changer = Input::filterMe("INT", $json->repchanger );
+    $r_goal = Input::filterMe("INT", $json->repgoal );
+
+
+
+    $hasChildren = 0;
+    if ($isRepeat == 1 && $r_times > 1){
+      $hasChildren = 1;
+    }
+    $target = $target == "" ? 0 : $target;
+    if (strlen($name) < 2){
+      $temp = Input::filterMe("STRING", $json->name, 1 );
+      if ($temp == '.' ||
+      $temp == '.' ||
+      $temp == ',' ||
+      $temp == '`' ||
+      $temp == '"' ||
+      $temp == '^' ||
+      $temp == '!' ||
+      $temp == '?' ||
+      $temp == '-' ||
+      $temp == '+' ||
+      $temp == '=' ||
+      $temp == '/' ||
+      $temp == '\\' ||
+      $temp == ')' ||
+      $temp == '(' ||
+      $temp == ';' ||
+      $temp == ':' ||
+      $temp == ';' ||
+      $temp == '*' ||
+      $temp == '&' ||
+      $temp == '|' ||
+      $temp == '#' ||
+      $temp == '@' ||
+      $temp == '%' ||
+      $temp == '[' ||
+      $temp == ']' ||
+      $temp == '{' ||
+      $temp == '}' ||
+      $temp == '%' ||
+      $temp == "'" ||
+      $temp == " "
+      ){
+        $name = "New event";
+      }
+    }
+
+    if ($type == 1 || $type == 3){
+      if ($amount < 0){
+        $amount = $amount * -1;
+      }
+    } 
+    else 
+    {
+      if ($amount > 0){
+        $amount = $amount * -1;
+      }
+    }
+
+    $newId  = DB::table(env('TB_BUD_EVENTS'))->insertGetId(
+      [
+      'name' => $name,
+      'description' => $descr,
+      'user' => $user->id,
+      'type' => $type,
+      'value' => $amount,
+      'account' => $account,
+      'transaccount' => $target,
+      'category'  => $category,
+      'haschildren'  => $hasChildren,
+      'date_in'  => $date,
+      'accented'  => $accented
+      ]
+    );
+    $result = [];
+    $block = BudgerTemplates::tpl_in_calendar_event(
+      $newId, $name, $descr, $date, $account, $type, $amount, $category,
+       $categoryname, '', '', '', '', 0, 0, 1, 0, $accented);
+      array_push($result, $block);
+    return json_encode($result); 
+  }
   
 
+  public function removeEventInChart($json, $user)
+  {
+    $id = Input::filterMe("INT", $json->id );
+    $removechilds = Input::filterMe("INT", $json->removechilds );
+
+    $deleted = DB::table(env('TB_BUD_EVENTS'))->where('id', '=', $id )->where('user', '=', $user->id )->delete();
+      return 1;
+  }
 }

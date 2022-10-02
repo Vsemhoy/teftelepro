@@ -46,6 +46,7 @@ class Input
 
   public static function filterMe($filter, $input, $length = 0)
   {
+    $filter = strtoupper($filter);
     if ($filter == 'INT')
     {
       return self::INT($input);
@@ -56,6 +57,14 @@ class Input
         return substr( self::STRING($input), 0 , $length);
       }
       return self::STRING($input);
+    }
+    elseif ($filter == 'WORD')
+    {
+      return preg_replace( "/[^a-zA-Z0-9]/i", "", $input );
+    }
+    elseif ($filter == 'WORDS')
+    {
+      return preg_replace( "/[^a-zA-Z0-9 ]/i", "", $input );
     }
     elseif ($filter == 'RAW')
     {
@@ -92,6 +101,10 @@ class Input
     elseif ($filter == 'INTARAY')
     {
       return self::INTARRAY($input);
+    }
+    elseif ($filter == 'DATE')
+    {
+      return self::DATE($input);
     }
     else 
     {
@@ -158,6 +171,23 @@ class Input
   {
     //return htmlspecialchars($value, ENT_QUOTES);
     return filter_var($value, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+  }
+
+
+  public static $date = true;
+  public static function DATE($value)
+  {
+    // returns formatted date of current date if false
+    $newformat = '';
+    try {
+      $time = strtotime($value);
+      $newformat = date('Y-m-d', $time);
+    }  finally {
+      if ($newformat == '1970-01-01'){
+        $newformat = date('Y-m-d', time());
+      }
+    }
+    return $newformat;
   }
 
   public static $array = true;

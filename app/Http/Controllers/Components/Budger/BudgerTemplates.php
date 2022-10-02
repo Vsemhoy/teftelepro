@@ -15,7 +15,7 @@ class BudgerTemplates extends BaseController{
 
 
 
-function tpl_in_calendar_event($id, $name, $text, $date, $account, $eventtype, $amount, $group = '', $groupname = '', $icon = '', $iconcolor = '', $whiteicon = '', $iconpath = '', $freq  = 0, $ordered = 0, $dataSection = 1, $disabled = 0, $accent = 0){
+  public static function tpl_in_calendar_event($id, $name, $text, $date, $account, $eventtype, $amount, $category = '', $catname = '', $icon = '', $iconcolor = '', $whiteicon = '', $iconpath = '', $freq  = 0, $ordered = 0, $dataSection = 1, $disabled = 0, $accent = 0, $haschildren = 0){
 $length = strlen($text) / 4;
 // Prevent insert negative values
 if ($amount < 0){
@@ -51,94 +51,61 @@ if ($length < 10){
 };
 
 if ($dataSection == 1){
-  $target = 'tf_item_';
+  $target = 'bud_item_';
 } else if ($dataSection == 2){
-  $target = 'tf_template_';
+  $target = 'bud_template_';
 } else if ($dataSection == 3){
-  $target = 'tf_good_';
+  $target = 'bud_good_';
 };
 
 $result = "";
 
 $accentclass = "";
 if ($accent == 1){
-  $accentclass = " tf-accented";
+  $accentclass = " bud-accented";
 };
 $disclass = "";
 if ($disabled == 1){
-  $disclass = " tf-disabled";
+  $disclass = " bud-disabled";
   $accentclass = "";
 };
 
 //  openeditorwindow = 1 - type: 1-editchart; 2 - edit template, 3 - edit good; second = id of the element
-$result .= '<div class="list-group-item py-1 tf_item dragtemplate ' . $transclasstype . $accentclass . $disclass . '" aria-current="true"
-  id="'. $target . $id . '" draggable="true" ondragstart="drag(event)"
-  template="22' . random_int(1, 30000) . '" type="' . $eventtype . '"
-  onekeydown="tf_keyhandler(event)" frequency="' . $freq . '" ordered="' . $ordered . '">
-  <div class="d-flex w-100 align-items-center justify-content-between">
-    <strong class="mb-1 namevalue">' . $name  . '</strong>
-    <div>
+$result .= "<div class='bud-event-card dragtemplate " . $transclasstype . $accentclass . $disclass .
+ "' aria-current='true'
+  id='" . $target . $id . "' draggable='true' ondragstart='drag(event)'
+  template='22" . random_int(1, 30000) . "' type='" . $eventtype . "'
+  onekeydown='tf_keyhandler(event)' frequency='" . $freq . "' ordered='" . $ordered . "'
+  haschildren='" . $haschildren . "'>
 
-    <span class="anchor fr pl-03rem tfItemMenuTrig" >
-    <i class="bi-three-dots-vertical"></i>
-    <div class="tfEventMenu d-none" section=' . $dataSection . ' id=' . $id . '>
-      <ul>
-        <li class="nav-item tf_edittrigger" >
-          <a class="nav-link">
-          <i class="bi-pencil-square"></i>
-          <span class="">Edit Item</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a href="javascript:void(false);" class="nav-link">
-          <i class="bi-toggle-off"></i>
-          <span class="">Toggle active</span>
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link">
-          <i class="bi-bookmark"></i>
-          <span class="">Toggle highlight</span>
-          </a>
-        </li>
-        <li class="nav-item"  onclick="tf_deletethisitem(this);">
-          <a class="nav-link">
-          <i class="bi-trash-fill"></i>
-          <span class="">Delete</span>
-          </a>
-        </li>';
-        if (!empty($text)){
-          $result .= '        <li class="nav-item" onclick="expandthistext(this)>
-          <a class="nav-link">
-          <i class="bi-eye"></i>
-          <span class="">Delete</span>
-          </a>
-        </li>';
-        };
-        $result .= '</ul>
-    </div>
+  <div class='cardName'>
+    <div class='bud-name'>" . $name . "</div>
+    <div class='bud-trigger'>
+      <span class='itemMenu '><span class='' uk-icon='settings'></span>
+      </span>
     </span>
     </div>
+    </div>";
 
-  </div>
-  <div class="col-12 mb-1 small textvalue
-   ' . $lengthClass . '" onclick="dbc_opener(this);">
+        $result .= '
+  <div class="col-12 mb-1 small bud-descr
+   ' . $lengthClass . '" >
    ' . preg_replace("/\r\n|\r|\n/", '<br/>', $text) . '</div>
-  <div class="d-flex w-100 align-items-center justify-content-between">
-  <strong class="mb-1 amountvalue">' . $addsign . $amount  . '</strong>
+  <div class="bud-footer">
+  <strong class="mb-1 bud-value">' . $addsign . $amount  . '</strong>
   <div class="categories">';
 
-  if (!empty($group)){
+  if (!empty($category)){
     $i_color = "";
     $i_white = "";
     $i_blacktext = "text-dark";
     if (!empty($iconcolor)){ $i_color = "style='background-color: #{$iconcolor};'";};
     if (!empty($whiteicon)){ $i_white = "dd-icon-inverted text-white"; $i_blacktext = "";};
-    $result .= "<span class='badge {$i_blacktext}' {$i_color} category='{$group}'>";
+    $result .= "<span class='bud-badge {$i_blacktext}' {$i_color} category='{$category}'>";
     if (empty($icon)){
-      $result .= $groupname;
+      $result .= $catname;
     } else {
-      $result .= "<img class='dd-icon {$i_white}' src='{$iconpath}{$icon}.svg' title='{$groupname}'>";
+      $result .= "<img class='dd-icon {$i_white}' src='{$iconpath}{$icon}.svg' title='{$catname}'>";
     };
     $result .= "</span>";
   }
@@ -149,7 +116,7 @@ return $result;
 }
 
 
-function tpl_in_calendar_event_transfer($id, $name, $text, $date, $account, $targeter, $accname, $acccolor, $accurrency, $eventtype, $amount, $freq  = 0, $ordered = 0){
+public static  function tpl_in_calendar_event_transfer($id, $name, $text, $date, $account, $targeter, $accname, $acccolor, $accurrency, $eventtype, $amount, $freq  = 0, $ordered = 0){
   $length = strlen($text) / 4;
   // Prevent insert negative values
   if ($amount < 0){
@@ -469,10 +436,10 @@ function renderEditorZone(){
 public static function renderEventModal($accounts = null, $categories = null, $allaccounts = null, $currencies = null)
 {
   $result = "<div id='modal_event' class='uk-flex-top' uk-modal>
-  <div class='uk-modal-dialog uk-margin-auto-vertical'>
+  <div class='uk-modal-dialog uk-margin-auto-vertical' >
   <button class='uk-modal-close-default' type='button' uk-close></button>
   <div class='uk-modal-header'>
-      <h2 id='mod_title' class='uk-modal-title'>Modal Title</h2>
+      <h4 id='mod_title' class='uk-modal-title'>Modal Title</h4>
   </div>
   <div>
   <div>
@@ -490,11 +457,14 @@ public static function renderEventModal($accounts = null, $categories = null, $a
         <!--legend class='uk-legend'>Legend</legend -->
 
         <div class='uk-margin uk-mb-0'>
-            <input class='uk-input' type='text' placeholder='Name' id='mod_name'>
+            <input class='uk-input' type='text' placeholder='Name' maxlength='64' id='mod_name'>
+            <div class='uk-text-meta uk-align-right'></div>
         </div>
 
         <div class='uk-margin uk-mb-0'>
-            <textarea class='uk-textarea' rows='7' placeholder='Description' id='mod_description'></textarea>
+            <textarea class='uk-textarea' rows='7' placeholder='Description'
+             id='mod_description' maxlength='2000'></textarea>
+             <div class='uk-text-meta uk-align-right'></div>
         </div>
 
         <div class='uk-margin uk-mb-0 uk-inline uk-width-1-1' title='Amount of money'>
@@ -555,7 +525,7 @@ public static function renderEventModal($accounts = null, $categories = null, $a
               foreach ($categories AS $value){
                 if (!empty($value->data)){
                   if ($value->archieved == 0){
-                    $result .= "<option class='opt-header' disabled>" . $value->name . "</option>";
+                    $result .= "<option class='opt-header' data-type='" . $value->type . "' disabled>" . $value->name . "</option>";
 
                   }
   
@@ -581,7 +551,9 @@ public static function renderEventModal($accounts = null, $categories = null, $a
           $result .= "</select>
       </div>
 
-
+      <div class='uk-margin uk-mb-0'>
+        <input id='mod_isAccent' class='uk-checkbox' type='checkbox'> Accented</label>
+      </div>
 
 
     </fieldset>
@@ -600,16 +572,16 @@ public static function renderEventModal($accounts = null, $categories = null, $a
 
       <div class='uk-margin uk-mb-0 uk-grid-small uk-child-width-auto uk-grid'>
         <label>
-        <input id='mod_isRepeat' class='uk-checkbox' type='checkbox' checked> Repeat event</label>
+        <input id='mod_isRepeat' class='uk-checkbox' type='checkbox'> Repeat event</label>
           </div>
 
           <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1 uk-column-1-2' title='Main repeat options'>
           <span class='small' >Repeat period</span>
             <select class='uk-select' id='mod_repeatPeriod' placeholder='Period of repeating'>
-                <option>Every month</option>
-                <option>Every week</option>
-                <option>Every day</option>
-                <option>Every Year</option>
+                <option value='month'>Every month</option>
+                <option value='week'>Every week</option>
+                <option value='day'>Every day</option>
+                <option value='year'>Every Year</option>
             </select>
             <span class='small' >Repeat times</span>
             <input class='uk-input' type='number'
@@ -655,6 +627,77 @@ public static function renderEventModal($accounts = null, $categories = null, $a
   </div>
 </div>
 </div>";
+  return $result;
+}
+
+public static function renderEventFilterModal($accounts = null, $categories = null, $allaccounts = null, $currencies = null) 
+{
+  $result = "";
+  $result .= "<div id='modal-container' class='uk-modal-container' uk-modal>
+  <div class='uk-modal-dialog'>
+      <button class='uk-modal-close-default' type='button' uk-close></button>
+      <form method='GET' action='/public/budger'>
+      <h3 class='uk-modal-header'>Event Navigator</h3>
+      <div class='uk-modal-body'>
+        <div class='uk-column-1-2@s uk-column-1-3@m uk-column-1-4@l'>
+          ";
+
+          $result .= "<div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Currency'>
+          <span class='small' >Currencies</span>
+          <select class='uk-select' name='cur' id='currency_filter' placeholder='Currency'>";
+          if ($currencies != null){
+            foreach ($currencies AS $value){
+    
+                      if ($value->is_removed == 0){
+                        $result .= "<option class='' data-type='' value='" . $value->id . "'>  " . $value->name . "</option>";
+                      }
+                      else {
+                        
+                        $result .= "<option class='opt-archieved' disabled>" . $value->name . "</option>";
+                      }
+                    }
+                  }
+                  $result .= "</select>";
+          $result .= "</div>
+   ";
+
+ $result .= "<div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Account'>
+          <span class='small' >Accounts</span>
+          <select class='uk-select' name='acc[]' id='accounts_filter' placeholder='Account' multiple >";
+          if ($allaccounts != null){
+            foreach ($allaccounts AS $value){
+    
+                      if ($value->archieved == 0){
+                        $result .= "<option class='' data-type='' value='" . $value->id . "'>  " . $value->name . "</option>";
+                      }
+                      else {
+                        
+                        $result .= "<option class='opt-archieved' disabled>" . $value->name . "</option>";
+                      }
+                    }
+                  }
+                  $result .= "</select>";
+          $result .= "</div>";
+
+   $result .= "<div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Past time'>
+   <label for='stm'>Month from (past)</label>
+   <input class='uk-input' type='month' id='stm' name='stm' value='2022-06'>
+   </div>";
+   
+   $result .= "<div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Future time'>
+    <label for='enm'>Month to (future)</label>
+    <input class='uk-input' type='month' id='enm' name='enm' value='2022-08'>
+   </div>
+
+   </div>
+   </div>
+   <div class='uk-modal-footer'>
+   <input class='uk-button uk-button-primary' type='submit' value='GO!'>
+   </div>
+   </form>
+   </div>
+   </div>";
+                  $result .= "";
   return $result;
 }
 
@@ -784,6 +827,20 @@ public static function renderAccountItemMenu(){
 return $result;
 }
 
+public static function renderEventItemMenu(){
+  $result = "<div id='itemMenu' data-target='' class='uk-dropdown uk-open menu-inverted' style=''>
+  <ul class='uk-nav uk-dropdown-nav'>
+     <!-- <li><a href='' data-event='opensettings' class='btnChangeColor'>Change color</a></li> -->
+      <li class='' data-event='enlarge' ><a class=''>Enlarge</a> <span uk-icon='icon: plus'></span></li>
+      <li  data-event='show' ><a class=''>Show</a>            <span uk-icon='icon: commenting'></span></li>
+      <li  data-event='edit' ><a class=''>Edit</a>            <span uk-icon='icon: pencil'></span></li>
+      <li  data-event='accent'  ><a class=''>Accent</a>          <span uk-icon='icon: bookmark'></span></li>
+      <li  data-event='disable'  ><a class=''>Disable</a>         <span uk-icon='icon: ban'></span></li>
+      <li  data-event='remove'   ><a class=''>Remove</a>          <span uk-icon='icon: trash'></span></li>
+  </ul>
+</div>";
+return $result;
+}
 
 public static function renderAccountContainer($id, $name, $items, $order = 0) 
 {

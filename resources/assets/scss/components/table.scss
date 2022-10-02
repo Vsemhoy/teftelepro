@@ -383,7 +383,7 @@ $inverse-table-hover-row-background:                     $inverse-table-row-acti
   color: rgb(255 255 255 / 15%);
   font-size: 1rem;
 }
-.droptabledata  .uk-icon {
+.droptabledata  > .uk-icon {
   display:  none;
   transition: all ease 1.2s;
   opacity: 0;

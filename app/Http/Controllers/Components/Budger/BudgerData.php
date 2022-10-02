@@ -166,9 +166,10 @@ class BudgerData
       $accounts = Utils::arrayToCommaSeparated($accounts);
     }
     $result = null;
-    $result = DB::select('select * from ' . env('TB_BUD_EVENTS') . ' where user = :user AND is_removed = 0 AND account IN (' . 
-    $accounts . ') AND date_in BETWEEN ' . $startmonth . ' AND ' . $lastmonth . ' ORDER BY ordered ASC', ['user' => $user, ]);
-    return Utils::arrayToIndexed($result);
+    $result = DB::select('select * from ' . env('TB_BUD_EVENTS') . 
+    ' where user = :user AND is_removed = 0  ORDER BY ordered ASC', ['user' => $user ]);
+
+    return Utils::arrayToaArray($result);
     // $db = parent::getDbo();
     // $query = $db->getQuery(true);
     // $query->select('*');
@@ -181,6 +182,9 @@ class BudgerData
     // $db->setQuery($query);
     // $result = $db->loadObjectList("id");
     // return $result;
+    // AND account IN ("' . 
+    //$accounts . '") AND date_in BETWEEN "' . $startmonth . '" AND "' .
+   // $lastmonth . '"
   }
 
 

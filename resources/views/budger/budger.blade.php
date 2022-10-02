@@ -26,17 +26,16 @@
     $com = Controller::getComponent('budger');
     $cont = new BudgerMain($user->id);
     
+
+    $accounts    = BudgerData::LoadAccountsByCurrency($user->id, $cont->currentCurrency);
+    $categories  = BudgerData::LoadGroupedCategories($user->id);
+    $allaccounts = BudgerData::LoadAccountList($user->id);
+    $currencies  = BudgerData::LoadCurrencies_keyId($user->id);
     ?>
 
 <div class="uk-section uk-section-primary uk-padding-small">
     <div class="uk-container uk-container-small uk-light">
     <h3 class="uk-card-title uk-light text-white">Budget events</h3>
-    <p uk-margin>
-
-      <button class="uk-button uk-button-default">Add event</button>
-      <button class="uk-button uk-button-default">Collapse all</button>
-      <button class="uk-button uk-button-default" disabled>Disabled</button>
-      </p>
     </div>
 </div>
 
@@ -44,45 +43,21 @@
 
     <div class="container-fluid px-0">
       <div class="input-group mb-0">
-      <input id="tf_budget_search" type="text" class="form-control rounded-0 bg-transparent" placeholder="Component search" aria-label="Recipient's username" aria-describedby="button-addon2" value="">
-      <button class="btn btn-outline-secondary rounded-0 bg-transparent " type="button" id="button-addon1">GO!</button>
-      <button onclick="togglefilterarea();" class="btn btn-outline-secondary rounded-0 bg-transparent " type="button" id="button-addon2">Filter</button>
+      <input id="tf_budget_search" type="text" class="uk-input" 
+      placeholder="Local filter" aria-label="Recipient's username" aria-describedby="button-addon2" value="">
+      
     </div>
     <div class="filterarea d-none p-4 card">
       <div class="container">
-      <form method="GET" action="/index.php/component/teftelebudget/?stm=2022-06&amp;enm=2022-08">
-        <div class="row">
-          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3 mb-3">
-            <select onchange="selectGroupsBycurrency();" class="form-select" name="cur" id="currency_filter" value="">
-<option value="RUB">RUB</option>
-Warning:  Undefined variable $urrentCurr in /home/host1334262/teftele.com/htdocs/www/components/com_teftelebudget/tmpl/index/default.php on line 620
-<option value="USD">USD</option><option value="BYR">BYR</option>            </select>
-          </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3  mb-3">
-            <select class="form-select" multiple="" name="acc[]" id="accounts_filter">
-            <option value="1" class="" currency="RUB">CASH</option><option value="2" class="" currency="RUB">SBER CARD</option><option value="7" class="" currency="RUB">Credit Debt</option><option value="4" class="d-none" currency="USD">Global Success</option><option value="8" class="d-none" currency="USD">Beginning deals</option><option value="3" class="d-none" currency="BYR">TINKOFF CR</option>            </select>
-          </div>
-                    <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3  mb-3">
-            <label for="stm">Month from (past)</label>
-            <input class="form-control" type="month" id="stm" name="stm" value="2022-06">
-          </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3  mb-3">
-            <label for="enm">Month to (future)</label>
-            <input class="form-control" type="month" id="enm" name="enm" value="2022-08">
-          </div>
-          <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-3  mb-3">
-            <input class="btn btn-secondary" type="submit" value="Submit Button">
-          </div>
-        </div>
-</form>
+
       </div>
     </div>
     </div>
       <div class="p-0">
  <!--  <h2>COM_TEFTELEBUDGET_MSG_HELLO_ACCOUNTS</h2> -->
-<p><?php  echo $cont->currentCurrency; ?> - current currency</p>
+
  <br>
- <?php echo $cont->get_lastMonth; ?>
+ 
   <div class="container">
 
       <?php echo $cont->renderNavigateButtons(); ?>
@@ -92,32 +67,39 @@ Warning:  Undefined variable $urrentCurr in /home/host1334262/teftele.com/htdocs
 <br>
 
       <?php 
-      $user = 3;
+
       // $result = DB::select('select * from ' . env('TB_BUD_ACCOUNTS') . ' where user = :user AND notshow = 0 AND is_removed = 0 ORDER BY ordered ASC', ['user' => $user, ]);
       // print_r($result);
       ?>
 
   
     <div class="container">
-    <div class="alert alert-info" role="alert">  
-      Press SHIFT before you start draging an Event to make a copy of event    </div>
-    <div class="alert alert-info" role="alert">  
-      This section uses Nestable.JS which implements five-level nesting of items. At the moment this functionality is redundant, but in the future I will definetly figure out how to use it with the greatest benefit for the user.    </div>
-  </div>
+      <div class="alert alert-info" role="alert">  
+        Press SHIFT before you start draging an Event to make a copy of event    </div>
+      <div class="alert alert-info" role="alert">  
+        This section uses Nestable.JS which implements five-level nesting of items. 
+        At the moment this functionality is redundant, but in the future I will definetly 
+        figure out how to use it with the greatest benefit for the user.    </div>
+    </div>
 </div>
   
-<?php echo $cont->currentCurrency;
-print_r(BudgerData::LoadCurrencies_keyId($user)); ?>
 
   </div>
-  </div>
+
 <?php 
  echo BudgerTemplates::renderEventModal(
-  BudgerData::LoadAccountsByCurrency($user, $cont->currentCurrency),
- BudgerData::LoadGroupedCategories($user),
-BudgerData::LoadAccountList($user),
-BudgerData::LoadCurrencies_keyId($user)
+    $accounts,
+    $categories,
+    $allaccounts,
+    $currencies  
     );
+
+    echo BudgerTemplates::renderEventFilterModal(
+      $accounts,
+      $categories,
+      $allaccounts,
+      $currencies  
+      );
  ?>
 
 
@@ -157,6 +139,8 @@ class ModalHandler
     this.rowOptions = document.querySelector('#mod_options_body');
     this.rowManage = document.querySelector('#mod_manage_body');
 
+    this.selectCategory = document.querySelector('#mod_category');
+
     this.title = document.querySelector('#mod_title');
 
     this.modalTriggers  = document.querySelectorAll(".event_trigger");
@@ -172,6 +156,29 @@ class ModalHandler
     this.btnSave.addEventListener('click', this.SaveNewEvent);
 
     parent = this;
+
+    document.querySelector('#mod_description').addEventListener('keyup', function(elem){
+      if (this.value.length > 0){
+        let limit = 2000;
+        let cou = this.value.length;
+        let block = this.parentNode.querySelectorAll('.uk-text-meta')[0];
+        block.innerHTML = cou + " of " + limit;
+      } else {
+        let block = this.parentNode.querySelectorAll('.uk-text-meta')[0];
+        block.innerHTML = "";
+      }
+    });
+    document.querySelector('#mod_name').addEventListener('keyup', function(elem){
+      if (this.value.length > 0){
+        let limit =  64;
+        let cou = this.value.length;
+        let block = this.parentNode.querySelectorAll('.uk-text-meta')[0];
+        block.innerHTML = cou + " of " + limit;
+      } else {
+        let block = this.parentNode.querySelectorAll('.uk-text-meta')[0];
+        block.innerHTML = "";
+      }
+    })
   }
 
   run(){
@@ -181,18 +188,23 @@ class ModalHandler
 
     Array.from(modalTriggers).forEach(i => i.addEventListener("click", function(event){
       let elem = this.parentNode;
-      base.openEventModal(elem);
+      base.openEventModal();
       base.buildClearEventModal(elem, event);
     }));
     
     Array.from(doubleTriggers).forEach(i => i.addEventListener("dblclick", function(event){
       let elem = this;
-      base.openEventModal(elem);
-      base.buildClearEventModal(elem, event);
+      let inblocks = elem.querySelectorAll('.bud-event-card');
+      console.log(inblocks.length);
+      if (inblocks.length == 0){
+        base.openEventModal();
+        base.buildClearEventModal(elem, event);
+
+      }
     }));
   }
 
-    openEventModal(elem){
+    openEventModal(){
      UIkit.modal(parent.modalWindow).show();
    }
   
@@ -206,6 +218,7 @@ class ModalHandler
       }
       this.SetOptionsHidden();
       this.title.innerHTML = 'Add new event';
+      this.btnManage.setAttribute('disabled', 'disabled');
 
       let date = elem.parentNode.getAttribute('date');
       document.querySelector('#mod_date').value = date;
@@ -223,6 +236,20 @@ class ModalHandler
 
     parent.rowTgAcc.classList.add('uk-hidden');
     parent.eventType = 2;
+
+    let index = 0;
+    let sel = parent.selectCategory.querySelectorAll('option');
+    for (let i = 0; i < sel.length; i++){
+      if (sel[i].getAttribute('data-type') == 2){
+        sel[i].classList.remove('uk-hidden');
+        if (index == 0 && !sel[i].classList.contains('opt-header')){
+          parent.selectCategory.selectedIndex = i;
+          index = i;
+        }
+      } else {
+        sel[i].classList.add('uk-hidden'); 
+      }
+    }
   }
   SetIncom(){
     parent.btnInc.classList.add('active');
@@ -235,6 +262,20 @@ class ModalHandler
 
     parent.rowTgAcc.classList.add('uk-hidden');
     parent.eventType = 1;
+
+    let index = 0;
+    let sel = parent.selectCategory.querySelectorAll('option');
+    for (let i = 0; i < sel.length; i++){
+      if (sel[i].getAttribute('data-type') == 1){
+        sel[i].classList.remove('uk-hidden');
+        if (index == 0 && !sel[i].classList.contains('opt-header')){
+          parent.selectCategory.selectedIndex = i;
+          index = i;
+        }
+      } else {
+        sel[i].classList.add('uk-hidden'); 
+      }
+    }
   }
   SetTranfer(){
     parent.btnInc.classList.remove('active');
@@ -247,6 +288,20 @@ class ModalHandler
 
     parent.rowTgAcc.classList.remove('uk-hidden');
     parent.eventType = 3;
+
+    let index = 0;
+    let sel = parent.selectCategory.querySelectorAll('option');
+    for (let i = 0; i < sel.length; i++){
+      if (sel[i].getAttribute('data-type') == 3){
+        sel[i].classList.remove('uk-hidden');
+        if (index == 0 && !sel[i].classList.contains('opt-header')){
+          parent.selectCategory.selectedIndex = i;
+          index = i;
+        }
+      } else {
+        sel[i].classList.add('uk-hidden'); 
+      }
+    }
   }
   SetOptionsHidden(){
     
@@ -257,6 +312,11 @@ class ModalHandler
 
   }
   SetOptionsShowed(){
+    if (parent.btnOptns.classList.contains('uk-background-default')){
+      parent.btnOptns.classList.remove('uk-background-default');
+      parent.rowOptions.classList.add('uk-hidden');
+      return;
+    }
     parent.btnOptns.classList.add('uk-background-default');
     parent.btnManage.classList.remove('uk-background-default');
     parent.rowManage.classList.add('uk-hidden');
@@ -271,6 +331,7 @@ class ModalHandler
 
   SaveNewEvent()
   {
+    let conter = 0;
     let requestCode = 300;
     let outFormat = "number";
 
@@ -279,7 +340,7 @@ class ModalHandler
       alert("Name is too short!");
       return;
     }
-
+    
     let data = {};
     data.code = requestCode;
     data.name = name;
@@ -288,23 +349,21 @@ class ModalHandler
     data.amount = document.querySelector('#mod_amount').value;
     data.date = document.querySelector('#mod_date').value;
     data.category = document.querySelector('#mod_category').value;
+    data.categoryname = document.querySelector('#mod_category')[document.querySelector('#mod_category').selectedIndex].text.trim();
     data.account = document.querySelector('#mod_account').value;
     data.target = document.querySelector('#mod_tgaccount').value;
     // Addtitional options
     let isRepeat = document.querySelector('#mod_isRepeat').checked ? 1 : 0;
-    data.isrepeat = isRepet;
+    let isAccent = document.querySelector('#mod_isAccent').checked ? 1 : 0;
+    data.accented = isAccent;
+    data.isrepeat = isRepeat;
     data.repperiod = document.querySelector('#mod_repeatPeriod').value;
     data.reptimes = document.querySelector('#mod_repeatTimes').value;
     data.repchanger = document.querySelector('#mod_amountChanger').value;
     data.repgoal = document.querySelector('#mod_amounGoal').value;
-    
-    
 
     if (data.amount == ''){ data.amount = 0; };
     if (data.category == ''){ data.category = 0; };
-
-
-    alert(isRepeat);
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -314,10 +373,25 @@ class ModalHandler
           return 0;
         };
         console.log(this.responseText);
-        block.classList.remove("temper");
-        block.setAttribute('id','item_' + this.responseText);
+        let result = JSON.parse(this.responseText);
+        let block = result[0];
+
+        let burs = document.querySelectorAll('.budrow');
+        for (let i = 0; i < burs.length; i++){
+          if (burs[i].getAttribute('date') == data.date){
+            let cols = burs[i].querySelectorAll('.droptabledata');
+            for (let q = 0; q < cols.length; q++){
+              if (cols[q].getAttribute('account') == data.account){
+                cols[q].insertAdjacentHTML('beforeEnd', block);
+              }
+            }
+          }
+        }
+        // block.classList.remove("temper");
+        // block.setAttribute('id','item_' + this.responseText);
         setTimeout(() => {
-          reorderItems(block.parentNode.parentNode);
+          Dom.reload();
+          // reorderItems(block.parentNode.parentNode);
         }, 30);
       }
       else if (this.status > 200)
@@ -333,22 +407,162 @@ class ModalHandler
     // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
-   // xhttp.setRequestHeader('name', '<?php echo csrf_token(); ?>');
 
-    alert(parent.eventType);
+    //alert(JSON.stringify(data));
 
-    //xhttp.send(JSON.stringify(data));
+    xhttp.send(JSON.stringify(data));
   }
 }
 
 
 class DOM {
+  parent;
+  reload(){
+    this.menuTrigger = document.querySelectorAll(".itemMenu ");
+    this.eventTrigger = document.querySelectorAll(".bud-event-card ");
+    this.modalWindow = document.querySelector("#modal_event");
+
+    this.chousenItem = "";
+
+    let modalWindow = this.modalWindow;
+    let menuTrigger = this.menuTrigger;
+      /// Trigger item Menu button
+    for (let i = 0; i < this.menuTrigger.length; i++)
+    {
+      menuTrigger[i].addEventListener("click", function(){
+        //eventBlock = true; 
+        parent.chousenItem = this.parentNode.parentNode.parentNode.id;
+
+        let left = menuTrigger[i].getBoundingClientRect().left;
+        let top = menuTrigger[i].getBoundingClientRect().top;
+
+        if (document.querySelector('#itemMenu') != null){
+          document.querySelector('#itemMenu').remove();
+        }
+        let block = `<?php echo budgerTemplates::renderEventItemMenu(); ?>`;
+        document.body.insertAdjacentHTML('beforeEnd', block);
+        block = document.querySelector('#itemMenu');
+        block.style.position = "fixed";
+        let width = block.getBoundingClientRect().width - menuTrigger[i].getBoundingClientRect().width;
+        block.style.left = ( left - width ) + "px";
+        block.style.top = top + "px";
+        let id = (menuTrigger[i].parentNode.parentNode.parentNode.id).replace(/\D/g, '');
+        let parentItem = menuTrigger[i].parentNode.parentNode.parentNode;
+        //parentItem.classList.add('menu-opened');
+        block.setAttribute('data-target', id);
+        let buttons = block.querySelectorAll(".uk-nav")[0].childNodes;
+        for (let y = 0; y < buttons.length; y++){
+
+          buttons[y].addEventListener('click', function(elem){
+            if (buttons[y].getAttribute('data-event') == 'enlarge'){
+              //archieveItem(id);
+              console.log('enlarge');
+            } else if (buttons[y].getAttribute('data-event') == 'show'){
+              // restoreItem(id);
+              console.log('show');
+            } else if (buttons[y].getAttribute('data-event') == 'edit'){
+              Modal.openEventModal();
+              console.log('edit');
+            } else if (buttons[y].getAttribute('data-event') == 'accent'){
+              // removeItem(id);
+              console.log('accent');
+            } else if (buttons[y].getAttribute('data-event') == 'disable'){
+              // removeItem(id);
+              console.log('disable');
+            } else if (buttons[y].getAttribute('data-event') == 'remove'){
+              // removeItem(id);
+              
+              parent.removeItem(parent.chousenItem);
+              console.log('remove');
+            }
+            document.querySelector('#itemMenu').remove();
+            //parentItem.classList.remove('menu-opened');
+          });
+        }
+
+        block.addEventListener("mouseleave", function(){
+          setTimeout(() => {
+            document.querySelector('#itemMenu').remove();
+            //parentItem.classList.remove('menu-opened');
+            }, 10);
+        });
+
+      });
+    }
+
+
+    for (let i = 0; i < this.eventTrigger.length; i++)
+    {
+      this.eventTrigger[i].addEventListener("dblclick", function()
+      {
+        Modal.openEventModal();
+        //UIkit.modal(modalWindow).show();
+      })
+    }
+
+  }
   
   constructor() 
   {
-    this.modalTriggers  = document.querySelectorAll(".event_trigger");
-    this.doubleTriggers = document.querySelectorAll(".droptabledata");
-    
+    this.reload(); 
+    parent = this;
+  }
+
+  removeItem(identer){
+    let block = document.querySelector('#' + identer);
+    let removeChilds = 0;
+    if (block.getAttribute('haschildren') == 1){
+      const result = confirm('Remove all child events?');
+      if (result == true){
+        removeChilds = 1;
+      }
+    }
+    let conter = 0;
+    let requestCode = 390;
+    let outFormat = "number";
+
+    let data = {};
+    data.code = requestCode;
+    data.id = identer;
+    data.removechilds = removeChilds;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          block.remove();
+          return 0;
+        };
+        console.log(this.responseText);
+        block.remove();
+
+        if (removeChilds){
+          let result = JSON.parse(this.responseText);
+          // foreach and so on
+        }
+        setTimeout(() => {
+          Dom.reload();
+          // reorderItems(block.parentNode.parentNode);
+        }, 30);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.remove();
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+
+    //alert(JSON.stringify(data));
+
+    xhttp.send(JSON.stringify(data));
+
   }
   
 
@@ -359,6 +573,32 @@ class DOM {
  // --------------------------- DOM -------------------
 
 
+ function allowDrop(ev) {
+  ev.preventDefault();
+}
+let sourceEventId = '';
+function drag(ev) {
+  ev.dataTransfer.setData("Text", ev.target.id);
+  sourceEventId = ev.target.id;
+}
+
+function drop(ev) {
+  if (ev.shiftKey){
+    //var data = ev.dataTransfer.getData("Text");
+    var nodeCopy = document.getElementById(sourceEventId).cloneNode(true);
+    if (ev.target.classList.contains('droptabledata')){
+      ev.target.appendChild(nodeCopy);
+      Dom.reload();
+    }
+  } 
+  else {
+    if (ev.target.classList.contains('droptabledata')){
+    var data = ev.dataTransfer.getData("Text");
+    ev.target.appendChild(document.getElementById(data));
+    }
+  }
+  ev.preventDefault();
+}
   
 class DomManager {
   constructor(){
@@ -368,6 +608,7 @@ class DomManager {
 
 }
  var Modal = new ModalHandler();
+ var Dom = new DOM();
 //  var DOME = new DOM();
 //  var DMAN =  new DomManager();
 
