@@ -117,46 +117,66 @@ let doubleTriggers = document.querySelectorAll(".droptabledata");
 
 class ModalHandler
 {
-  parent;
   constructor() 
   {
+    let parent = this;
     this.eventType = 0;
-
+    
     this.modalWindow = document.querySelector("#modal_event");
     this.btnInc = document.querySelectorAll('.uk-button-incom')[0];
     this.btnExp = document.querySelectorAll('.uk-button-expense')[0];
     this.btnTrs = document.querySelectorAll('.uk-button-transfer')[0];
+
     this.modHeader = document.querySelectorAll('.uk-modal-header')[0];
     this.btnOptns = document.querySelector('#btn_optionTrigger');
     this.btnManage = document.querySelector('#btn_manageTrigger');
-
+    
     this.btnDisable = document.querySelector("#btnDisableEvent");
     this.btnSave = document.querySelector("#btnSaveEvent");
-
+    
     this.rowTgAcc = document.querySelector('#row_targetAcc');
     this.rowCateg = document.querySelector('#row_category');
-
+    
     this.rowOptions = document.querySelector('#mod_options_body');
     this.rowManage = document.querySelector('#mod_manage_body');
-
-    this.selectCategory = document.querySelector('#mod_category');
-
+    
+    this.categorySelector = document.querySelector('#mod_category');
+    
     this.title = document.querySelector('#mod_title');
-
+    
     this.modalTriggers  = document.querySelectorAll(".event_trigger");
     this.doubleTriggers = document.querySelectorAll(".droptabledata");
     this.run = this.run();
     //this.buttonHandle = this.buttonHandle(this);
+    
 
-    this.btnExp.addEventListener('click', this.SetExpense);
-    this.btnInc.addEventListener('click', this.SetIncom);
-    this.btnTrs.addEventListener('click', this.SetTranfer);
-    this.btnOptns.addEventListener('click', this.SetOptionsShowed);
-    this.btnManage.addEventListener('click', this.SetManageShowed);
-    this.btnSave.addEventListener('click', this.SaveNewEvent);
+    this.btnExp.addEventListener('click', function(){
+      parent.SetExpense(parent);
+    });
+    this.btnInc.addEventListener('click', function(){
+      parent.SetIncom(parent);
+    });
 
-    parent = this;
+    this.btnTrs.addEventListener('click', function(){
+      parent.SetTranfer(parent);
+    });
+    
 
+    this.btnOptns.addEventListener('click', function(){
+      parent.SetOptionsShowed(parent);
+    });
+    
+
+    this.btnManage.addEventListener('click', function(){
+      parent.SetManageShowed(parent);
+    });
+
+    this.btnSave.addEventListener('click', function(){
+      parent.SaveNewEvent(parent);
+    });
+
+
+    
     document.querySelector('#mod_description').addEventListener('keyup', function(elem){
       if (this.value.length > 0){
         let limit = 2000;
@@ -179,6 +199,7 @@ class ModalHandler
         block.innerHTML = "";
       }
     })
+    parent = this;
   }
 
   run(){
@@ -199,7 +220,6 @@ class ModalHandler
       if (inblocks.length == 0){
         base.openEventModal();
         base.buildClearEventModal(elem, event);
-
       }
     }));
   }
@@ -210,13 +230,13 @@ class ModalHandler
   
     buildClearEventModal(elem, ev){
       if (ev.ctrlKey){
-        this.SetIncom();
+        this.SetIncom(this);
       } else if  (ev.altKey) {
-        this.SetTranfer();
+        this.SetTranfer(this);
       } else {
-        this.SetExpense();
+        this.SetExpense(this);
       }
-      this.SetOptionsHidden();
+      this.SetOptionsHidden(this);
       this.title.innerHTML = 'Add new event';
       this.btnManage.setAttribute('disabled', 'disabled');
 
@@ -225,7 +245,7 @@ class ModalHandler
      //alert(date);
    }
 
-  SetExpense(){
+  SetExpense(parent){
     parent.btnInc.classList.remove('active');
     parent.btnExp.classList.add('active');
     parent.btnTrs.classList.remove('active');
@@ -238,12 +258,12 @@ class ModalHandler
     parent.eventType = 2;
 
     let index = 0;
-    let sel = parent.selectCategory.querySelectorAll('option');
+    let sel = parent.categorySelector.querySelectorAll('option');
     for (let i = 0; i < sel.length; i++){
       if (sel[i].getAttribute('data-type') == 2){
         sel[i].classList.remove('uk-hidden');
         if (index == 0 && !sel[i].classList.contains('opt-header')){
-          parent.selectCategory.selectedIndex = i;
+          parent.categorySelector.selectedIndex = i;
           index = i;
         }
       } else {
@@ -251,7 +271,7 @@ class ModalHandler
       }
     }
   }
-  SetIncom(){
+  SetIncom(parent){
     parent.btnInc.classList.add('active');
     parent.btnExp.classList.remove('active');
     parent.btnTrs.classList.remove('active');
@@ -264,12 +284,12 @@ class ModalHandler
     parent.eventType = 1;
 
     let index = 0;
-    let sel = parent.selectCategory.querySelectorAll('option');
+    let sel = parent.categorySelector.querySelectorAll('option');
     for (let i = 0; i < sel.length; i++){
       if (sel[i].getAttribute('data-type') == 1){
         sel[i].classList.remove('uk-hidden');
         if (index == 0 && !sel[i].classList.contains('opt-header')){
-          parent.selectCategory.selectedIndex = i;
+          parent.categorySelector.selectedIndex = i;
           index = i;
         }
       } else {
@@ -277,7 +297,7 @@ class ModalHandler
       }
     }
   }
-  SetTranfer(){
+  SetTranfer(parent){
     parent.btnInc.classList.remove('active');
     parent.btnExp.classList.remove('active');
     parent.btnTrs.classList.add('active');
@@ -290,12 +310,12 @@ class ModalHandler
     parent.eventType = 3;
 
     let index = 0;
-    let sel = parent.selectCategory.querySelectorAll('option');
+    let sel = parent.categorySelector.querySelectorAll('option');
     for (let i = 0; i < sel.length; i++){
       if (sel[i].getAttribute('data-type') == 3){
         sel[i].classList.remove('uk-hidden');
         if (index == 0 && !sel[i].classList.contains('opt-header')){
-          parent.selectCategory.selectedIndex = i;
+          parent.categorySelector.selectedIndex = i;
           index = i;
         }
       } else {
@@ -303,15 +323,14 @@ class ModalHandler
       }
     }
   }
-  SetOptionsHidden(){
-    
+  SetOptionsHidden(parent){
     parent.rowManage.classList.add('uk-hidden');
     parent.rowOptions.classList.add('uk-hidden');
     parent.btnOptns.classList.remove('uk-background-default');
     parent.btnManage.classList.remove('uk-background-default');
 
   }
-  SetOptionsShowed(){
+  SetOptionsShowed(parent){
     if (parent.btnOptns.classList.contains('uk-background-default')){
       parent.btnOptns.classList.remove('uk-background-default');
       parent.rowOptions.classList.add('uk-hidden');
@@ -322,7 +341,7 @@ class ModalHandler
     parent.rowManage.classList.add('uk-hidden');
     parent.rowOptions.classList.remove('uk-hidden');
   }
-  SetManageShowed(){
+  SetManageShowed(parent){
     parent.btnOptns.classList.remove('uk-background-default');
     parent.btnManage.classList.add('uk-background-default');
     parent.rowOptions.classList.add('uk-hidden');
