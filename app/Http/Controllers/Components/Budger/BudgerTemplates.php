@@ -959,9 +959,10 @@ public static function renderAccountModal($currencies)
         <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Account'>
           <span class='small' >Type of account</span>
             <select class='uk-select' id='tf_acctype' placeholder='Account type'>
+                <option disabled value='0'>Shadow account</option>
                 <option value='1'>Standard</option>
-                <option value='2'>Debt</option>
-                <option value='3'>Credit</option>
+                <option value='2'>Cretid/Debt</option>
+                <option value='3'>Saving Account</option>
             </select>
         </div>
 

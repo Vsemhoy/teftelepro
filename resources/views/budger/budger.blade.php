@@ -62,7 +62,8 @@
 
       <?php echo $cont->renderNavigateButtons(); ?>
       <?php echo $cont->renderWholeTable(); ?>
-
+      <br>
+      <?php echo $cont->renderNavigateButtons(); ?>
 </div>
 <br>
 
@@ -119,7 +120,7 @@ class ModalHandler
 {
   constructor() 
   {
-    let parent = this;
+    let self = this;
     this.eventType = 0;
     
     this.modalWindow = document.querySelector("#modal_event");
@@ -151,28 +152,28 @@ class ModalHandler
     
 
     this.btnExp.addEventListener('click', function(){
-      parent.SetExpense(parent);
+      self.SetExpense(self);
     });
     this.btnInc.addEventListener('click', function(){
-      parent.SetIncom(parent);
+      self.SetIncom(self);
     });
 
     this.btnTrs.addEventListener('click', function(){
-      parent.SetTranfer(parent);
+      self.SetTranfer(self);
     });
     
 
     this.btnOptns.addEventListener('click', function(){
-      parent.SetOptionsShowed(parent);
+      self.SetOptionsShowed(self);
     });
     
 
     this.btnManage.addEventListener('click', function(){
-      parent.SetManageShowed(parent);
+      self.SetManageShowed(self);
     });
 
     this.btnSave.addEventListener('click', function(){
-      parent.SaveNewEvent(parent);
+      self.SaveNewEvent(self);
     });
 
 
@@ -348,9 +349,9 @@ class ModalHandler
     parent.rowManage.classList.remove('uk-hidden');
   }
 
-  SaveNewEvent()
+  SaveNewEvent(self)
   {
-    let conter = 0;
+    let counter = 0;
     let requestCode = 300;
     let outFormat = "number";
 
@@ -363,7 +364,7 @@ class ModalHandler
     let data = {};
     data.code = requestCode;
     data.name = name;
-    data.type = parent.eventType;
+    data.type = self.eventType;
     data.description = document.querySelector('#mod_description').value;
     data.amount = document.querySelector('#mod_amount').value;
     data.date = document.querySelector('#mod_date').value;
@@ -428,7 +429,6 @@ class ModalHandler
     xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
 
     //alert(JSON.stringify(data));
-
     xhttp.send(JSON.stringify(data));
   }
 }
@@ -616,6 +616,7 @@ function drop(ev) {
     ev.target.appendChild(document.getElementById(data));
     }
   }
+  Mastercounter.recount();
   ev.preventDefault();
 }
   
@@ -630,8 +631,110 @@ class DomManager {
  var Dom = new DOM();
 //  var DOME = new DOM();
 //  var DMAN =  new DomManager();
+class Counter
+{
+  recount()
+  {
+    this.droptabledata = document.querySelectorAll('.droptabledata');
 
- 
+    // recount CELL
+    for (let i = 0; i < this.droptabledata.length; i++)
+    {
+      let total = 0;
+      if (this.droptabledata[i].querySelectorAll('.bud-event-card').length > 0)
+      {
+        for (let q = 0; q < this.droptabledata[i].querySelectorAll('.bud-event-card').length; q++) {
+          let value = this.droptabledata[i].querySelectorAll('.bud-event-card')[q].querySelectorAll('.bud-value')[0].innerHTML;
+          value = +(value.trim());
+          total += value;
+        }
+      }
+      if (total != 0){
+        this.droptabledata[i].querySelectorAll('.daytotal')[0].innerHTML = total;
+      }
+      else 
+      {
+        this.droptabledata[i].querySelectorAll('.daytotal')[0].innerHTML = "";
+      }
+    }
+
+    // RECOUNT ROWS
+    // 1 - get starting balance and create value array
+    let resarray = [];
+    let subtotalrows = document.querySelectorAll('.subtotal');
+    for (let i = 0; i < subtotalrows.length ; i++) {
+      let index = subtotalrows.length - i - 1;
+      let subbalances = subtotalrows[index].querySelectorAll('.subtotalbal');
+      for (let q = 0; q < subbalances.length; q++) {
+        let value = +((subbalances[q].innerHTML).trim());
+        resarray.push(value);
+      }
+      break;
+    }
+    let table = document.querySelector('#budgettable');
+    let rows = table.querySelectorAll('tr');
+
+    for (let i = 0; i < rows.length; i++) {
+      let index = rows.length - 1 - i;
+      if (rows[index].classList.contains('budrow')){
+        for (let t = 0; t < resarray.length; t++) {
+          let value = rows[index].querySelectorAll('.daytotal')[t].innerHTML;
+          value = value == "" ? 0 : +(value.trim());
+          resarray[t] += value;
+          rows[index].querySelectorAll('.daytotals')[t].innerHTML = resarray[t];
+        }
+      }
+      if (rows[index].classList.contains('subtotal')){
+        for (let t = 0; t < resarray.length; t++) {
+          rows[index].querySelectorAll('.subtotalbal')[t].innerHTML = resarray[t];
+        }
+      }
+    }
+
+  }
+
+  constructor()
+  {
+    this.recount();
+  }
+}
+
+
+ class Decorator
+ {
+    reload(){
+      this.tabledata = document.querySelectorAll('td');
+      this.tabledatahead = document.querySelectorAll('th');
+      for (let i = 0; i < this.tabledata.length; i++)
+      {
+        if (this.tabledata[i].getAttribute('actype') == 2)
+        {
+          this.tabledata[i].classList.add('credits');
+        }
+        if (this.tabledata[i].getAttribute('actype') == 3)
+        {
+          this.tabledata[i].classList.add('savings');
+        }
+      }
+      for (let i = 0; i < this.tabledatahead.length; i++)
+      {
+        if (this.tabledatahead[i].getAttribute('actype') == 2)
+        {
+          this.tabledatahead[i].classList.add('credits');
+        }
+        if (this.tabledatahead[i].getAttribute('actype') == 3)
+        {
+          this.tabledatahead[i].classList.add('savings');
+        }
+      }
+    }
+    constructor()
+    {
+      this.reload();
+    }
+ }
+ var Decor = new Decorator();
+ var Mastercounter = new Counter();
 
 
 </script>

@@ -544,8 +544,6 @@ class BudgerAjax extends BaseController
     $r_changer = Input::filterMe("INT", $json->repchanger );
     $r_goal = Input::filterMe("INT", $json->repgoal );
 
-
-
     $hasChildren = 0;
     if ($isRepeat == 1 && $r_times > 1){
       $hasChildren = 1;

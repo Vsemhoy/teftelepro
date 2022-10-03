@@ -358,13 +358,10 @@ $inverse-table-hover-row-background:                     $inverse-table-row-acti
   padding-bottom: 1px;
 }
 
-.subtotal {
-  box-shadow: 0px -6px 9px -8px black;
+.subtotal:last-child {
+  border-bottom: 1px solid #e5e5e5;
 }
-.bg-subtotal {
-  background-color: #afb9c194 !important;
-    color: #343434;
-}
+
 .currentdate {
   background: #fff9c4 !important;
   outline: auto;
@@ -372,7 +369,7 @@ $inverse-table-hover-row-background:                     $inverse-table-row-acti
   outline-style: dashed;
 }
 .daytotal {
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 1px;
   font-style: oblique;
 }

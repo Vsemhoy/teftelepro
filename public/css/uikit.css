@@ -1205,13 +1205,8 @@ a.uk-link-reset,
   padding-bottom: 1px;
 }
 
-.subtotal {
-  box-shadow: 0px -6px 9px -8px black;
-}
-
-.bg-subtotal {
-  background-color: rgba(175, 185, 193, 0.5803921569) !important;
-  color: #343434;
+.subtotal:last-child {
+  border-bottom: 1px solid #e5e5e5;
 }
 
 .currentdate {
@@ -1222,7 +1217,7 @@ a.uk-link-reset,
 }
 
 .daytotal {
-  font-weight: 500;
+  font-weight: 400;
   letter-spacing: 1px;
   font-style: oblique;
 }
@@ -10802,6 +10797,14 @@ select .opt-header {
 }
 .bud-navigation .uk-button {
   padding: 0 12px;
+}
+
+.credits {
+  box-shadow: inset 0px 0px 0px 200px rgba(255, 0, 0, 0.0705882353);
+}
+
+.savings {
+  box-shadow: inset 0px 0px 0px 200px rgba(0, 243, 255, 0.0705882353);
 }
 
 /*# sourceMappingURL=uikit.css.map */

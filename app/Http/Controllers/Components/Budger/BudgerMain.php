@@ -319,7 +319,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false){
   <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
   foreach ($accountsToloadArr AS $account){
     $result .=  "<td class='mtotalio'><small>INCOMS<span class='incoms'></span></small></br><small>EXPENSES<span class='expences'></span></small></br><small>DIFFERENCE<span class='difference'></span></small></td>
-    <td class='mtotals'>BALANCE<span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'>";
+    <td class='mtotals'>balance: <span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'>";
     $ttv = 0;
         foreach ($this->items AS $total){
           if ($total->date_in == $date4total && $total->account ==  $account->id){
@@ -330,7 +330,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false){
     $result .=  "</span></td>";
   };
   if (count($accountsToloadArr) > 1){
-    $result .=  "<td class='totalofrow_s'><small>BALANCE"  . 
+    $result .=  "<td class='totalofrow_s'><small>balance: " . 
     ": <span class='incoms'></span></small></br><small>EXPENSES" . 
     ": <span class='expences'></span></small></br><small>DIFFERENCE<span class='difference'></span></small></td>";
   };
@@ -354,21 +354,21 @@ public function renderWholeTable(){
   
     $result .= "<table class='uk-table uk-table-divider uk-table-hover uk-table-small budgetable'>
     <thead>
-    <tr>
+    <tr style='border-top: 1px solid #e5e5e5;'>
       <th scope='col' class='tthd'>_DATE</th>
-      <th scope='col' class='tthd'>
+      <th scope='col' class='tthd' style='border-right: 1px solid #e5e5e5;'>
       <span class='datetrigwrap'>
         <input class='headdate' type='month' id='dateflash' 
             name='flash_date' value='" . $this->get_startMonth_filter . "' />
             </span></th>";
     if (count($this->accounts)){
       foreach ($this->accounts AS $accid){
-        $result .=  "<th scope='col' account='" . trim($accid->id) . "' decimal='" . $accid->decimals . "'>" . $accid->name . "</th>
-        <th class='daytotals' scope='col' accfor='" . trim($accid->id) . "'>" . "TOTAL" . "</th>";
+        $result .=  "<th scope='col' actype='" . $accid->type . "' account='" . trim($accid->id) . "' decimal='" . $accid->decimals . "'>" . $accid->name . "</th>
+        <th class='daytotals' scope='col' accfor='" . trim($accid->id) . "' actype='" . $accid->type . "' >" . "TOTAL" . "</th>";
       }
     }
     if (count($this->accounts) > 1){
-      $result .= '<th scope="col" class="headtotal ttfr">' . 'TOTALS' . '</th>';
+      $result .= '<th scope="col" class="headtotal totalofrow">' . 'TOTALS' . '</th>';
     };
     $result .= "</tr>
     </thead>
@@ -416,7 +416,7 @@ public function renderWholeTable(){
       $idconstructorcol = $t;
       $result .=  "<td id='dragarea_" . $idconstructorrow . "_" . $idconstructorcol . "' 
       class='droptabledata' ondrop='drop(event)' ondragover='allowDrop(event)'
-      account='{$accountid}' date='{$date}' ><span class='daytotal'>";
+      account='{$accountid}' date='{$date}' actype='" . $account->type . "'><span class='daytotal'>";
       if (empty($empty)) {
          // echo $randvalue[$t];
        };
@@ -493,7 +493,7 @@ public function renderWholeTable(){
         }
       }
       $result .=  "</td>";
-      $result .=  "<td class='daytotals' for='{$accountid}' date='{$date}'>0</td>";
+      $result .=  "<td class='daytotals' for='{$accountid}' date='{$date}'  actype='" . $account->type . "'>0</td>";
       $t++;
     };
     if (count($this->accounts) > 1){
