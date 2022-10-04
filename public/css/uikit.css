@@ -10278,6 +10278,7 @@ h3 {
   height: 100vh;
   width: 60px;
   top: 0px;
+  backdrop-filter: blur(3px);
 }
 
 .nav-rail {
@@ -10805,6 +10806,37 @@ select .opt-header {
 
 .savings {
   box-shadow: inset 0px 0px 0px 200px rgba(0, 243, 255, 0.0705882353);
+}
+
+.totalhider .uk-grid {
+  display: none;
+}
+.totalhider .uk-grid:last-child {
+  display: flex;
+  margin-top: 0px;
+}
+
+.bud-disabled {
+  filter: contrast(0.7);
+}
+
+.bud-accented {
+  background: #faffb1;
+  border: 1px solid rgba(255, 207, 0, 0.25);
+}
+
+.bud-accented:hover {
+  box-shadow: 0 3px 12px rgba(255, 225, 0, 0.87);
+}
+
+#itemMenu {
+  transition: all 0.3s;
+  opacity: 1;
+}
+
+.bud-coox {
+  filter: blur(4px);
+  opacity: 0 !important;
 }
 
 /*# sourceMappingURL=uikit.css.map */

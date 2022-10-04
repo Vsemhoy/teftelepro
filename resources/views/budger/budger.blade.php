@@ -134,6 +134,7 @@ class ModalHandler
     
     this.btnDisable = document.querySelector("#btnDisableEvent");
     this.btnSave = document.querySelector("#btnSaveEvent");
+    this.btnUpdate = document.querySelector("#btnUpdateEvent");
     
     this.rowTgAcc = document.querySelector('#row_targetAcc');
     this.rowCateg = document.querySelector('#row_category');
@@ -175,7 +176,9 @@ class ModalHandler
     this.btnSave.addEventListener('click', function(){
       self.SaveNewEvent(self);
     });
-
+    this.btnUpdate.addEventListener('click', function(){
+      self.UpdateEvent(self);
+    });
 
     
     document.querySelector('#mod_description').addEventListener('keyup', function(elem){
@@ -228,6 +231,9 @@ class ModalHandler
     openEventModal(){
      UIkit.modal(parent.modalWindow).show();
    }
+   closeEventModal(){
+     UIkit.modal(parent.modalWindow).hide();
+   }
   
     buildClearEventModal(elem, ev){
       if (ev.ctrlKey){
@@ -240,10 +246,23 @@ class ModalHandler
       this.SetOptionsHidden(this);
       this.title.innerHTML = 'Add new event';
       this.btnManage.setAttribute('disabled', 'disabled');
+      this.btnOptns.removeAttribute('disabled');
 
       let date = elem.parentNode.getAttribute('date');
       document.querySelector('#mod_date').value = date;
      //alert(date);
+
+     document.querySelector('#mod_name').value = "";
+        document.querySelector('#mod_description').value = "";
+        document.querySelector('#mod_amount').value = 0;
+
+        //document.querySelector('#mod_category').value = result.category;
+        // document.querySelector('#mod_category')[document.querySelector('#mod_category').selectedIndex].text.trim();
+        //document.querySelector('#mod_account').value = result.account;
+        //data.target = document.querySelector('#mod_tgaccount').value = result.transaccount;
+        // Addtitional options
+        document.querySelector('#mod_isRepeat').checked = false;
+        document.querySelector('#mod_isAccent').checked  = false;
    }
 
   SetExpense(parent){
@@ -343,6 +362,11 @@ class ModalHandler
     parent.rowOptions.classList.remove('uk-hidden');
   }
   SetManageShowed(parent){
+    if (parent.btnManage.classList.contains('uk-background-default')){
+      parent.btnManage.classList.remove('uk-background-default');
+      parent.rowManage.classList.add('uk-hidden');
+      return;
+    }
     parent.btnOptns.classList.remove('uk-background-default');
     parent.btnManage.classList.add('uk-background-default');
     parent.rowOptions.classList.add('uk-hidden');
@@ -395,7 +419,7 @@ class ModalHandler
         console.log(this.responseText);
         let result = JSON.parse(this.responseText);
         let block = result[0];
-
+        
         let burs = document.querySelectorAll('.budrow');
         for (let i = 0; i < burs.length; i++){
           if (burs[i].getAttribute('date') == data.date){
@@ -410,7 +434,91 @@ class ModalHandler
         // block.classList.remove("temper");
         // block.setAttribute('id','item_' + this.responseText);
         setTimeout(() => {
+          Modal.closeEventModal();
           Dom.reload();
+          Mastercounter.recount();
+          // reorderItems(block.parentNode.parentNode);
+        }, 100);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.remove();
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+
+    //alert(JSON.stringify(data));
+    xhttp.send(JSON.stringify(data));
+  }
+
+
+  UpdateEvent(self)
+  {
+
+    let counter = 0;
+    let requestCode = 330;
+    let outFormat = "json";
+
+    let name = document.querySelector('#mod_name').value;
+    if (name.length == 0){
+      alert("Name is too short!");
+      return;
+    }
+    let data = {};
+    data.id = Dom.chousenItem;
+    data.code = requestCode;
+    data.name = name;
+    data.type = self.eventType;
+    data.description = document.querySelector('#mod_description').value;
+    data.amount = document.querySelector('#mod_amount').value;
+    data.date = document.querySelector('#mod_date').value;
+    data.category = document.querySelector('#mod_category').value;
+    data.categoryname = document.querySelector('#mod_category')[document.querySelector('#mod_category').selectedIndex].text.trim();
+    data.account = document.querySelector('#mod_account').value;
+    data.target = document.querySelector('#mod_tgaccount').value;
+    // Addtitional options
+    let isRepeat = document.querySelector('#mod_isRepeat').checked ? 1 : 0;
+    let isAccent = document.querySelector('#mod_isAccent').checked ? 1 : 0;
+    data.accented = isAccent;
+
+
+    if (data.amount == ''){ data.amount = 0; };
+    if (data.category == ''){ data.category = 0; };
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          block.remove();
+          return 0;
+        };
+        console.log(this.responseText);
+        let result = JSON.parse(this.responseText);
+        let block = result[0];
+        document.querySelector('#' + data.id).remove();
+        let burs = document.querySelectorAll('.budrow');
+        for (let i = 0; i < burs.length; i++){
+          if (burs[i].getAttribute('date') == data.date){
+            let cols = burs[i].querySelectorAll('.droptabledata');
+            for (let q = 0; q < cols.length; q++){
+              if (cols[q].getAttribute('account') == data.account){
+                cols[q].insertAdjacentHTML('beforeEnd', block);
+              }
+            }
+          }
+        }
+
+        setTimeout(() => {
+          Dom.reload();
+          Modal.closeEventModal();
+          Mastercounter.recount();
           // reorderItems(block.parentNode.parentNode);
         }, 30);
       }
@@ -481,40 +589,50 @@ class DOM {
               console.log('show');
             } else if (buttons[y].getAttribute('data-event') == 'edit'){
               Modal.openEventModal();
+              parent.fillEditItemWindow(parent.chousenItem);
               console.log('edit');
             } else if (buttons[y].getAttribute('data-event') == 'accent'){
               // removeItem(id);
+              parent.accentItem(parent.chousenItem);
               console.log('accent');
             } else if (buttons[y].getAttribute('data-event') == 'disable'){
               // removeItem(id);
               console.log('disable');
+              parent.disableItem(parent.chousenItem);
+              Mastercounter.recount();
             } else if (buttons[y].getAttribute('data-event') == 'remove'){
               // removeItem(id);
-              
               parent.removeItem(parent.chousenItem);
               console.log('remove');
+              Mastercounter.recount();
             }
             document.querySelector('#itemMenu').remove();
             //parentItem.classList.remove('menu-opened');
           });
         }
 
+        let h = 0;
         block.addEventListener("mouseleave", function(){
+          block.classList.add('bud-coox');
           setTimeout(() => {
-            document.querySelector('#itemMenu').remove();
-            //parentItem.classList.remove('menu-opened');
-            }, 10);
+            if (h == 0){
+              
+              document.querySelector('#itemMenu').remove();
+            }
+          }, 500);
         });
-
       });
     }
 
 
     for (let i = 0; i < this.eventTrigger.length; i++)
     {
+      let self = this;
+      let identer = this.eventTrigger[i].id;
       this.eventTrigger[i].addEventListener("dblclick", function()
       {
         Modal.openEventModal();
+        self.fillEditItemWindow(identer);
         //UIkit.modal(modalWindow).show();
       })
     }
@@ -527,6 +645,94 @@ class DOM {
     parent = this;
   }
 
+  fillEditItemWindow(identer)
+  {
+    let block = document.querySelector('#' + identer);
+    Dom.chousenItem = identer;
+    let counter = 0;
+    let requestCode = 350;
+    let outFormat = "json";
+
+    let data = {};
+    data.code = requestCode;
+    data.id = identer;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          block.remove();
+          return 0;
+        };
+        console.log(this.responseText);
+        let result = JSON.parse(this.responseText);
+        
+        let disabled = result.disabled;
+        if (disabled == 0){
+          document.querySelector('#mod_title').innerHTML = "Edit event ";
+
+        } else {
+          document.querySelector('#mod_title').innerHTML = "Edit event (disabled)";
+        }
+        let type = result.type;
+        if (type == 1){
+          Modal.SetIncom(Modal);
+        }
+        if (type == 2){
+          Modal.SetExpense(Modal);
+        }
+        if (type == 3){
+          Modal.SetTransfer(Modal);
+        }
+
+        Modal.SetManageShowed(Modal);
+        Modal.btnOptns.setAttribute('disabled', 'disabled');
+        Modal.btnManage.removeAttribute('disabled');
+        if (result.haschildren == 0){
+          Modal.SetManageShowed(Modal);
+
+        }
+
+        document.querySelector('#mod_name').value = result.name;
+        document.querySelector('#mod_description').value = result.description;
+        document.querySelector('#mod_amount').value = result.value;
+        let date = result.date_in;
+        //console.log(date);
+        //date =   dateFormat(date, 'YYYY-MM-DD');
+        document.querySelector('#mod_date').value = date;
+        document.querySelector('#mod_category').value = result.category;
+        // document.querySelector('#mod_category')[document.querySelector('#mod_category').selectedIndex].text.trim();
+        document.querySelector('#mod_account').value = result.account;
+        data.target = document.querySelector('#mod_tgaccount').value = result.transaccount;
+        // Addtitional options
+        let isRepeat = document.querySelector('#mod_isRepeat').checked = result.haschildren == 1 ? true : false;
+        let isAccent = document.querySelector('#mod_isAccent').checked  = result.accented == 1 ? true : false;
+
+        let parentId = result.parent;
+
+        setTimeout(() => {
+          //Dom.reload();
+          // reorderItems(block.parentNode.parentNode);
+        }, 30);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.remove();
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+    xhttp.send(JSON.stringify(data));
+
+  }
+
+
   removeItem(identer){
     let block = document.querySelector('#' + identer);
     let removeChilds = 0;
@@ -536,9 +742,9 @@ class DOM {
         removeChilds = 1;
       }
     }
-    let conter = 0;
+    let counter = 0;
     let requestCode = 390;
-    let outFormat = "number";
+    let outFormat = "json";
 
     let data = {};
     data.code = requestCode;
@@ -577,15 +783,118 @@ class DOM {
     // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
-
-    //alert(JSON.stringify(data));
-
     xhttp.send(JSON.stringify(data));
-
   }
   
 
-   
+  disableItem(identer){
+    let block = document.querySelector('#' + identer);
+    let disablestate = 1;
+    if (block.classList.contains('bud-disabled')){
+       disablestate = 0;
+       block.classList.remove('bud-disabled');
+      } else {
+        block.classList.add('bud-disabled');
+      }
+    let disableChilds = 0;
+    if (block.getAttribute('haschildren') == 1){
+      const result = confirm('Disable all child events?');
+      if (result == true){
+        disableChilds = 1;
+      }
+    }
+    let counter = 0;
+    let requestCode = 380;
+    let outFormat = "json";
+
+    let data = {};
+    data.code = requestCode;
+    data.id = identer;
+    data.state = disablestate;
+    data.disablechilds = disableChilds;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          block.remove();
+          return 0;
+        };
+        console.log(this.responseText);
+
+        if (disableChilds){
+          let result = JSON.parse(this.responseText);
+          // foreach and so on
+        }
+        setTimeout(() => {
+          Dom.reload();
+          // reorderItems(block.parentNode.parentNode);
+        }, 30);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.remove();
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+    xhttp.send(JSON.stringify(data));
+  }
+
+  accentItem(identer){
+    let block = document.querySelector('#' + identer);
+    let accentstate = 1;
+    if (block.classList.contains('bud-accented')){
+      accentstate = 0;
+       block.classList.remove('bud-accented');
+      } else {
+        block.classList.add('bud-accented');
+      }
+
+    let counter = 0;
+    let requestCode = 370;
+    let outFormat = "number";
+
+    let data = {};
+    data.code = requestCode;
+    data.id = identer;
+    data.state = accentstate;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          block.remove();
+          return 0;
+        };
+        console.log(this.responseText);
+
+        setTimeout(() => {
+          Dom.reload();
+          // reorderItems(block.parentNode.parentNode);
+        }, 30);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.remove();
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+    xhttp.send(JSON.stringify(data));
+  }
 
 
  }
@@ -627,10 +936,7 @@ class DomManager {
   }
 
 }
- var Modal = new ModalHandler();
- var Dom = new DOM();
-//  var DOME = new DOM();
-//  var DMAN =  new DomManager();
+
 class Counter
 {
   recount()
@@ -644,9 +950,12 @@ class Counter
       if (this.droptabledata[i].querySelectorAll('.bud-event-card').length > 0)
       {
         for (let q = 0; q < this.droptabledata[i].querySelectorAll('.bud-event-card').length; q++) {
-          let value = this.droptabledata[i].querySelectorAll('.bud-event-card')[q].querySelectorAll('.bud-value')[0].innerHTML;
-          value = +(value.trim());
-          total += value;
+          if (!this.droptabledata[i].querySelectorAll('.bud-event-card')[q].classList.contains('bud-disabled')){
+
+            let value = this.droptabledata[i].querySelectorAll('.bud-event-card')[q].querySelectorAll('.bud-value')[0].innerHTML;
+            value = +(value.trim());
+            total += value;
+          }
         }
       }
       if (total != 0){
@@ -661,6 +970,7 @@ class Counter
     // RECOUNT ROWS
     // 1 - get starting balance and create value array
     let resarray = [];
+    let subobjects = [];
     let subtotalrows = document.querySelectorAll('.subtotal');
     for (let i = 0; i < subtotalrows.length ; i++) {
       let index = subtotalrows.length - i - 1;
@@ -668,6 +978,17 @@ class Counter
       for (let q = 0; q < subbalances.length; q++) {
         let value = +((subbalances[q].innerHTML).trim());
         resarray.push(value);
+        let obj = {
+          "incom" : 0,
+          "depos" : 0,
+          "expens" : 0,
+          "transfer" : 0,
+          "prev_incom" : 0,
+          "prev_depos" : 0,
+          "prev_expens" : 0,
+          "prev_transfer" : 0,
+        }
+        subobjects.push(obj);
       }
       break;
     }
@@ -685,11 +1006,103 @@ class Counter
         }
       }
       if (rows[index].classList.contains('subtotal')){
+        let sums = 0;
         for (let t = 0; t < resarray.length; t++) {
           rows[index].querySelectorAll('.subtotalbal')[t].innerHTML = resarray[t];
+          sums += resarray[t];
+        }
+        if (resarray.length > 1){
+          rows[index].querySelectorAll('.totalofrow_s')[0].innerHTML = sums;
+        }
+      }
+      if (rows[index].querySelectorAll('.totalofrow').length > 0){
+        let sum = 0;
+        for (let t = 0; t < resarray.length; t++) {
+          sum += resarray[t];
+        }
+        rows[index].querySelectorAll('.totalofrow')[0].innerHTML = sum;
+      }
+    }
+
+    for (let i = 0; i < rows.length; i++) {
+      let index = rows.length - 1 - i;
+      for (let h = 0; h < rows[index].querySelectorAll('.droptabledata').length; h++)
+      {
+        let total = 0;
+        if (rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card').length > 0)
+        {
+          for (let q = 0; q < rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card').length; q++) {
+            let value = rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card')[q].querySelectorAll('.bud-value')[0].innerHTML;
+            let type = rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card')[q].getAttribute('type');
+            value = +(value.trim());
+            if (type == 1){
+              subobjects[h].incom += value;
+            }
+            if (type == 4){
+              subobjects[h].depos += value;
+            }
+            if (type == 2){
+              subobjects[h].expens += value;
+            }
+            if (type == 3){
+              subobjects[h].transfer += value;
+            }
+          }
+        }
+      }
+
+      for (let i = 0; i < rows[index].querySelectorAll('.mtotalio').length; i++) {
+        let celler = rows[index].querySelectorAll('.mtotalio')[i];
+        if (celler.querySelectorAll('.incoms').length > 0){
+
+          let sign = "+";
+          let previc = "";
+          let value = 0;
+
+          value = subobjects[i].incom - subobjects[i].prev_incom;
+          if (value > 0){sign = "+";} else {sign = "";};
+          previc = "(" + sign + (value) + ")";
+          let t = previc;
+          celler.querySelectorAll('.incoms')[0].innerHTML      = subobjects[i].incom;
+          celler.querySelectorAll('.incoms')[0].parentNode.setAttribute('title', t);
+          
+          value = subobjects[i].depos - subobjects[i].prev_depos;
+          if (value > 0){sign = "+";} else {sign = "";};
+          previc = "(" + sign + value + ")";
+          celler.querySelectorAll('.deposits')[0].innerHTML    = subobjects[i].depos;
+          let b = previc + " incoms + deposits = " + (subobjects[i].incom + subobjects[i].depos);
+          celler.querySelectorAll('.deposits')[0].parentNode.setAttribute('title', b);
+          
+          value = subobjects[i].expens - subobjects[i].prev_expens;
+          if (value > 0){sign = "+";} else {sign = "";};
+          previc = "(" + sign + value + ")";
+          celler.querySelectorAll('.expenses')[0].innerHTML    = subobjects[i].expens;
+          celler.querySelectorAll('.expenses')[0].parentNode.setAttribute('title', previc);
+
+          value = subobjects[i].transfer - subobjects[i].prev_transfer;
+          if (value > 0){sign = "+";} else {sign = "";};
+          previc = "(" + sign + value + ")";
+          celler.querySelectorAll('.transfers')[0].innerHTML   = subobjects[i].transfer;
+          let e = previc + " expenses + transfers = " + (subobjects[i].expens + subobjects[i].transfer);
+          celler.querySelectorAll('.transfers')[0].parentNode.setAttribute('title', e);
+
+          celler.querySelectorAll('.difference')[0].innerHTML  = subobjects[i].incom + subobjects[i].expens;
+          let s = "all transactions = " + (subobjects[i].incom + subobjects[i].depos + subobjects[i].expens + subobjects[i].transfer);
+          celler.querySelectorAll('.difference')[0].parentNode.setAttribute('title', s);
+
+
+          subobjects[i].prev_incom    = subobjects[i].incom;
+          subobjects[i].prev_depos    = subobjects[i].depos;
+          subobjects[i].prev_expens   = subobjects[i].expens;
+          subobjects[i].prev_transfer = subobjects[i].transfer;
+          subobjects[i].incom = 0;
+          subobjects[i].depos = 0;
+          subobjects[i].expens = 0;
+          subobjects[i].transfer = 0;
         }
       }
     }
+
 
   }
 
@@ -705,6 +1118,7 @@ class Counter
     reload(){
       this.tabledata = document.querySelectorAll('td');
       this.tabledatahead = document.querySelectorAll('th');
+      this.subtotalrows = document.querySelectorAll('.subtotal');
       for (let i = 0; i < this.tabledata.length; i++)
       {
         if (this.tabledata[i].getAttribute('actype') == 2)
@@ -727,15 +1141,64 @@ class Counter
           this.tabledatahead[i].classList.add('savings');
         }
       }
+
+      for (let i = 0 ; i < this.subtotalrows.length; i++){
+        this.subtotalrows[i].classList.add('totalhider');
+        let self  = this.subtotalrows[i];
+        this.subtotalrows[i].addEventListener('dblclick', function(e){
+          if (self.classList.contains('totalhider')){
+            self.classList.remove('totalhider');
+          }
+          else 
+          {
+            self.classList.add('totalhider');
+          }
+        });
+      }
+
     }
     constructor()
     {
       this.reload();
     }
+
+    hideSubtotals(self)
+    {
+
+    }
  }
+ var Modal = new ModalHandler();
+ var Dom = new DOM();
+//  var DOME = new DOM();
+//  var DMAN =  new DomManager();
  var Decor = new Decorator();
  var Mastercounter = new Counter();
 
+ //a simple date formatting function
+function dateFormat(inputDate, format) {
+    //parse the input date
+    const date = new Date(inputDate);
+
+    //extract the parts of the date
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear();    
+
+    //replace the month
+    format = format.replace("MM", month.toString().padStart(2,"0"));        
+
+    //replace the year
+    if (format.indexOf("yyyy") > -1) {
+        format = format.replace("yyyy", year.toString());
+    } else if (format.indexOf("yy") > -1) {
+        format = format.replace("yy", year.toString().substr(2,2));
+    }
+
+    //replace the day
+    format = format.replace("dd", day.toString().padStart(2,"0"));
+
+    return format;
+}
 
 </script>
 @endsection

@@ -67,7 +67,7 @@ if ($accent == 1){
 $disclass = "";
 if ($disabled == 1){
   $disclass = " bud-disabled";
-  $accentclass = "";
+
 };
 
 //  openeditorwindow = 1 - type: 1-editchart; 2 - edit template, 3 - edit good; second = id of the element
@@ -439,7 +439,7 @@ public static function renderEventModal($accounts = null, $categories = null, $a
   <div class='uk-modal-dialog uk-margin-auto-vertical' >
   <button class='uk-modal-close-default' type='button' uk-close></button>
   <div class='uk-modal-header'>
-      <h4 id='mod_title' class='uk-modal-title'>Modal Title</h4>
+      <h3 id='mod_title' class=''>Modal Title</h3>
   </div>
   <div>
   <div>
@@ -624,6 +624,7 @@ public static function renderEventModal($accounts = null, $categories = null, $a
       <button id='btnDisableEvent' class='uk-button uk-button-default' type='button'>Disable</button>
       <button class='uk-button uk-button-default uk-modal-close' type='button'>Cancel</button>
       <button id='btnSaveEvent' class='uk-button uk-button-primary' type='button'>Save</button>
+      <button id='btnUpdateEvent' class='uk-button uk-button-primary' type='button'>Update</button>
   </div>
 </div>
 </div>";

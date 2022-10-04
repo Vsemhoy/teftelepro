@@ -305,7 +305,7 @@ public function renderMonthTable(){
   return 0;
 }
 
-public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false){
+public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $lastRow = false){
   $result = "";
   if ($isEnd == true){
     $date       = date('Y-m-d', strtotime($date . "-1 month"));
@@ -318,8 +318,34 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false){
   $result .= "<tr class='bg-subtotal subtotal'>
   <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
   foreach ($accountsToloadArr AS $account){
-    $result .=  "<td class='mtotalio'><small>INCOMS<span class='incoms'></span></small></br><small>EXPENSES<span class='expences'></span></small></br><small>DIFFERENCE<span class='difference'></span></small></td>
-    <td class='mtotals'>balance: <span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'>";
+    $result .=  "<td class='mtotalio'>";
+
+    if ($lastRow == false){
+
+      $result .=  "<div class='uk-grid-small' uk-grid>
+      <div class='uk-width-expand' uk-leader>Incoms</div>
+      <div class='incoms'>$20.90</div>
+      </div>
+      <div class='uk-grid-small' uk-grid>
+      <div class='uk-width-expand' uk-leader>Deposits</div>
+      <div class='deposits'>$20.90</div>
+      </div>
+      <div class='uk-grid-small' uk-grid>
+      <div class='uk-width-expand' uk-leader>Expenses</div>
+      <div class='expenses'>$20.90</div>
+      </div>
+      <div class='uk-grid-small' uk-grid>
+      <div class='uk-width-expand' uk-leader>Transfers</div>
+      <div class='transfers'>$20.90</div>
+      </div>
+      <div class='uk-grid-small' uk-grid>
+      <div class='uk-width-expand' uk-leader>Difference</div>
+      <div class='difference'>$20.90</div>
+      </div>";
+    }
+    
+    $result .=  "</td>
+    <td class='mtotals'><span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'>";
     $ttv = 0;
         foreach ($this->items AS $total){
           if ($total->date_in == $date4total && $total->account ==  $account->id){
@@ -330,9 +356,9 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false){
     $result .=  "</span></td>";
   };
   if (count($accountsToloadArr) > 1){
-    $result .=  "<td class='totalofrow_s'><small>balance: " . 
-    ": <span class='incoms'></span></small></br><small>EXPENSES" . 
-    ": <span class='expences'></span></small></br><small>DIFFERENCE<span class='difference'></span></small></td>";
+    $result .=  "<td class='totalofrow_s'><small> " . 
+    "<span class='incoms'></span></small><small>" . 
+    " <span class='expences'></span></small><small><span class='difference'></span></small></td>";
   };
   $result .=  "</tr>";
   return $result;
@@ -364,11 +390,11 @@ public function renderWholeTable(){
     if (count($this->accounts)){
       foreach ($this->accounts AS $accid){
         $result .=  "<th scope='col' actype='" . $accid->type . "' account='" . trim($accid->id) . "' decimal='" . $accid->decimals . "'>" . $accid->name . "</th>
-        <th class='daytotals' scope='col' accfor='" . trim($accid->id) . "' actype='" . $accid->type . "' >" . "TOTAL" . "</th>";
+        <th class='daytotals' scope='col' accfor='" . trim($accid->id) . "' actype='" . $accid->type . "' >" . "Balance" . "</th>";
       }
     }
     if (count($this->accounts) > 1){
-      $result .= '<th scope="col" class="headtotal totalofrow">' . 'TOTALS' . '</th>';
+      $result .= '<th scope="col" class="headtotal totalofrow">' . 'SUM' . '</th>';
     };
     $result .= "</tr>
     </thead>
@@ -501,7 +527,10 @@ public function renderWholeTable(){
     };
     $result .=  "</tr>";
   if ($daynum == 1){
-    $result .= $this->tableTotalSectton($date, $this->accounts, true);
+    $lastRow = false;
+    if ($x > $this->tableLength - 5){ $lastRow = true;}
+
+    $result .= $this->tableTotalSectton($date, $this->accounts, true, $lastRow);
   };
   };
 

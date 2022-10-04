@@ -170,6 +170,31 @@ class BudgerAjax extends BaseController
       return self::createEventInChart($data, $user);
     }
 
+    if ($code == 330) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::updateEventInfo($data, $user);
+    }
+
+    if ($code == 350) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::loadEventInfo($data, $user);
+    }
+
+    
+    if ($code == 370) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::accentEventInChart($data, $user);
+    }
+
+    if ($code == 380) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::disableEventInChart($data, $user);
+    }
+
     if ($code == 390) // restore category Item
     {
       // returns number -1 if not success, 1 if success
@@ -412,7 +437,6 @@ class BudgerAjax extends BaseController
   // CODE 250
   public static function loadAccountData($json, $user)
   {
-    
     $id = Input::filterMe("INT", $json->id );
     if ($id == 0)
     { return -1;}
@@ -622,7 +646,168 @@ class BudgerAjax extends BaseController
     return json_encode($result); 
   }
   
+  // 330
+  public static function  updateEventInfo($json, $user)
+  {
+    //return($user->id);
+    $id   = Input::filterMe("INT", $json->id );
+    $type = Input::filterMe("INT", $json->type );
+    $category = Input::filterMe("INT", $json->category );
+    $account = Input::filterMe("INT", $json->account );
+    $target = Input::filterMe("INT", $json->target );
+    $amount = Input::filterMe("INT", $json->amount );
+    $name = Input::filterMe("STRING", $json->name, 64 );
+    $categoryname = Input::filterMe("STRING", $json->categoryname, 64 );
+    $descr = Input::filterMe("STRING", $json->description, 2000 );
+    $date = Input::filterMe("DATE", $json->date );
 
+    
+    $accented = Input::filterMe("INT", $json->accented );
+
+
+    $hasChildren = 0;
+    // if ($isRepeat == 1 && $r_times > 1){
+    //   $hasChildren = 1;
+    // }
+    // $target = $target == "" ? 0 : $target;
+    if (strlen($name) < 2){
+      $temp = Input::filterMe("STRING", $json->name, 1 );
+      if ($temp == '.' ||
+      $temp == '.' ||
+      $temp == ',' ||
+      $temp == '`' ||
+      $temp == '"' ||
+      $temp == '^' ||
+      $temp == '!' ||
+      $temp == '?' ||
+      $temp == '-' ||
+      $temp == '+' ||
+      $temp == '=' ||
+      $temp == '/' ||
+      $temp == '\\' ||
+      $temp == ')' ||
+      $temp == '(' ||
+      $temp == ';' ||
+      $temp == ':' ||
+      $temp == ';' ||
+      $temp == '*' ||
+      $temp == '&' ||
+      $temp == '|' ||
+      $temp == '#' ||
+      $temp == '@' ||
+      $temp == '%' ||
+      $temp == '[' ||
+      $temp == ']' ||
+      $temp == '{' ||
+      $temp == '}' ||
+      $temp == '%' ||
+      $temp == "'" ||
+      $temp == " "
+      ){
+        $name = "New event";
+      }
+    }
+
+    if ($type == 1 || $type == 3){
+      if ($amount < 0){
+        $amount = $amount * -1;
+      }
+    } 
+    else 
+    {
+      if ($amount > 0){
+        $amount = $amount * -1;
+      }
+    }
+    if ($name == ""){ $name = "empty name";};
+    //return($name);
+      $affected = DB::table(env('TB_BUD_EVENTS'))
+      ->where('id', $id)
+      ->where('user', $user->id)
+      ->update([
+          'name' => $name,
+          'description' => $descr,
+          'type' => $type,
+          'value' => $amount,
+          'account' => $account,
+          'transaccount' => $target,
+          'category'  => $category,
+          'haschildren'  => $hasChildren,
+          'date_in'  => $date,
+          'accented'  => $accented
+          /// etc and so on
+      ]);
+      
+      $result = [];
+      $block = BudgerTemplates::tpl_in_calendar_event(
+        $id, $name, $descr, $date, $account, $type, $amount, $category,
+         $categoryname, '', '', '', '', 0, 0, 1, 0, $accented);
+        array_push($result, $block);
+      return json_encode($result); 
+  }
+
+  // 350
+  public function accentEventInChart($json, $user)
+  {
+    $id = Input::filterMe("INT", $json->id );
+    $state = Input::filterMe("INT", $json->state );
+
+    $affected = DB::table(env('TB_BUD_EVENTS'))
+    ->where('id', $id)
+    ->where('user', $user->id)
+    ->update([
+        'accented'  => $state
+    ]);
+    if (!empty($affected)){
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+
+  // code 350 
+  public function loadEventInfo($json, $user){
+    $id = Input::filterMe("INT", $json->id );
+    if ($id == 0)
+    { return -1;}
+    $item = DB::table(env('TB_BUD_EVENTS'))->where('id', '=', $id )->where('user', '=', $user->id )->first();
+    if ($item == null){
+      return -1;
+    }
+    $haschilds = $item->haschildren;
+    if ($haschilds == 0){
+      return json_encode($item);
+    }
+    else 
+    {
+      $items = DB::table(env('TB_BUD_EVENTS'))->where('parent', '=', $id )->where('user', '=', $user->id );
+      $item->childs = $items;
+    }
+    return $item;
+  }
+
+  // code 380
+  public function disableEventInChart($json, $user)
+  {
+    $id = Input::filterMe("INT", $json->id );
+    $disableChilds = Input::filterMe("INT", $json->disablechilds );
+    $state = Input::filterMe("INT", $json->state );
+
+    $affected = DB::table(env('TB_BUD_EVENTS'))
+    ->where('id', $id)
+    ->where('user', $user->id)
+    ->update([
+        'disabled'      => $state
+    ]);
+    if (!empty($affected)){
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  /// CODE 390
   public function removeEventInChart($json, $user)
   {
     $id = Input::filterMe("INT", $json->id );
