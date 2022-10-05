@@ -217,11 +217,22 @@ class ModalHandler
       base.buildClearEventModal(elem, event);
     }));
     
-    Array.from(doubleTriggers).forEach(i => i.addEventListener("dblclick", function(event){
+    Array.from(doubleTriggers).forEach(i => i.addEventListener("dblclick", function(e){
       let elem = this;
       let inblocks = elem.querySelectorAll('.bud-event-card');
-      console.log(inblocks.length);
-      if (inblocks.length == 0){
+
+      let inwindow = (e || event).clientY; // Throw position depended by window top
+      let scrolled = window.scrollY;
+      let clickposition = scrolled + inwindow;
+      //let id = $(this).attr("id");
+      let blockpos = 0;
+      let height = 0;
+      if (inblocks.length > 0){
+        blockpos = inblocks[0].getBoundingClientRect().top + scrolled;
+        height = inblocks[inblocks.length - 1].getBoundingClientRect().bottom - inblocks[0].getBoundingClientRect().top;
+      };
+      console.log(height);
+      if (blockpos == 0 || blockpos > clickposition || clickposition > blockpos + height){
         base.openEventModal();
         base.buildClearEventModal(elem, event);
       }
@@ -236,6 +247,8 @@ class ModalHandler
    }
   
     buildClearEventModal(elem, ev){
+      document.querySelector('#btnSaveEvent').classList.remove('uk-hidden');
+      document.querySelector('#btnUpdateEvent').classList.add('uk-hidden');
       if (ev.ctrlKey){
         this.SetIncom(this);
       } else if  (ev.altKey) {
@@ -647,6 +660,8 @@ class DOM {
 
   fillEditItemWindow(identer)
   {
+    document.querySelector('#btnSaveEvent').classList.add('uk-hidden');
+    document.querySelector('#btnUpdateEvent').classList.remove('uk-hidden');
     let block = document.querySelector('#' + identer);
     Dom.chousenItem = identer;
     let counter = 0;
@@ -896,6 +911,91 @@ class DOM {
     xhttp.send(JSON.stringify(data));
   }
 
+  moveEventItem(id, date, account)
+  {
+    let counter = 0;
+    let requestCode = 331;
+    let outFormat = "number";
+
+    let data = {};
+    data.code = requestCode;
+    data.id = id;
+    data.date = date;
+    data.account = account;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          block.remove();
+          return 0;
+        };
+        console.log(this.responseText);
+
+        setTimeout(() => {
+          Dom.reload();
+          // reorderItems(block.parentNode.parentNode);
+        }, 30);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+    xhttp.send(JSON.stringify(data));
+  }
+
+  cloneEventItem(id, date, account)
+  {
+    let counter = 0;
+    let requestCode = 332;
+    let outFormat = "number";
+
+    let data = {};
+    data.code = requestCode;
+    data.id = id;
+    data.date = date;
+    data.account = account;
+    console.log(id + " "  + date + " " + account);
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+          block.remove();
+          return 0;
+        };
+        console.log(this.responseText);
+
+        setTimeout(() => {
+          Dom.reload();
+          // reorderItems(block.parentNode.parentNode);
+        }, 30);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+    xhttp.send(JSON.stringify(data));
+  }
+
 
  }
  // --------------------------- DOM -------------------
@@ -911,10 +1011,19 @@ function drag(ev) {
 }
 
 function drop(ev) {
+  let account = ev.target.getAttribute('account');
+  let date = ev.target.getAttribute('date');
+  let actype = ev.target.getAttribute('account');
+
+  let sourceType = document.getElementById(sourceEventId).getAttribute('type');
+
   if (ev.shiftKey){
     //var data = ev.dataTransfer.getData("Text");
     var nodeCopy = document.getElementById(sourceEventId).cloneNode(true);
+    console.log(sourceEventId);
     if (ev.target.classList.contains('droptabledata')){
+
+      Dom.cloneEventItem(sourceEventId, date, account);
       ev.target.appendChild(nodeCopy);
       Dom.reload();
     }
@@ -922,6 +1031,7 @@ function drop(ev) {
   else {
     if (ev.target.classList.contains('droptabledata')){
     var data = ev.dataTransfer.getData("Text");
+    Dom.moveEventItem(sourceEventId, date, account);
     ev.target.appendChild(document.getElementById(data));
     }
   }

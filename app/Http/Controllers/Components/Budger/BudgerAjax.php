@@ -176,6 +176,19 @@ class BudgerAjax extends BaseController
       return self::updateEventInfo($data, $user);
     }
 
+    if ($code == 331) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::moveEventItem($data, $user);
+    }
+
+    if ($code == 332) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::cloneEventItem($data, $user);
+    }
+
+
     if ($code == 350) // restore category Item
     {
       // returns number -1 if not success, 1 if success
@@ -745,6 +758,31 @@ class BudgerAjax extends BaseController
         array_push($result, $block);
       return json_encode($result); 
   }
+
+  // 331
+  public static function moveEventItem($json, $user)
+  {
+    //return($user->id);
+    $id   = Input::filterMe("INT", $json->id );
+    $date = Input::filterMe("DATE", $json->date );
+    $account = Input::filterMe("INT", $json->account );
+
+      $affected = DB::table(env('TB_BUD_EVENTS'))
+      ->where('id', $id)
+      ->where('user', $user->id)
+      ->update([
+          'account' => $account,
+          'date_in'  => $date
+          /// etc and so on
+      ]);
+      if (!empty($affected)){
+        return 1;
+      } else {
+        return 0;
+      }
+  }
+
+
 
   // 350
   public function accentEventInChart($json, $user)
