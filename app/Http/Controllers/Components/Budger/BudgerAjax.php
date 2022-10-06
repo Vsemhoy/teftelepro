@@ -783,6 +783,56 @@ class BudgerAjax extends BaseController
   }
 
 
+  // 332
+  public static function cloneEventItem($json, $user)
+  {
+    //return($user->id);
+    $id       = Input::filterMe("INT", $json->id );
+    $date     = Input::filterMe("DATE", $json->date );
+    $account  = Input::filterMe("INT", $json->account );
+
+    if ($id == 0)
+    { return -1;}
+    $item = DB::table(env('TB_BUD_EVENTS'))->where('id', '=', $id )->where('user', '=', $user->id )->first();
+    if ($item == null){
+      return -1;
+    }
+
+    $categoryname = BudgerData::getCategoryNameById($item->category);
+
+    $parent = 0;
+    if ($item->parent > 0 || $item->haschildren == 1) {$parent = $item->parent;};
+    $hasChildren = 0;
+    $newId  = DB::table(env('TB_BUD_EVENTS'))->insertGetId(
+      [
+      'name'         => $item->name,
+      'description'  => $item->description,
+      'user'         => $user->id,
+      'type'         => $item->type,
+      'value'        => $item->value,
+      'account'      => $account,
+      'transaccount' => $item->transaccount,
+      'parent'       => $parent,
+      'category'     => $item->category,
+      'haschildren'  => $hasChildren,
+      'date_in'      => $date,
+      'accented'     => $item->accented,
+      'disabled'     => $item->disabled,
+      'stuff_linked'     => $item->stuff_linked,
+      'event_linked'     => $item->event_linked,
+      'warehouse_linked'     => $item->warehouse_linked,
+      'disabled'     => $item->disabled
+      ]
+    );
+    $result = [];
+    $block = BudgerTemplates::tpl_in_calendar_event(
+      $newId, $item->name, $item->description, $date, $account,
+      $item->type, $item->value, $item->category,
+       $categoryname, '', '', '', '', 0, 0, 1, $item->disabled, $item->accented, $hasChildren, $item->parent);
+      array_push($result, $block);
+    return json_encode($result); 
+  }
+
 
   // 350
   public function accentEventInChart($json, $user)

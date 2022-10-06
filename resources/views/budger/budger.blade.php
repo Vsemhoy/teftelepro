@@ -915,7 +915,7 @@ class DOM {
   {
     let counter = 0;
     let requestCode = 331;
-    let outFormat = "number";
+    let outFormat = "json";
 
     let data = {};
     data.code = requestCode;
@@ -953,7 +953,7 @@ class DOM {
     xhttp.send(JSON.stringify(data));
   }
 
-  cloneEventItem(id, date, account)
+  cloneEventItem(id, date, account, target)
   {
     let counter = 0;
     let requestCode = 332;
@@ -970,15 +970,18 @@ class DOM {
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         if (this.responseText == -1){ alert("You are not registered!");
-          block.remove();
+          
           return 0;
         };
-        console.log(this.responseText);
+        //console.log(JSON.parse(this.responseText));
+        let dat = JSON.parse(this.responseText);
+        if (dat.length > 0){
 
-        setTimeout(() => {
-          Dom.reload();
-          // reorderItems(block.parentNode.parentNode);
-        }, 30);
+          target.insertAdjacentHTML('beforeEnd', dat[0]);
+        } else {
+          console.log(dat);
+        }
+
       }
       else if (this.status > 200)
       {
@@ -1023,8 +1026,13 @@ function drop(ev) {
     console.log(sourceEventId);
     if (ev.target.classList.contains('droptabledata')){
 
-      Dom.cloneEventItem(sourceEventId, date, account);
-      ev.target.appendChild(nodeCopy);
+      Dom.cloneEventItem(sourceEventId, date, account, ev.target);
+      // if (data.length > 0){
+      //   ev.target.appendChild(data[0]);
+      // } else {
+        
+      //   ev.target.appendChild(nodeCopy);
+      // }
       Dom.reload();
     }
   } 
@@ -1270,11 +1278,92 @@ class Counter
     constructor()
     {
       this.reload();
+      this.handleScrollTableTop();
     }
 
-    hideSubtotals(self)
-    {
+    handleScrollTableTop(){
+      /* HIDE Nav when scroll down
+      let inwindow = (e || event).clientY; // Throw position depended by window top
+      let scrolled = window.scrollY;
+      let clickposition = scrolled + inwindow;
+      //let id = $(this).attr("id");
+      let blockpos = 0;
+      let height = 0;
+      if (inblocks.length > 0){
+        blockpos = inblocks[0].getBoundingClientRect().top + scrolled;
+      */
+      var lastScrollTop = 0;
+      var conditor = 0;
+      window.addEventListener('scroll', function(event){
+        let self = window;
+        var position = 0;
+        var st = window.scrollY;
 
+        var ttble = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().top;
+        //console.log(ttble);
+          if (st > lastScrollTop){
+            position = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().left;
+            if (position > -1){
+              position = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().left;
+            };
+            //console.log(position);
+            //$("#stickytablehead").css("left", position + "px");
+           // document.querySelector("#stickytablehead").style.left = position + "px";
+          };
+          if (document.querySelector("#stickytablehead") != undefined){
+            /*
+            $(".tf-table-monthname").each(function(){
+                let montnamepos = $(this).offset().top;
+                let montnamneme = $(this).text();
+                if (st > montnamepos){
+                  montnamneme = montnamneme.slice(0, 3);
+                  $("#stickytablehead").find("th").eq(0).text(montnamneme);
+                }
+              }); */
+          };
+          /*
+          if (st > ttble + 1){
+      // if (st > lastScrollTop){
+          if (conditor == 0){
+            let counter = 0;
+            let header = $(".tftable").children("thead").html();
+            let newCon = "<div id='stickytablehead'><table class='table table-bordered mb-0'><thead>" + header + "</thead></table></div>";
+            if (st > ttble + 1){
+              $("#main-tf-1").append(newCon);
+            };
+            $(".tftable").eq(0).children("thead").find("th").each(function(){
+              let width = ($(this).css("width"));
+              let padding = $(this).css("padding");
+              width = parseInt(width) + 0.5;
+              $("#stickytablehead").find("th").eq(counter).css("width", width + "px");
+              $("#stickytablehead").find("th").eq(counter).css("padding", padding);
+              $("#stickytablehead").find("th").eq(counter).css("z-index", "99");
+              $("#sidebarMenu").addClass("top-zero");
+              $("#fixedpool").addClass("top-zero");
+              counter++;
+              });
+              $("nav").addClass("d-none");
+              conditor = 1;
+            }
+            // downscroll code
+          } else {
+            // upscroll code
+            if (conditor == 1){
+              $("nav").removeClass("d-none");
+              $("#stickytablehead").remove();
+              $("#sidebarMenu").removeClass("top-zero");
+              $("#fixedpool").removeClass("top-zero");
+              conditor = 0;
+            };
+          } */
+          lastScrollTop = st;
+          position = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().left; // position
+          if (position > -1){
+            position = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().left; // offset
+          };
+          //console.log(position);
+          // document.querySelector("#stickytablehead").style.left = position + "px";
+      });
     }
  }
  var Modal = new ModalHandler();

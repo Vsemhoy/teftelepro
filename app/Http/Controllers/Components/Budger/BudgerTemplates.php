@@ -15,7 +15,7 @@ class BudgerTemplates extends BaseController{
 
 
 
-  public static function tpl_in_calendar_event($id, $name, $text, $date, $account, $eventtype, $amount, $category = '', $catname = '', $icon = '', $iconcolor = '', $whiteicon = '', $iconpath = '', $freq  = 0, $ordered = 0, $dataSection = 1, $disabled = 0, $accent = 0, $haschildren = 0){
+  public static function tpl_in_calendar_event($id, $name, $text, $date, $account, $eventtype, $amount, $category = '', $catname = '', $icon = '', $iconcolor = '', $whiteicon = '', $iconpath = '', $freq  = 0, $ordered = 0, $dataSection = 1, $disabled = 0, $accent = 0, $haschildren = 0, $parent = 0){
 $length = strlen($text) / 4;
 // Prevent insert negative values
 if ($amount < 0){
@@ -93,6 +93,16 @@ $result .= "<div class='bud-event-card dragtemplate " . $transclasstype . $accen
    ' . preg_replace("/\r\n|\r|\n/", '<br/>', $text) . '</div>
   <div class="bud-footer">
   <strong class="mb-1 bud-value">' . $addsign . $amount  . '</strong>
+  <span>';
+  if ($haschildren == 1){
+
+    $result .= '<span uk-icon="icon: git-fork" title="Has childrens"></span>';
+  }
+  if ($parent > 0){
+
+    $result .= '<span uk-icon="icon: link" title="linked to parent"></span>';
+  }
+  $result .= '</span>
   <div class="categories">';
 
   if (!empty($category)){

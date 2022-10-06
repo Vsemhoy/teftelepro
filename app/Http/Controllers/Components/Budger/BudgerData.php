@@ -159,6 +159,14 @@ class BudgerData
       return Utils::arrayToIndexed($result);
     }
 
+    public static function getCategoryNameById($id){
+      $item = DB::table(env('TB_BUD_CATEGORIES'))->where('id', '=', $id )->first();
+      if (isset($item->name)){
+        return $item->name;
+      }
+      return "-Unnamed category-";
+    }
+
 
     /* ----------------------- get items ------------------------ */
   public static function LoadItemsToChart($user, $accounts, $startmonth, $lastmonth){
