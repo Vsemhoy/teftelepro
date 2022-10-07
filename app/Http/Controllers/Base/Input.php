@@ -121,6 +121,7 @@ class Input
   public static $int = true;
   public static function INT($value)
   {
+    if ($value == ""){ $value = 0; };
     return filter_var($value, FILTER_SANITIZE_NUMBER_INT);
   } 
 

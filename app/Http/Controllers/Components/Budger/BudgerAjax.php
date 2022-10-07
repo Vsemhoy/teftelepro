@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Components\Budger\BudgerTemplates;
+use DateTime;
 
 
 
@@ -569,6 +570,7 @@ class BudgerAjax extends BaseController
     $account = Input::filterMe("INT", $json->account );
     $target = Input::filterMe("INT", $json->target );
     $amount = Input::filterMe("INT", $json->amount );
+    $contrAmount = $amount * -1;
     $name = Input::filterMe("STRING", $json->name, 64 );
     $categoryname = Input::filterMe("STRING", $json->categoryname, 64 );
     $descr = Input::filterMe("STRING", $json->description, 2000 );
@@ -624,10 +626,19 @@ class BudgerAjax extends BaseController
       }
     }
 
-    if ($type == 1 || $type == 3){
+    if ($type == 1){
       if ($amount < 0){
         $amount = $amount * -1;
       }
+      $r_changer = $r_changer * -1;
+    } 
+    if ($type == 3){
+      if ($amount > 0){
+        $amount = $amount * -1;
+      } 
+      if ($contrAmount < 0){
+        $contrAmount = $contrAmount * -1;
+      } 
     } 
     else 
     {
@@ -652,11 +663,110 @@ class BudgerAjax extends BaseController
       ]
     );
     $result = [];
-    $block = BudgerTemplates::tpl_in_calendar_event(
-      $newId, $name, $descr, $date, $account, $type, $amount, $category,
-       $categoryname, '', '', '', '', 0, 0, 1, 0, $accented);
-      array_push($result, $block);
-    return json_encode($result); 
+    $block = "";
+    if ($type < 3){
+      $block = BudgerTemplates::tpl_in_calendar_event(
+        $newId, $name, $descr, $date, $account, $type, $amount, $category,
+         $categoryname, '', '', '', '', 0, 0, 1, 0, $accented, $hasChildren);
+    } 
+    else if ($type < 5)
+    {
+      $block = BudgerTemplates::tpl_in_calendar_event_transfer(
+        $newId, $name, $descr, $date, $account, $type, $amount, $category,
+         $categoryname, '', '', '', '', 0, 0, 1, 0, $accented, $hasChildren);
+    }
+       $object = (object) [
+        'date' => $date,
+        'account' => $account,
+        'block' => $block
+       ];
+      array_push($result, $object);
+
+      if ($type == 3){
+        $sidNewId  = DB::table(env('TB_BUD_EVENTS'))->insertGetId(
+          [
+          'name' => $name,
+          'description' => $descr,
+          'user' => $user->id,
+          'type' => 4,
+          'value' => $contrAmount,
+          'account' => $account,
+          'transaccount' => $target,
+          'category'  => $category,
+          'haschildren'  => $hasChildren,
+          'date_in'  => $date,
+          'accented'  => $accented
+          ]
+        );
+        $block = BudgerTemplates::tpl_in_calendar_event_transfer(
+          $sidNewId, $name, $descr, $date, $account, 4, $contrAmount, $category,
+           $categoryname, '', '', '', '', 0, 0, 1, 0, $accented, $hasChildren);
+           $object = (object) [
+            'date' => $date,
+            'account' => $account,
+            'block' => $block
+           ];
+          array_push($result, $object);
+      }
+
+      if ($isRepeat == 0 || $r_times == 0){
+        return json_encode($result); 
+      }
+      // Get the sequence!
+      for ($i = 0; $i < $r_times; $i++ )
+      {
+        
+        if ($r_period == 'day')
+        {
+          $date = date("Y-m-d", strtotime($date . " +1 day"));
+        } else if ($r_period == 'week')
+        {
+          $date = date("Y-m-d", strtotime($date . " +1 week"));
+        } else if ($r_period == 'month')
+        {
+          $date = date("Y-m-d", strtotime($date . " +1 month"));
+        } else if ($r_period == 'quarter')
+        {
+          $date = date("Y-m-d", strtotime($date . " +3 months"));
+        } else if ($r_period == 'year')
+        {
+          $date = date("Y-m-d", strtotime($date . " +1 year"));
+      
+        } else {
+          $date = date("Y-m-d", strtotime($date . " +2 weeks"));
+        }
+        $amount = $amount + $r_changer;
+        if ($amount == 0 || ($amount > $r_goal &&  $r_goal != 0)){
+          break;
+        }
+        $newIdChild  = DB::table(env('TB_BUD_EVENTS'))->insertGetId(
+          [
+          'name' => $name,
+          'description' => $descr,
+          'user' => $user->id,
+          'type' => $type,
+          'value' => $amount,
+          'account' => $account,
+          'transaccount' => $target,
+          'category'  => $category,
+          'date_in'  => $date,
+          'accented'  => $accented,
+          'parent'   => $newId
+          ]
+        );
+        $block = BudgerTemplates::tpl_in_calendar_event(
+          $newIdChild, $name, $descr, $date, $account, $type, $amount, $category,
+           $categoryname, '', '', '', '', 0, 0, 1, 0, $accented, 0, $newId);
+           $object = (object) [
+            'date' => $date,
+            'account' => $account,
+            'block' => $block
+            
+           ];
+          array_push($result, $object);
+      }
+
+      return json_encode($result);
   }
   
   // 330
@@ -834,26 +944,6 @@ class BudgerAjax extends BaseController
   }
 
 
-  // 350
-  public function accentEventInChart($json, $user)
-  {
-    $id = Input::filterMe("INT", $json->id );
-    $state = Input::filterMe("INT", $json->state );
-
-    $affected = DB::table(env('TB_BUD_EVENTS'))
-    ->where('id', $id)
-    ->where('user', $user->id)
-    ->update([
-        'accented'  => $state
-    ]);
-    if (!empty($affected)){
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-
   // code 350 
   public function loadEventInfo($json, $user){
     $id = Input::filterMe("INT", $json->id );
@@ -875,24 +965,83 @@ class BudgerAjax extends BaseController
     return $item;
   }
 
+
+
+  // 370
+  public function accentEventInChart($json, $user)
+  {
+    $id = Input::filterMe("INT", $json->id );
+    $state = Input::filterMe("INT", $json->state );
+    $accentChilds = Input::filterMe("INT", $json->accentchilds );
+
+    $result = [];
+    $affected = DB::table(env('TB_BUD_EVENTS'))
+    ->where('id', $id)
+    ->where('user', $user->id)
+    ->update([
+        'accented'      => $state
+    ]);
+
+    $items = DB::table(env('TB_BUD_EVENTS'))
+    ->select('id')
+    ->where('user', '=', $user->id )
+    ->where('parent', '=', $id )
+    ->get();
+    
+    foreach($items AS $item){
+      array_push($result, $item->id);
+    }
+
+    if ($accentChilds == 1)
+    {
+      $affected = DB::table(env('TB_BUD_EVENTS'))
+      ->where('parent', $id)
+      ->where('user', $user->id)
+      ->update([
+          'accented' => $state
+      ]);
+    }
+    return json_encode($result);
+  }
+
+
+
+
   // code 380
   public function disableEventInChart($json, $user)
   {
     $id = Input::filterMe("INT", $json->id );
     $disableChilds = Input::filterMe("INT", $json->disablechilds );
     $state = Input::filterMe("INT", $json->state );
-
+    
+    $result = [];
     $affected = DB::table(env('TB_BUD_EVENTS'))
     ->where('id', $id)
     ->where('user', $user->id)
     ->update([
         'disabled'      => $state
     ]);
-    if (!empty($affected)){
-      return 1;
-    } else {
-      return 0;
+
+    $items = DB::table(env('TB_BUD_EVENTS'))
+    ->select('id')
+    ->where('user', '=', $user->id )
+    ->where('parent', '=', $id )
+    ->get();
+    
+    foreach($items AS $item){
+      array_push($result, $item->id);
     }
+
+    if ($disableChilds == 1)
+    {
+      $affected = DB::table(env('TB_BUD_EVENTS'))
+      ->where('parent', $id)
+      ->where('user', $user->id)
+      ->update([
+          'disabled' => $state
+      ]);
+    }
+    return json_encode($result);
   }
 
   /// CODE 390
@@ -900,8 +1049,32 @@ class BudgerAjax extends BaseController
   {
     $id = Input::filterMe("INT", $json->id );
     $removechilds = Input::filterMe("INT", $json->removechilds );
-
+    $result = [];
     $deleted = DB::table(env('TB_BUD_EVENTS'))->where('id', '=', $id )->where('user', '=', $user->id )->delete();
-      return 1;
+    //array_push($result, $id);
+    
+    $items = DB::table(env('TB_BUD_EVENTS'))
+    ->select('id')
+    ->where('user', '=', $user->id )
+    ->where('parent', '=', $id )
+    ->get();
+    
+    foreach($items AS $item){
+      array_push($result, $item->id);
+    }
+    
+    if ($removechilds == 1){
+      $deleted = DB::table(env('TB_BUD_EVENTS'))->where('parent', '=', $id )->where('user', '=', $user->id )->delete();
+    }
+    else  // UNLINK ITEMS
+    {
+      $affected = DB::table(env('TB_BUD_EVENTS'))
+      ->where('parent', $id)
+      ->where('user', $user->id)
+      ->update([
+          'parent' => '0'
+      ]);
+    }
+    return json_encode($result);
   }
 }

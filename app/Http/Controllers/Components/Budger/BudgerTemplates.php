@@ -96,11 +96,11 @@ $result .= "<div class='bud-event-card dragtemplate " . $transclasstype . $accen
   <span>';
   if ($haschildren == 1){
 
-    $result .= '<span uk-icon="icon: git-fork" title="Has childrens"></span>';
+    $result .= '<span uk-icon="icon: git-fork" class="bud-parent-icon" title="Has childrens"></span>';
   }
   if ($parent > 0){
 
-    $result .= '<span uk-icon="icon: link" title="linked to parent"></span>';
+    $result .= '<span uk-icon="icon: link" class="bud-linked-icon" title="linked to parent"></span>';
   }
   $result .= '</span>
   <div class="categories">';
@@ -457,6 +457,8 @@ public static function renderEventModal($accounts = null, $categories = null, $a
         <button class='uk-button uk-button-incom uk-width-1-3'>Incom</button>
         <button class='uk-button uk-button-expense uk-width-1-3'>Expense</button>
         <button class='uk-button uk-button-transfer uk-width-1-3'>Transfer</button>
+        <button class='uk-button uk-button-percent uk-width-1-3'>Percent</button>
+        <button class='uk-button uk-button-deposit uk-width-1-3'>Deposit</button>
     </div>
   </div>
   </div>
@@ -494,7 +496,7 @@ public static function renderEventModal($accounts = null, $categories = null, $a
               foreach ($accounts AS $value){
 
                   if ($value->archieved == 0){
-                    $result .= "<option class='' data-type='' value='" . $value->id . "'>  " . $value->name . "</option>";
+                    $result .= "<option class=''  data-curr='" . $currencies[$value->currency]->id . "' value='" . $value->id . "'>  " . $value->name . "</option>";
                   }
                   else {
 
@@ -514,7 +516,7 @@ public static function renderEventModal($accounts = null, $categories = null, $a
               foreach ($allaccounts AS $value){
 
                   if ($value->archieved == 0){
-                    $result .= "<option class='' data-type='' value='" . $value->id . "'>  " . $value->name . " (" . $currencies[$value->currency]->literals .  ")</option>";
+                    $result .= "<option class='' data-curr='" . $currencies[$value->currency]->id . "' value='" . $value->id . "'>  " . $value->name . " (" . $currencies[$value->currency]->literals .  ")</option>";
                     
                   } 
                   else {
@@ -577,7 +579,6 @@ public static function renderEventModal($accounts = null, $categories = null, $a
   </div>
   <div class='uk-modal-body' id='mod_options_body'>
     <form>
-    <label>NANAN</label>
       <fieldset class='uk-fieldset'>
 
       <div class='uk-margin uk-mb-0 uk-grid-small uk-child-width-auto uk-grid'>
@@ -588,9 +589,10 @@ public static function renderEventModal($accounts = null, $categories = null, $a
           <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1 uk-column-1-2' title='Main repeat options'>
           <span class='small' >Repeat period</span>
             <select class='uk-select' id='mod_repeatPeriod' placeholder='Period of repeating'>
+            <option value='day'>Every day</option>
+            <option value='week'>Every week</option>
+            <option value='quarter'>Every quarter</option>
                 <option value='month'>Every month</option>
-                <option value='week'>Every week</option>
-                <option value='day'>Every day</option>
                 <option value='year'>Every Year</option>
             </select>
             <span class='small' >Repeat times</span>
@@ -601,9 +603,9 @@ public static function renderEventModal($accounts = null, $categories = null, $a
 
         <div class='uk-margin uk-mb-0 uk-width-1-1 uk-column-1-2' title='Additional repeat options'>
 
-          <span class='small' >Every time Change amount for</span>
+          <span class='small' >Every time Change amount for </span>
           <input class='uk-input' type='number'
-           placeholder='+100' min='0' max='36000000' step='1'
+           placeholder='-100 or +100' min='0' max='36000000' step='1' title='set negative value if need to subtract from base value'
             inputmode='decimal' id='mod_amountChanger'>
 
           <span class='small' >Stop repeating when reached</span>
@@ -920,9 +922,9 @@ $isArchieved = 0, $notshow = 0, $isactive = 0)
   ";
   if ($type == 1){
     $result .= "<span class='itemTypeMarker uktm-1 uk-badge' >standard</span>";
-  } else   if ($type == 2){
-    $result .= "<span class='itemTypeMarker uktm-2 uk-badge'  >debt</span>";
   } else   if ($type == 3){
+    $result .= "<span class='itemTypeMarker uktm-2 uk-badge'  >debt</span>";
+  } else   if ($type == 2){
     $result .= "<span class='itemTypeMarker uktm-3 uk-badge' >credit</span>";
   }
   $result .= "

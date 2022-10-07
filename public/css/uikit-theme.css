@@ -2226,40 +2226,6 @@ select.uk-form-width-xsmall {
   color: #fff;
 }
 
-.uk-button-incom {
-  background-color: #2abf87;
-  color: #fff;
-}
-
-.uk-button-expense {
-  background-color: #e94676;
-  color: #fff;
-}
-
-.uk-button-transfer {
-  background-color: #00a2af;
-  color: #fff;
-}
-
-.uk-button-incom:hover {
-  background-color: #25a574;
-  color: #fff;
-}
-
-.uk-button-expense:hover {
-  background-color: #ca3e68;
-  color: #fff;
-}
-
-.uk-button-transfer:hover {
-  background-color: #0095a0;
-  color: #fff;
-}
-
-.uk-button-incom:active, .uk-button-expense:active, .uk-button-transfer:active {
-  box-shadow: inset 0px 0px 9px rgba(0, 0, 0, 0.32);
-}
-
 /* Hover */
 .uk-button-primary:hover {
   background-color: #0f7ae5;
@@ -10698,7 +10664,63 @@ select .opt-header {
   border-right: 1px solid #e5e5e5;
 }
 
-.uk-button-expense, .uk-button-incom, .uk-button-transfer {
+.uk-button-incom {
+  background-color: #2abf87;
+  color: #fff;
+}
+
+.uk-button-expense {
+  background-color: #e94676;
+  color: #fff;
+}
+
+.uk-button-transfer {
+  background-color: #00a2af;
+  color: #fff;
+}
+
+.uk-button-percent {
+  background-color: #db2909;
+  color: #fff;
+}
+
+.uk-button-deposit {
+  background-color: #721cb9;
+  color: #fff;
+}
+
+.uk-button-incom:hover {
+  background-color: #25a574;
+  color: #fff;
+}
+
+.uk-button-expense:hover {
+  background-color: #ca3e68;
+  color: #fff;
+}
+
+.uk-button-transfer:hover {
+  background-color: #0095a0;
+  color: #fff;
+}
+
+.uk-button-percent:hover {
+  background-color: #ca1f01;
+  color: #fff;
+}
+
+.uk-button-deposit:hover {
+  background-color: #6807b8;
+  color: #fff;
+}
+
+.uk-button-incom:active, .uk-button-expense:active, .uk-button-transfer:active,
+.uk-button-percent:active,
+.uk-button-deposit:active {
+  box-shadow: inset 0px 0px 9px rgba(0, 0, 0, 0.32);
+}
+
+.uk-button-expense, .uk-button-incom, .uk-button-transfer, .uk-button-percent, .uk-button-deposit {
   opacity: 0.5;
   transition: all ease 0.3s;
 }
@@ -10724,6 +10746,20 @@ select .opt-header {
   outline: 1px solid rgba(255, 255, 255, 0.34);
 }
 
+.uk-button-percent.active {
+  box-shadow: 0px 3px 15px 2px #db2909;
+  z-index: 9;
+  opacity: 1;
+  outline: 1px solid rgba(255, 255, 255, 0.34);
+}
+
+.uk-button-deposit.active {
+  box-shadow: 0px 3px 15px 2px #721cb9;
+  z-index: 9;
+  opacity: 1;
+  outline: 1px solid rgba(255, 255, 255, 0.34);
+}
+
 .hd-incom {
   background-color: #ffb9cd;
 }
@@ -10734,6 +10770,14 @@ select .opt-header {
 
 .hd-transfer {
   background-color: #7ed9e9;
+}
+
+.hd-percent {
+  background-color: #ebbeb6;
+}
+
+.hd-deposit {
+  background-color: #d1b2eb;
 }
 
 .bud-event-card {

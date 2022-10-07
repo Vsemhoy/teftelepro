@@ -194,33 +194,7 @@ $button-link-disabled-color:                     $global-muted-color !default;
     @if(mixin-exists(hook-button-primary)) {@include hook-button-primary();}
 }
 
-.uk-button-incom {
-  background-color: #2abf87;
-  color: #fff;
-}
-.uk-button-expense {
-  background-color: #e94676;
-  color: #fff;
-}
-.uk-button-transfer {
-  background-color: #00a2af;
-  color: #fff;
-}
-.uk-button-incom:hover {
-  background-color: #25a574;
-  color: #fff;
-}
-.uk-button-expense:hover {
-  background-color: #ca3e68;
-  color: #fff;
-}
-.uk-button-transfer:hover {
-  background-color: #0095a0;
-  color: #fff;
-}
-.uk-button-incom:active, .uk-button-expense:active, .uk-button-transfer:active   {
-  box-shadow: inset 0px 0px 9px rgb(0 0 0 / 32%);
-}
+
 
 
 

@@ -127,6 +127,8 @@ class ModalHandler
     this.btnInc = document.querySelectorAll('.uk-button-incom')[0];
     this.btnExp = document.querySelectorAll('.uk-button-expense')[0];
     this.btnTrs = document.querySelectorAll('.uk-button-transfer')[0];
+    this.btnPrc = document.querySelectorAll('.uk-button-percent')[0];
+    this.btnDep = document.querySelectorAll('.uk-button-deposit')[0];
 
     this.modHeader = document.querySelectorAll('.uk-modal-header')[0];
     this.btnOptns = document.querySelector('#btn_optionTrigger');
@@ -143,6 +145,7 @@ class ModalHandler
     this.rowManage = document.querySelector('#mod_manage_body');
     
     this.categorySelector = document.querySelector('#mod_category');
+    this.accountSelector = document.querySelector('#mod_account');
     
     this.title = document.querySelector('#mod_title');
     
@@ -162,6 +165,12 @@ class ModalHandler
     this.btnTrs.addEventListener('click', function(){
       self.SetTranfer(self);
     });
+    this.btnPrc.addEventListener('click', function(){
+      self.SetPercent(self);
+    });
+    this.btnDep.addEventListener('click', function(){
+      self.SetDeposit(self);
+    });
     
 
     this.btnOptns.addEventListener('click', function(){
@@ -179,7 +188,9 @@ class ModalHandler
     this.btnUpdate.addEventListener('click', function(){
       self.UpdateEvent(self);
     });
-
+    this.accountSelector.addEventListener('change', function(){
+      self.HideTargetAccount();
+    });
     
     document.querySelector('#mod_description').addEventListener('keyup', function(elem){
       if (this.value.length > 0){
@@ -282,10 +293,14 @@ class ModalHandler
     parent.btnInc.classList.remove('active');
     parent.btnExp.classList.add('active');
     parent.btnTrs.classList.remove('active');
+    parent.btnDep.classList.remove('active');
+    parent.btnPrc.classList.remove('active');
    
     parent.modHeader.classList.add('hd-incom');
     parent.modHeader.classList.remove('hd-expense');
     parent.modHeader.classList.remove('hd-transfer');
+    parent.modHeader.classList.remove('hd-deposit');
+    parent.modHeader.classList.remove('hd-percent');
 
     parent.rowTgAcc.classList.add('uk-hidden');
     parent.eventType = 2;
@@ -308,10 +323,14 @@ class ModalHandler
     parent.btnInc.classList.add('active');
     parent.btnExp.classList.remove('active');
     parent.btnTrs.classList.remove('active');
+    parent.btnDep.classList.remove('active');
+    parent.btnPrc.classList.remove('active');
  
     parent.modHeader.classList.remove('hd-incom');
     parent.modHeader.classList.add('hd-expense');
     parent.modHeader.classList.remove('hd-transfer');
+    parent.modHeader.classList.remove('hd-deposit');
+    parent.modHeader.classList.remove('hd-percent');
 
     parent.rowTgAcc.classList.add('uk-hidden');
     parent.eventType = 1;
@@ -334,10 +353,74 @@ class ModalHandler
     parent.btnInc.classList.remove('active');
     parent.btnExp.classList.remove('active');
     parent.btnTrs.classList.add('active');
+    parent.btnDep.classList.remove('active');
+    parent.btnPrc.classList.remove('active');
     
     parent.modHeader.classList.remove('hd-incom');
     parent.modHeader.classList.remove('hd-expense');
     parent.modHeader.classList.add('hd-transfer');
+    parent.modHeader.classList.remove('hd-deposit');
+    parent.modHeader.classList.remove('hd-percent');
+
+    parent.rowTgAcc.classList.remove('uk-hidden');
+    parent.eventType = 3;
+
+    let index = 0;
+    let sel = parent.categorySelector.querySelectorAll('option');
+    for (let i = 0; i < sel.length; i++){
+      if (sel[i].getAttribute('data-type') == 3){
+        sel[i].classList.remove('uk-hidden');
+        if (index == 0 && !sel[i].classList.contains('opt-header')){
+          parent.categorySelector.selectedIndex = i;
+          index = i;
+        }
+      } else {
+        sel[i].classList.add('uk-hidden'); 
+      }
+    }
+  }
+  SetPercent(parent){
+    parent.btnInc.classList.remove('active');
+    parent.btnExp.classList.remove('active');
+    parent.btnExp.classList.remove('active');
+    parent.btnDep.classList.remove('active');
+    parent.btnPrc.classList.add('active');
+    
+    parent.modHeader.classList.remove('hd-incom');
+    parent.modHeader.classList.remove('hd-expense');
+    parent.modHeader.classList.add('hd-transfer');
+    parent.modHeader.classList.remove('hd-deposit');
+    parent.modHeader.classList.add('hd-percent');
+
+    parent.rowTgAcc.classList.remove('uk-hidden');
+    parent.eventType = 3;
+
+    let index = 0;
+    let sel = parent.categorySelector.querySelectorAll('option');
+    for (let i = 0; i < sel.length; i++){
+      if (sel[i].getAttribute('data-type') == 3){
+        sel[i].classList.remove('uk-hidden');
+        if (index == 0 && !sel[i].classList.contains('opt-header')){
+          parent.categorySelector.selectedIndex = i;
+          index = i;
+        }
+      } else {
+        sel[i].classList.add('uk-hidden'); 
+      }
+    }
+  }
+  SetDeposit(parent){
+    parent.btnInc.classList.remove('active');
+    parent.btnExp.classList.remove('active');
+    parent.btnTrs.classList.remove('active');
+    parent.btnDep.classList.add('active');
+    parent.btnPrc.classList.remove('active');
+    
+    parent.modHeader.classList.remove('hd-incom');
+    parent.modHeader.classList.remove('hd-expense');
+    parent.modHeader.classList.add('hd-transfer');
+    parent.modHeader.classList.add('hd-deposit');
+    parent.modHeader.classList.remove('hd-percent');
 
     parent.rowTgAcc.classList.remove('uk-hidden');
     parent.eventType = 3;
@@ -386,7 +469,28 @@ class ModalHandler
     parent.rowManage.classList.remove('uk-hidden');
   }
 
-  SaveNewEvent(self)
+  HideTargetAccount(){
+    let acc = document.querySelector('#mod_account');
+    let tgacc = document.querySelector('#mod_tgaccount');
+    let val = acc.value;
+    let curr = acc.options[acc.selectedIndex].getAttribute('data-curr');
+    console.log(curr);
+    let co = 0;
+    for(let i = 0; i < tgacc.options.length; i++){
+      if (tgacc.options[i].value == val){
+        tgacc.options[i].classList.add('uk-hidden');
+      } else {
+        tgacc.options[i].classList.remove('uk-hidden');
+        if (co == 0 && tgacc.options[i].getAttribute('data-curr') == curr){
+          tgacc.value = tgacc.options[i].value;
+          co++;
+        }
+      }
+    //Add operations here
+    }
+  }
+
+  SaveNewEvent(self) // Create event item add new item
   {
     let counter = 0;
     let requestCode = 300;
@@ -430,20 +534,25 @@ class ModalHandler
           return 0;
         };
         console.log(this.responseText);
-        let result = JSON.parse(this.responseText);
-        let block = result[0];
+        let containers = JSON.parse(this.responseText);
         
         let burs = document.querySelectorAll('.budrow');
-        for (let i = 0; i < burs.length; i++){
-          if (burs[i].getAttribute('date') == data.date){
-            let cols = burs[i].querySelectorAll('.droptabledata');
-            for (let q = 0; q < cols.length; q++){
-              if (cols[q].getAttribute('account') == data.account){
-                cols[q].insertAdjacentHTML('beforeEnd', block);
+        for (let n = 0; n < containers.length; n++)
+        {
+          let container = containers[n];
+          for (let i = 0; i < burs.length; i++){
+            if (burs[i].getAttribute('date') == container.date){
+              let cols = burs[i].querySelectorAll('.droptabledata');
+              for (let q = 0; q < cols.length; q++){
+                if (cols[q].getAttribute('account') == container.account){
+  
+                  cols[q].insertAdjacentHTML('beforeEnd', container.block);
+                }
               }
             }
           }
         }
+        
         // block.classList.remove("temper");
         // block.setAttribute('id','item_' + this.responseText);
         setTimeout(() => {
@@ -776,9 +885,29 @@ class DOM {
         console.log(this.responseText);
         block.remove();
 
-        if (removeChilds){
-          let result = JSON.parse(this.responseText);
-          // foreach and so on
+        let result = JSON.parse(this.responseText);
+        if (removeChilds == 1){
+          for (let i = 0; i < result.length; i++)
+          {
+            let remblock = document.querySelector('#bud_item_' + result[i]);
+            if (remblock != undefined){
+              remblock.remove();
+            }
+          }
+        }
+        //  OR UNLINK EVENTS
+        else
+        {
+          for (let i = 0; i < result.length; i++)
+          {
+            let upblock = document.querySelector('#bud_item_' + result[i]);
+            if (upblock != undefined){
+              let icon = upblock.querySelectorAll('.bud-linked-icon')[0];
+              if (icon != undefined){
+                icon.remove();
+              }
+            }
+          }
         }
         setTimeout(() => {
           Dom.reload();
@@ -813,7 +942,11 @@ class DOM {
       }
     let disableChilds = 0;
     if (block.getAttribute('haschildren') == 1){
-      const result = confirm('Disable all child events?');
+      let phrase = 'Disable all child events?';
+      if (disablestate == 0){
+        phrase = 'Enable all child events?';
+      }
+      const result = confirm(phrase);
       if (result == true){
         disableChilds = 1;
       }
@@ -832,14 +965,25 @@ class DOM {
     xhttp.onreadystatechange = function() {
       if (this.readyState == 4 && this.status == 200) {
         if (this.responseText == -1){ alert("You are not registered!");
-          block.remove();
           return 0;
         };
         console.log(this.responseText);
-
         if (disableChilds){
           let result = JSON.parse(this.responseText);
-          // foreach and so on
+          for (let i = 0; i < result.length; i++)
+          {
+            let upblock = document.querySelector('#bud_item_' + result[i]);
+            if (upblock != undefined){
+              if (disablestate == 0)
+              {
+                upblock.classList.remove('bud-disabled');
+              }
+              else 
+              {
+                upblock.classList.add('bud-disabled');
+              }
+            }
+          }
         }
         setTimeout(() => {
           Dom.reload();
@@ -871,6 +1015,17 @@ class DOM {
       } else {
         block.classList.add('bud-accented');
       }
+    let accentChilds = 0;
+    if (block.getAttribute('haschildren') == 1){
+      let phrase = 'Accent all child events?';
+      if (accentstate == 0){
+        phrase = 'Remove accent of all child events?';
+      }
+      const result = confirm(phrase);
+      if (result == true){
+        accentChilds = 1;
+      }
+    }
 
     let counter = 0;
     let requestCode = 370;
@@ -880,6 +1035,7 @@ class DOM {
     data.code = requestCode;
     data.id = identer;
     data.state = accentstate;
+    data.accentchilds = accentChilds;
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -889,6 +1045,23 @@ class DOM {
           return 0;
         };
         console.log(this.responseText);
+        if (accentChilds){
+          let result = JSON.parse(this.responseText);
+          for (let i = 0; i < result.length; i++)
+          {
+            let upblock = document.querySelector('#bud_item_' + result[i]);
+            if (upblock != undefined){
+              if (accentstate == 0)
+              {
+                upblock.classList.remove('bud-accented');
+              }
+              else 
+              {
+                upblock.classList.add('bud-accented');
+              }
+            }
+          }
+        }
 
         setTimeout(() => {
           Dom.reload();
@@ -953,7 +1126,7 @@ class DOM {
     xhttp.send(JSON.stringify(data));
   }
 
-  cloneEventItem(id, date, account, target)
+  cloneEventItem(id, date, account, target) 
   {
     let counter = 0;
     let requestCode = 332;
