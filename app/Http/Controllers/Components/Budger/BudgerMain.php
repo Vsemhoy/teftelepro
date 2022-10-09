@@ -318,7 +318,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
   $result .= "<tr class='bg-subtotal subtotal'>
   <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
   foreach ($accountsToloadArr AS $account){
-    $result .=  "<td class='mtotalio'>";
+    $result .=  "<td class='mtotalio'  dec='" . $account->decimals . "'>";
 
     if ($lastRow == false){
 
@@ -345,7 +345,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
     }
     
     $result .=  "</td>
-    <td class='mtotals'><span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'>";
+    <td class='mtotals'><span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'  dec='" . $account->decimals . "'>";
     $ttv = 0;
         foreach ($this->items AS $total){
           if ($total->date_in == $date4total && $total->account ==  $account->id){
@@ -389,7 +389,11 @@ public function renderWholeTable(){
             </span></th>";
     if (count($this->accounts)){
       foreach ($this->accounts AS $accid){
-        $result .=  "<th scope='col' actype='" . $accid->type . "' account='" . trim($accid->id) . "' decimal='" . $accid->decimals . "'>" . $accid->name . "</th>
+        $percentVal = "";
+        if ($accid->percent > 0){
+          $percentVal = " data-percent='" . $accid->percent . "'";
+        }
+        $result .=  "<th scope='col' actype='" . $accid->type . "' account='" . trim($accid->id) . "' decimal='" . $accid->decimals . "'" . $percentVal . ">" . $accid->name . "</th>
         <th class='daytotals' scope='col' accfor='" . trim($accid->id) . "' actype='" . $accid->type . "' >" . "Balance" . "</th>";
       }
     }
@@ -438,11 +442,15 @@ public function renderWholeTable(){
     <td  class='tf_daytd'>" . $this->weekdayNames[$week] . "</td>";
     $t = 0;
     foreach ($this->accounts AS $account){
+      $percentVal = "";
+      if ($account->percent > 0){
+        $percentVal = " data-percent='" . $account->percent . "'";
+      }
       $accountid = $account->id;
       $idconstructorcol = $t;
       $result .=  "<td id='dragarea_" . $idconstructorrow . "_" . $idconstructorcol . "' 
       class='droptabledata' ondrop='drop(event)' ondragover='allowDrop(event)'
-      account='{$accountid}' date='{$date}' actype='" . $account->type . "'><span class='daytotal'>";
+      account='{$accountid}' date='{$date}' actype='" . $account->type . "'" . $percentVal . " dec='" . $account->decimals . "'><span class='daytotal'>";
       if (empty($empty)) {
          // echo $randvalue[$t];
        };
@@ -521,7 +529,7 @@ public function renderWholeTable(){
         }
       }
       $result .=  "</td>";
-      $result .=  "<td class='daytotals' for='{$accountid}' date='{$date}'  actype='" . $account->type . "'>0</td>";
+      $result .=  "<td class='daytotals' for='{$accountid}' date='{$date}' dec='" . $account->decimals . "'  actype='" . $account->type . "'" . $percentVal . ">0</td>";
       $t++;
     };
     if (count($this->accounts) > 1){

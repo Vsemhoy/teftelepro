@@ -1232,17 +1232,19 @@ class Counter
 {
   recount()
   {
+    let toFixer = 0;
     this.droptabledata = document.querySelectorAll('.droptabledata');
 
     // recount CELL
     for (let i = 0; i < this.droptabledata.length; i++)
     {
       let total = 0;
+      let dec = this.droptabledata[i].getAttribute('dec');
+      toFixer = toFixer < dec ? dec : toFixer;
       if (this.droptabledata[i].querySelectorAll('.bud-event-card').length > 0)
       {
         for (let q = 0; q < this.droptabledata[i].querySelectorAll('.bud-event-card').length; q++) {
           if (!this.droptabledata[i].querySelectorAll('.bud-event-card')[q].classList.contains('bud-disabled')){
-
             let value = this.droptabledata[i].querySelectorAll('.bud-event-card')[q].querySelectorAll('.bud-value')[0].innerHTML;
             value = +(value.trim());
             total += value;
@@ -1250,7 +1252,7 @@ class Counter
         }
       }
       if (total != 0){
-        this.droptabledata[i].querySelectorAll('.daytotal')[0].innerHTML = total;
+        this.droptabledata[i].querySelectorAll('.daytotal')[0].innerHTML = total.toFixed(dec);
       }
       else 
       {
@@ -1293,17 +1295,31 @@ class Counter
           let value = rows[index].querySelectorAll('.daytotal')[t].innerHTML;
           value = value == "" ? 0 : +(value.trim());
           resarray[t] += value;
-          rows[index].querySelectorAll('.daytotals')[t].innerHTML = resarray[t];
+          if (rows[index].querySelectorAll('.daytotals')[t].getAttribute('actype') == 2 && resarray[t] < 0)
+          {
+            let percentValue = rows[index].querySelectorAll('.daytotals')[t].getAttribute('data-percent');
+            if (percentValue > 0){
+              let days  = this.daysInMonth(rows[index].getAttribute('date'));
+              let addon = resarray[t] * (percentValue / 100) / 12 / days;
+              resarray[t] = resarray[t] + addon;
+            }
+          }
+          let dec = rows[index].querySelectorAll('.daytotals')[t].getAttribute('dec');
+          toFixer = toFixer < dec ? dec : toFixer;
+          rows[index].querySelectorAll('.daytotals')[t].innerHTML = resarray[t].toFixed(dec);
+
+
         }
       }
       if (rows[index].classList.contains('subtotal')){
         let sums = 0;
         for (let t = 0; t < resarray.length; t++) {
-          rows[index].querySelectorAll('.subtotalbal')[t].innerHTML = resarray[t];
+          let dec = rows[index].querySelectorAll('.subtotalbal')[t].getAttribute('dec');
+          rows[index].querySelectorAll('.subtotalbal')[t].innerHTML = resarray[t].toFixed(dec);
           sums += resarray[t];
         }
         if (resarray.length > 1){
-          rows[index].querySelectorAll('.totalofrow_s')[0].innerHTML = sums;
+          rows[index].querySelectorAll('.totalofrow_s')[0].innerHTML = sums.toFixed(toFixer);
         }
       }
       if (rows[index].querySelectorAll('.totalofrow').length > 0){
@@ -1311,7 +1327,7 @@ class Counter
         for (let t = 0; t < resarray.length; t++) {
           sum += resarray[t];
         }
-        rows[index].querySelectorAll('.totalofrow')[0].innerHTML = sum;
+        rows[index].querySelectorAll('.totalofrow')[0].innerHTML = sum.toFixed(toFixer);
       }
     }
 
@@ -1401,6 +1417,11 @@ class Counter
   {
     this.recount();
   }
+
+  daysInMonth (date) {
+    let arr = date.split('-');
+    return new Date(arr[0], arr[1], 0).getDate();
+}
 }
 
 

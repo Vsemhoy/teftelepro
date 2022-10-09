@@ -462,6 +462,7 @@ class BudgerAjax extends BaseController
   public static function saveNewAccount($json, $user)
   {
     $dec   = Input::filterMe("INT", $json->decimals );
+    $percent   = Input::filterMe("FLOAT", $json->percent );
     $name = Input::filterMe("STRING", $json->name, 32 );
     $descr = Input::filterMe("STRING", $json->descr, 256 );
     $type = Input::filterMe("INT", $json->type );
@@ -478,6 +479,7 @@ class BudgerAjax extends BaseController
       'type'         => $type,
       'currency'     => $currency,
       'decimals'     => $dec,
+      'percent'      => $percent,
       'archieved'    => $archieved,
       'notshow'      => $notshow,
       'user'         => $user->id
@@ -492,6 +494,7 @@ class BudgerAjax extends BaseController
   {
     $id   = Input::filterMe("INT", $json->id );
     $dec   = Input::filterMe("INT", $json->decimals );
+    $percent   = Input::filterMe("FLOAT", $json->percent );
     $name = Input::filterMe("STRING", $json->name, 32 );
     $descr = Input::filterMe("STRING", $json->descr, 256 );
     $type = Input::filterMe("INT", $json->type );
@@ -509,6 +512,7 @@ class BudgerAjax extends BaseController
         'type'         => $type,
         'currency'     => $currency,
         'decimals'     => $dec,
+        'percent'      => $percent,
         'archieved'    => $archieved,
         'notshow'      => $notshow
     ]);

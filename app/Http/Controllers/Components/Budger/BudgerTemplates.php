@@ -956,22 +956,23 @@ public static function renderAccountModal($currencies)
         <!--legend class='uk-legend'>Legend</legend -->
 
         <div class='uk-margin uk-mb-0'>
-            <input class='uk-input' type='text' max='32' placeholder='Account name' id='tf_name'>
+            <input class='uk-input' type='text' max='32' placeholder='Account name' id='bud_name'>
         </div>
 
         <div class='uk-margin uk-mb-0'>
-            <textarea class='uk-textarea' rows='7' max='256' placeholder='Description' id='tf_description'></textarea>
+            <textarea class='uk-textarea' rows='7' max='256' placeholder='Description' id='bud_descr'></textarea>
         </div>
 
         <div class='uk-margin uk-mb-0 uk-inline uk-width-1-1' title='Number of symbols after comma'>
           <span class='uk-form-icon uk-form-icon' uk-icon='icon: database' ></span>
-          <input class='uk-input' type='number' min='0' max='8' placeholder='Number of digits after comma' inputmode='decimal' id='tf_decimal'>
+          <input class='uk-input' type='number' min='1' max='5' 
+          placeholder='Number of digits after comma' inputmode='numeric' id='bud_decimal'>
         </div>
 
 
         <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Account'>
           <span class='small' >Type of account</span>
-            <select class='uk-select' id='tf_acctype' placeholder='Account type'>
+            <select class='uk-select' id='bud_acctype' placeholder='Account type'>
                 <option disabled value='0'>Shadow account</option>
                 <option value='1'>Standard</option>
                 <option value='2'>Cretid/Debt</option>
@@ -979,10 +980,14 @@ public static function renderAccountModal($currencies)
             </select>
         </div>
 
+        <div id='row_percent' class='uk-margin uk-mb-0 uk-inline uk-width-1-1' title='Percentage'>
+          <span class='uk-form-icon uk-form-icon' uk-icon='icon: database' ></span>
+          <input class='uk-input' type='number' min='1' max='8' placeholder='Percentage value' id='bud_percentage'>
+        </div>
 
         <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Category of event'>
         <span class='small' >Currency identifier</span>
-          <select class='uk-select' id='tf_currency' placeholder='Account'>";
+          <select class='uk-select' id='bud_currency' placeholder='Account'>";
             if ($currencies != null){
               foreach ($currencies AS $dat){
 
@@ -995,10 +1000,10 @@ public static function renderAccountModal($currencies)
       </div>
             <hr>
       <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Visibility'>
-      <label><input class='uk-checkbox' id='tf_archieved' type='checkbox'> Archieved account</label>
+      <label><input class='uk-checkbox' id='bud_archieved' type='checkbox'> Archieved account</label>
       </div>
       <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Visibility'>
-      <label><input class='uk-checkbox' id='tf_hotshow' type='checkbox'> Not show in main page</label>
+      <label><input class='uk-checkbox' id='bud_notshow' type='checkbox'> Not show in main page</label>
       </div>
     </fieldset>
   </form>
