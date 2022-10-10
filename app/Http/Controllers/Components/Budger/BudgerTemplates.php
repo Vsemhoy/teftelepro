@@ -126,7 +126,15 @@ return $result;
 }
 
 
-public static  function tpl_in_calendar_event_transfer($id, $name, $text, $date, $account, $targeter, $accname, $acccolor, $accurrency, $eventtype, $amount, $freq  = 0, $ordered = 0){
+public static  function tpl_in_calendar_event_transfer($id, $name, $text, $date, $account, $transaccount, $eventtype, $amount, $category = '', $catname = '', $accname, $icon = '', $iconcolor = '', $whiteicon = '', $iconpath = '', $freq  = 0, $ordered = 0, $dataSection = 1, $disabled = 0, $accent = 0, $haschildren = 0, $parent = 0)
+{
+  $result = '</div>
+  ' . $amount . '
+  </div>';
+  return $result;
+}
+
+public static  function tpl_in_calendar_event_transfers($id, $name, $text, $date, $account, $targeter, $accname, $acccolor, $accurrency, $eventtype, $amount, $freq  = 0, $ordered = 0){
   $length = strlen($text) / 4;
   // Prevent insert negative values
   if ($amount < 0){
@@ -457,8 +465,8 @@ public static function renderEventModal($accounts = null, $categories = null, $a
         <button class='uk-button uk-button-incom uk-width-1-3'>Incom</button>
         <button class='uk-button uk-button-expense uk-width-1-3'>Expense</button>
         <button class='uk-button uk-button-transfer uk-width-1-3'>Transfer</button>
-        <button class='uk-button uk-button-percent uk-width-1-3'>Percent</button>
-        <button class='uk-button uk-button-deposit uk-width-1-3'>Deposit</button>
+        <button class='uk-hidden uk-button uk-button-percent uk-width-1-3'>Percent</button>
+        <button class='uk-hidden uk-button uk-button-deposit uk-width-1-3'>Deposit</button>
     </div>
   </div>
   </div>

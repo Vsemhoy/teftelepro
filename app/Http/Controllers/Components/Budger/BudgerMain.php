@@ -345,7 +345,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
     }
     
     $result .=  "</td>
-    <td class='mtotals'><span class='subtotalbal' date='" . $date4total . "' foracc='" . trim($account->id) . "'  dec='" . $account->decimals . "'>";
+    <td class='mtotals'><span class='subtotalbal ' date='" . $date4total . "' foracc='" . trim($account->id) . "'  dec='" . $account->decimals . "'>";
     $ttv = 0;
         foreach ($this->items AS $total){
           if ($total->date_in == $date4total && $total->account ==  $account->id){
@@ -353,7 +353,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
           }
         }
         $result .=  $ttv;
-    $result .=  "</span></td>";
+    $result .=  "</span><span class='subbal-diff uk-text-muted uk-display-inline-block'></span></td>";
   };
   if (count($accountsToloadArr) > 1){
     $result .=  "<td class='totalofrow_s'><small> " . 

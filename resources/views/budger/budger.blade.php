@@ -273,13 +273,17 @@ class ModalHandler
       this.btnOptns.removeAttribute('disabled');
 
       let date = elem.parentNode.getAttribute('date');
+      let account = elem.getAttribute('account');
+      
       document.querySelector('#mod_date').value = date;
+      console.log(account);
+      document.querySelector('#mod_account').value = account;
      //alert(date);
 
      document.querySelector('#mod_name').value = "";
         document.querySelector('#mod_description').value = "";
         document.querySelector('#mod_amount').value = 0;
-
+      
         //document.querySelector('#mod_category').value = result.category;
         // document.querySelector('#mod_category')[document.querySelector('#mod_category').selectedIndex].text.trim();
         //document.querySelector('#mod_account').value = result.account;
@@ -1263,6 +1267,7 @@ class Counter
     // RECOUNT ROWS
     // 1 - get starting balance and create value array
     let resarray = [];
+    let lastBalanceArr = [];
     let subobjects = [];
     let subtotalrows = document.querySelectorAll('.subtotal');
     for (let i = 0; i < subtotalrows.length ; i++) {
@@ -1271,6 +1276,7 @@ class Counter
       for (let q = 0; q < subbalances.length; q++) {
         let value = +((subbalances[q].innerHTML).trim());
         resarray.push(value);
+        lastBalanceArr.push(value);
         let obj = {
           "incom" : 0,
           "depos" : 0,
@@ -1279,7 +1285,7 @@ class Counter
           "prev_incom" : 0,
           "prev_depos" : 0,
           "prev_expens" : 0,
-          "prev_transfer" : 0,
+          "prev_transfer" : 0
         }
         subobjects.push(obj);
       }
@@ -1316,6 +1322,15 @@ class Counter
         for (let t = 0; t < resarray.length; t++) {
           let dec = rows[index].querySelectorAll('.subtotalbal')[t].getAttribute('dec');
           rows[index].querySelectorAll('.subtotalbal')[t].innerHTML = resarray[t].toFixed(dec);
+
+          if (lastBalanceArr[t] != 0){
+            let valDiff  = (resarray[t] - lastBalanceArr[t]).toFixed(0);
+            if (valDiff != 0){
+              rows[index].querySelectorAll('.subbal-diff')[t].innerHTML = valDiff > 0 ? ("+" + valDiff) : valDiff;
+            }
+          }
+          lastBalanceArr[t] = resarray[t];
+
           sums += resarray[t];
         }
         if (resarray.length > 1){

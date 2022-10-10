@@ -61,6 +61,14 @@ class BudgerData
        ['user' => $user, ]);
       return $result;
     }
+
+    public static function getAccountNameById($id){
+      $item = DB::table(env('TB_BUD_ACCOUNTS'))->where('id', '=', $id )->first();
+      if (isset($item->name)){
+        return $item->name;
+      }
+      return "-???-";
+    }
   
     public static function GetFirstCurrency($user){
       $row = DB::table( env('TB_BUD_ACCOUNTS') )
