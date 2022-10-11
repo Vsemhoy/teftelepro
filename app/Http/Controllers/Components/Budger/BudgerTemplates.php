@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Components\Budger;
 ///use App\Http\Controllers\Language\...;
 use App\Http\Controllers\Components\Budger\BudgerController;
 use Illuminate\Routing\Controller as BaseController;
+use App\Http\Controllers\Components\Budger\BudgerData;
  // No direct access to this file
 
 class BudgerTemplates extends BaseController{
@@ -15,7 +16,7 @@ class BudgerTemplates extends BaseController{
 
 
 
-  public static function tpl_in_calendar_event($id, $name, $text, $date, $account, $eventtype, $amount, $category = '', $catname = '', $icon = '', $iconcolor = '', $whiteicon = '', $iconpath = '', $freq  = 0, $ordered = 0, $dataSection = 1, $disabled = 0, $accent = 0, $haschildren = 0, $parent = 0){
+  public static function tpl_in_calendar_event($id, $name, $text, $date, $account, $eventtype, $amount, $category = '', $catname = '', $icon = '', $iconcolor = '', $whiteicon = '', $iconpath = '', $ordered = 0, $dataSection = 1, $disabled = 0, $accent = 0, $haschildren = 0, $parent = 0){
 $length = strlen($text) / 4;
 // Prevent insert negative values
 if ($amount < 0){
@@ -74,8 +75,7 @@ if ($disabled == 1){
 $result .= "<div class='bud-event-card dragtemplate " . $transclasstype . $accentclass . $disclass .
  "' aria-current='true'
   id='" . $target . $id . "' draggable='true' ondragstart='drag(event)'
-  template='22" . random_int(1, 30000) . "' type='" . $eventtype . "'
-  onekeydown='tf_keyhandler(event)' frequency='" . $freq . "' ordered='" . $ordered . "'
+  template='22" . random_int(1, 30000) . "' type='" . $eventtype . "' ordered='" . $ordered . "'
   haschildren='" . $haschildren . "'>
 
   <div class='cardName'>
@@ -126,11 +126,44 @@ return $result;
 }
 
 
-public static  function tpl_in_calendar_event_transfer($id, $name, $text, $date, $account, $transaccount, $eventtype, $amount, $category = '', $catname = '', $accname, $icon = '', $iconcolor = '', $whiteicon = '', $iconpath = '', $freq  = 0, $ordered = 0, $dataSection = 1, $disabled = 0, $accent = 0, $haschildren = 0, $parent = 0)
+public static  function tpl_in_calendar_event_transfer($id, $trans_id, $name, $text, $date, $account, $transaccount, $eventtype, $amount, $category = '', $catname = '', $accname, $icon = '', $iconcolor = '', $whiteicon = '', $iconpath = '', $dataSection = 1, $disabled = 0, $accent = 0, $haschildren = 0, $parent = 0)
 {
-  $result = '</div>
-  ' . $amount . '
-  </div>';
+  $footerText = "";
+  $transclasstype = "";
+  if ($eventtype == 1){
+    $transclasstype = "incom";
+  } else if ($eventtype  == 2) {
+    $transclasstype = "expend";
+  } else if ($eventtype  == 3) {
+    $transclasstype = "transfer";
+    $footerText = "<span class='uk-text-small'>Transfer to <br></span><span class='uk-text-default'>" . $accname . "</div>";
+  } else if ($eventtype  == 4) {
+    $transclasstype = "transfered";
+    $footerText = "<span class='uk-text-small'>Transfer from <br></span>" . $accname;
+  };
+  
+
+  $result = "  <div class='bud-event-card dragtemplate " . $transclasstype . "' aria-current='true'
+   id='bud_item_" . $id . "' draggable='true' trans_id='" . $trans_id . "'
+   type='" . $eventtype . "'  haschildren='0' transaccount='" . $transaccount . "'>
+  <div class='cardName'>
+  <div class='bud-name'>" . $name . "</div>
+  <div class='bud-trigger'>
+    <span class='itemMenu '><span uk-icon='settings'></span>
+    </span>
+  
+  </div>
+  </div>
+<div class='col-12 mb-1 small bud-descr
+ shortest-text'>" . $text . "
+ </div>
+<div class='bud-footer'>
+<strong class='mb-1 bud-value'>" . $amount . "</strong>
+<span></span>
+<div class='categories'><span class='bud-badge text-dark' category='" . $category . "'>" . $catname . "</span></div>
+</div>
+<div class='bud-card-footer'>" . $footerText . "</div>
+</div>";
   return $result;
 }
 

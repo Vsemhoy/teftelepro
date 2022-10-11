@@ -499,9 +499,8 @@ public function renderWholeTable(){
               $_grpcolor, 
               $_grpwhiteicon,
               "", //$iconpath,
-              0, // frequency
               $_object->ordered,
-              1,
+              1, // Data Section property - 1 - Event / 2 - Template / 3 - Good
               $_object->disabled,
               $_object->accented,
               $_object->haschildren, 
@@ -509,21 +508,33 @@ public function renderWholeTable(){
             ); // RENDERER
             } else {
               if (!isset($allAccounts)){
-                $allAccounts = IndexModel::LoadAccountList_ALL_keyId(USERID);
+                //$allAccounts = IndexModel::LoadAccountList_ALL_keyId(USERID);
               };
               $result .= BudgerTemplates::tpl_in_calendar_event_transfer(
                 $_object->id, 
+                $_object->trans_id, 
                 $_object->name, 
                 $_object->description, 
                 $_object->date_in,
+                $_object->account,
                 $_object->transaccount,
-                $_object->transferred,
-                $allAccounts[$_object->transaccount]->name,
-                $allAccounts[$_object->transaccount]->color,
-                $allAccounts[$_object->transaccount]->currency,
                 $_object->type,  
                 $_object->value,
-                $_object->ordered); // RENDERER */
+                $_object->category,
+                $_grpname, 
+                $this->accounts[$_object->transaccount]->name,
+                // $allAccounts[$_object->transaccount]->name,
+                // $allAccounts[$_object->transaccount]->color,
+                // $allAccounts[$_object->transaccount]->currency,
+                $_gpricon,
+                $_grpcolor, 
+                $_grpwhiteicon,
+              $iconpath = '',
+              $dataSection = 1,
+              $_object->disabled,
+              $_object->accented,
+              $_object->haschildren, 
+              $_object->parent); // RENDERER */
             };
           }
         }

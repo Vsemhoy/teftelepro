@@ -564,6 +564,20 @@ select {
     }
   }
 }
+.transfer {
+  border-left: 4px solid #e94676 !important;
+  background-color: #bce0ee;
+  background: radial-gradient(circle, rgb(228, 243, 249) 50%, rgb(198, 236, 244) 100%);
+}
+.transfered {
+  border-left: 4px solid #2abf87 !important;
+  background-color: #bce0ee;
+  background: radial-gradient(circle, rgb(228, 243, 249) 50%, rgb(198, 236, 244) 100%);
+}
+.bud-card-footer {
+  margin-top: 6px;
+  border-top: 1px solid #00000054;
+}
 .bud-event-card:hover {
   opacity: 0.9;
   cursor: pointer;

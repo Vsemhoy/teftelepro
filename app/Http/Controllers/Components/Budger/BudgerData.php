@@ -63,7 +63,7 @@ class BudgerData
     }
 
     public static function getAccountNameById($id){
-      $item = DB::table(env('TB_BUD_ACCOUNTS'))->where('id', '=', $id )->first();
+      $item = DB::table(env('TB_BUD_ACCOUNTS'))->where('id', $id )->first();
       if (isset($item->name)){
         return $item->name;
       }

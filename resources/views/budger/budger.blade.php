@@ -382,6 +382,7 @@ class ModalHandler
         sel[i].classList.add('uk-hidden'); 
       }
     }
+    parent.HideTargetAccount();
   }
   SetPercent(parent){
     parent.btnInc.classList.remove('active');
@@ -549,7 +550,7 @@ class ModalHandler
               let cols = burs[i].querySelectorAll('.droptabledata');
               for (let q = 0; q < cols.length; q++){
                 if (cols[q].getAttribute('account') == container.account){
-  
+                  
                   cols[q].insertAdjacentHTML('beforeEnd', container.block);
                 }
               }
@@ -742,8 +743,10 @@ class DOM {
           block.classList.add('bud-coox');
           setTimeout(() => {
             if (h == 0){
-              
-              document.querySelector('#itemMenu').remove();
+              if (document.querySelector('#itemMenu') != null){
+
+                document.querySelector('#itemMenu').remove();
+              }
             }
           }, 500);
         });
@@ -886,6 +889,13 @@ class DOM {
           block.remove();
           return 0;
         };
+          if (block.getAttribute("type") == 3 || block.getAttribute("type") == 4){
+            let trans = block.getAttribute("trans_id");
+            let remToo = document.querySelector('#bud_item_' + trans);
+            if (remToo != undefined){
+              remToo.remove();
+                }
+              };
         console.log(this.responseText);
         block.remove();
 
@@ -895,6 +905,13 @@ class DOM {
           {
             let remblock = document.querySelector('#bud_item_' + result[i]);
             if (remblock != undefined){
+              if (remblock.getAttribute("type") == 3 || remblock.getAttribute("type") == 4){
+                let trans = remblock.getAttribute("trans_id");
+                let remToo = document.querySelector('#bud_item_' + trans);
+                if (remToo != undefined){
+                  remToo.remove();
+                }
+              }
               remblock.remove();
             }
           }
@@ -971,6 +988,20 @@ class DOM {
         if (this.responseText == -1){ alert("You are not registered!");
           return 0;
         };
+        if (block.getAttribute("type") == 3 || block.getAttribute("type") == 4){
+            let trans = block.getAttribute("trans_id");
+            let meToo = document.querySelector('#bud_item_' + trans);
+            if (meToo != undefined){
+              if (accentstate == 0)
+              {
+                meToo.classList.remove('bud-disabled');
+              }
+              else 
+              {
+                meToo.classList.add('bud-disabled');
+              }
+            }
+          };
         console.log(this.responseText);
         if (disableChilds){
           let result = JSON.parse(this.responseText);
@@ -986,6 +1017,7 @@ class DOM {
               {
                 upblock.classList.add('bud-disabled');
               }
+              
             }
           }
         }
@@ -1048,6 +1080,20 @@ class DOM {
           block.remove();
           return 0;
         };
+        if (block.getAttribute("type") == 3 || block.getAttribute("type") == 4){
+            let trans = block.getAttribute("trans_id");
+            let meToo = document.querySelector('#bud_item_' + trans);
+            if (meToo != undefined){
+              if (accentstate == 0)
+              {
+                meToo.classList.remove('bud-accented');
+              }
+              else 
+              {
+                meToo.classList.add('bud-accented');
+              }
+            }
+          };
         console.log(this.responseText);
         if (accentChilds){
           let result = JSON.parse(this.responseText);
