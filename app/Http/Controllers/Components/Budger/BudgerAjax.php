@@ -632,7 +632,7 @@ class BudgerAjax extends BaseController
         $name = "New event";
       }
     }
-    
+
     if ($type == 1){
       if ($amount < 0){
         $amount = $amount * -1;
@@ -685,7 +685,7 @@ class BudgerAjax extends BaseController
            $categoryname, $transAccName, '', '', '', '', 1, 0, $accented, $hasChildren);
     }
        $object = (object) [
-        'id' => $newId,
+//        'id' => $newId,
         'date' => $date,
         'account' => $account,
         'block' => $block
@@ -713,7 +713,7 @@ class BudgerAjax extends BaseController
           $transId, $newId, $name, $descr, $date, $target, $account,  4, $contrAmount, $category,
            $categoryname, $accName, '', '', '', '', 1, 0, $accented, $hasChildren);
            $object = (object) [
-            'id' => $transId,
+     //       'id' => $transId,
             'date' => $date,
             'account' => $target,
             'block' => $block
@@ -729,13 +729,14 @@ class BudgerAjax extends BaseController
               'trans_id' => $transId
               /// etc and so on
           ]);
-
+          
       }
-/*
+
       if ($isRepeat == 0 || $r_times == 0){
         return json_encode($result); 
       }
       // Get the sequence!
+      
       for ($i = 0; $i < $r_times; $i++ )
       {
         
@@ -762,44 +763,48 @@ class BudgerAjax extends BaseController
         if ($amount == 0 || ($amount > $r_goal &&  $r_goal != 0)){
           break;
         }
+        
         $newIdChild  = DB::table(env('TB_BUD_EVENTS'))->insertGetId(
           [
-          'name' => $name,
-          'description' => $descr,
-          'user' => $user->id,
-          'type' => $type,
-          'value' => $amount,
-          'account' => $account,
-          'transferred' => $target,
-          'category'  => $category,
-          'date_in'  => $date,
-          'accented'  => $accented,
-          'parent'   => $newId
+          'name'           => $name,
+          'description'    => $descr,
+          'user'           => $user->id,
+          'type'           => $type,
+          'value'          => $amount,
+          'account'        => $account,
+          'transaccount'   => $target,
+          'category'       => $category,
+          'date_in'        => $date,
+          'accented'       => $accented,
+          'parent'         => $newId
           ]
         );
 
            if ($type < 3){
             $block = BudgerTemplates::tpl_in_calendar_event(
-              $newIdChild, $name, $descr, $date, $account, $type, $amount, $category,
-               $categoryname, '', '', '', '', 0, 1, 0, $accented, 0, $newId);
+                $newIdChild, $name, $descr, $date, $account, $type, $amount, $category,
+                $categoryname, '', '', '', '', 0, 1, 0, $accented, 0, $newId);
                $object = (object) [
                 'date' => $date,
                 'account' => $account,
                 'block' => $block
-          } 
-          else if ($type < 5 && $type > 2)
+               ];
+                array_push($result, $object);
+              } 
+              else if ($type == 3)
           {
       
             $block = BudgerTemplates::tpl_in_calendar_event_transfer(
-              $newIdChild, $name, $descr, $date, $account, $target, $type, $amount, $category,
-               $categoryname, '', '', '', '', 0, 0, 1, 0, $accented, $hasChildren);
-          }
-             $object = (object) [
-              'date' => $date,
-              'account' => $account,
-              'block' => $block
-             ];
-            array_push($result, $object);
+               $newId, "(*&ID_TO_REPLACE&*)", $name, $descr, $date, $account, $target, $type, $amount, $category,
+               $categoryname, $transAccName, '', '', '', '', 1, 0, $accented, 0);
+               
+               $object = (object) [
+                   'date' => $date,
+                   'account' => $account,
+                   'block' => $block
+                  ];
+              array_push($result, $object);
+              }
       
             if ($type == 3){
               $contrAmount = $amount * -1;
@@ -811,25 +816,36 @@ class BudgerAjax extends BaseController
                 'type' => 4,
                 'value' => $contrAmount,
                 'account' => $target,
+                'trans_id' => $newIdChild,
                 'transaccount' => $account,
                 'category'  => $category,
-                'haschildren'  => $hasChildren,
+                'parent'  => $newId,
                 'date_in'  => $date,
                 'accented'  => $accented
                 ]
               );
               $block = BudgerTemplates::tpl_in_calendar_event_transfer(
-                $transId, $name, $descr, $date, $target, $account, 4, $contrAmount, $category,
-                 $categoryname, '', '', '', '', 0, 0, 1, 0, $accented, $hasChildren);
+                $transId, $newIdChild, $name, $descr, $date, $target, $account, 4, $contrAmount, $category,
+                $categoryname, $transAccName, '', '', '', '', 1, 0, $accented, 0);
                  $object = (object) [
                   'date' => $date,
                   'account' => $target,
                   'block' => $block
                  ];
                 array_push($result, $object);
-            }
+                $result[count($result) - 2]->block = str_replace("(*&ID_TO_REPLACE&*)", $transId, $result[count($result) - 2]->block);
+
+          // Update trans_id of the previous Item
+          $affected = DB::table(env('TB_BUD_EVENTS'))
+          ->where('id', $newIdChild)
+          ->where('user', $user->id)
+          ->update([
+              'trans_id' => $transId
+              /// etc and so on
+          ]);
+        }
+            
       }
-      */
       return json_encode($result);
   }
   
