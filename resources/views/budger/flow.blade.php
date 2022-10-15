@@ -49,7 +49,7 @@ return $result;
 <div uk-filter="target: .js-filter">
   <ul class="uk-subnav uk-subnav-pill">
       <li uk-filter-control=""><a href="#">All</a></li>
-      <li uk-filter-control=".tag-incom"><a href="#">Incoms</a></li>
+      <li uk-filter-control=".tag-incom"><a href="#">incomes</a></li>
       <li uk-filter-control=".tag-expense"><a href="#">Expenses</a></li>
       <li uk-filter-control=".tag-transfer"><a href="#">Transfers</a></li>
   </ul>

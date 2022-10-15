@@ -215,6 +215,12 @@ class BudgerAjax extends BaseController
       // returns number -1 if not success, 1 if success
       return self::removeEventInChart($data, $user);
     }
+
+    if ($code == 901) // restore category Item
+    {
+      // returns number -1 if not success, 1 if success
+      return self::updateAccountTotals($data, $user);
+    }
   }
 
 
@@ -1052,6 +1058,9 @@ class BudgerAjax extends BaseController
   {
     $id = Input::filterMe("INT", $json->id );
     $state = Input::filterMe("INT", $json->state );
+    if (Input::filterMe("INT", $json->type) == 4){
+      $id = Input::filterMe("INT", $json->trans);
+    }
     $accentChilds = Input::filterMe("INT", $json->accentchilds );
 
     $result = [];
@@ -1099,6 +1108,9 @@ class BudgerAjax extends BaseController
   {
     $id = Input::filterMe("INT", $json->id );
     $disableChilds = Input::filterMe("INT", $json->disablechilds );
+    if (Input::filterMe("INT", $json->type) == 4){
+      $id = Input::filterMe("INT", $json->trans);
+    }
     $state = Input::filterMe("INT", $json->state );
     
     $result = [];
@@ -1143,6 +1155,10 @@ class BudgerAjax extends BaseController
   {
     $id = Input::filterMe("INT", $json->id );
     $removechilds = Input::filterMe("INT", $json->removechilds );
+    if (Input::filterMe("INT", $json->type) == 4){
+      $id = Input::filterMe("INT", $json->trans);
+    }
+
     $result = [];
     $deleted = DB::table(env('TB_BUD_EVENTS'))
     ->where('id', '=', $id )->where('user', '=', $user->id )->delete();
@@ -1175,4 +1191,204 @@ class BudgerAjax extends BaseController
     }
     return json_encode($result);
   }
+
+
+
+  // $newstartmonth = date("Y-m-01", strtotime($getdate . "-1 month")); // 01 of month before event occurs
+  /* This value will be taken as a basis for recalculating totals
+   for the current month and all subsequent months in which events exist. */
+
+//  $getmonthfirst = date("Y-m-01", strtotime($getdate));              // o1 of month when event occurs
+  /* The fact that the value indicates the first day of the month does not mean at all 
+  that this is data from the beginning of the month. 
+  The first day of the month is taken for convenience, 
+  since the last day of the month has variability. 
+  This is only needed to get the correct value for the "DATE" field */
+  
+  //echo "input: " . $getdate . ", newstartmonth: " . $newstartmonth . ", getmonthfirst: " . $getmonthfirst;
+  /* Intended handler logic:
+  0   - get decimals of current account;
+  1   - get value of $newstartmonth - from - Totals (this value );
+  1.1 - if ROW (value) not exists, try to get last existed value before $newstartmonth
+  1.2 - if values not exist, create an object with zero-values
+  2   - Read all events within the account from Current month
+  3   - Read all totals within the account from Current mont
+  4   - get last month from events AND last month from totals, find the most recent month
+  5   - count months between first month and last month
+  6   - create an array of Values (so far empty), where key=date
+  7   - ... STOP! Why I cant't do that with Js totals?
+   */
+  /* JS Alternative Indended logic:
+  1 - when JS recount each total (except first, which is base) just read value and date into DB via AJAX
+  */
+
+  // CODE 901
+  public function updateAccountTotals($json, $user)
+  {
+    $account   = Input::filterMe("INT", $json->account );
+    $objects = Input::filterMe("ARRAY", $json->objects );
+    $date = Input::filterMe("DATE", $json->date );
+    $dateMod = date("Y-m-d", strtotime($date . " -1 month"));
+      //1 - set not actual to all rows of account
+    $affected = DB::table(env('TB_BUD_TOTALS'))
+    ->where('account', $account)
+    ->where('user', $user->id)
+    ->where('setdate', '>', $dateMod)
+    ->update([
+        'actual' => '0'
+    ]);
+
+    foreach ($objects AS $obj){
+      $value =  Input::filterMe("FLOAT", $obj->value);
+      // difference with past account if there were not 0 balance
+      $monthDiff =  Input::filterMe("FLOAT", $obj->monthdiff);
+      $percent =  Input::filterMe("FLOAT", $obj->percent);
+      $incomes =  Input::filterMe("FLOAT", $obj->incomes);
+      $deposits =  Input::filterMe("FLOAT", $obj->deposits);
+      $expenses =  Input::filterMe("FLOAT", $obj->expenses);
+      $transfers =  Input::filterMe("FLOAT", $obj->transfers);
+      $difference =  Input::filterMe("FLOAT", $obj->difference);
+      $dateThis = Input::filterMe("DATE", $obj->date );
+      //echo $difference . " and ";
+      // 2 - read if exist
+      $item = DB::table(env('TB_BUD_TOTALS'))
+      ->where('account', $account)->where('setdate', $dateThis)
+      ->where('user', '=', $user->id )->first();
+
+
+      
+      // 3 - update if exists
+      if (isset($item->id)){      
+        $affected = DB::table(env('TB_BUD_TOTALS'))
+        ->where('id', $item->id)
+        ->where('user', $user->id)
+        ->update([
+          'actual'       => '1',
+          'value'        => $value,
+          'monthdiff'    => $monthDiff,
+          'percent'      => $percent,
+          'incomes'      => $incomes,
+          'deposits'     => $deposits,
+          'expenses'     => $expenses,
+          'transfers'    => $transfers,
+          'difference'   => $difference
+        ]);
+      }
+      else
+      {
+        // 4 - write if not exists
+        $newId  = DB::table(env('TB_BUD_TOTALS'))->insertGetId(
+          [
+          'actual'       => '1',
+          'setdate'      => $dateThis,
+          'user'         => $user->id,
+          'account'      => $account,
+          'value'        => $value,
+          'account'      => $account,
+          'monthdiff'    => $monthDiff,
+          'percent'      => $percent,
+          'incomes'      => $incomes,
+          'deposits'     => $deposits,
+          'expenses'     => $expenses,
+          'transfers'    => $transfers,
+          'difference'   => $difference
+          ]
+        );
+      }
+    }
+    return 1;
+  }
+
+
+/* -----------  GLOBAL RECOUNT TOTALS --------------- */
+public function totalRecount($json, $user)
+{
+  // Warning!  --  This functional block rounds negative values to decimal!
+/* The plan:
+1. GET ALL ACCOUNTS AND SET IT INTO ObjectArr
+2. Foreach all Object:
+- Load all items within this ACC and
+recount startvalues
+When month != month, do record in Totals like ....-..-01 - date 
+  if Decimals == x, we multiply all count values to 10 to the power x
+*/
+
+// input data:
+$id   = Input::filterMe("INT", $json->id );
+$type = Input::filterMe("INT", $json->type );
+$category = Input::filterMe("INT", $json->category );
+$target = Input::filterMe("INT", $json->target );
+$amount = Input::filterMe("INT", $json->amount );
+$name = Input::filterMe("STRING", $json->name, 64 );
+$categoryname = Input::filterMe("STRING", $json->categoryname, 64 );
+$descr = Input::filterMe("STRING", $json->description, 2000 );
+
+$account = Input::filterMe("INT", $json->account );
+$date = Input::filterMe("DATE", $json->date );
+
+
+// $thisDate;
+// $lastDate;
+// $value = 0;
+
+// $db = Factory::getDbo();
+// $query = $db->getQuery(true);
+
+// $query->select('*');
+// $query->from($db->quoteName('#__tf_budget_accounts'));
+// $query->where($db->quoteName('user') . ' = ' . $db->quote($user->id));
+// $query->order('ordered ASC');
+// $db->setQuery($query);
+// $accounts_objects = $db->loadObjectList();
+
+// if (!count($accounts_objects)){ echo "Killed!";};
+// foreach($accounts_objects AS $account){
+// $multiplier = pow(10, $account->decimals);
+
+// $counterA = 0;
+// $moneycounter = 0;
+// $lastDate = 0;
+
+// $db = Factory::getDbo();
+// // Create a new query object
+// $query = $db->getQuery(true);
+
+// // Select all records 
+// // Order it by the ordering field
+// $query->select($db->quoteName(array('id', 'value', 'date_in')));
+// $query->from($db->quoteName('#__tf_budget_items'));
+// $query->where($db->quoteName('user') . ' = ' . $db->quote($user->id));
+// $query->where($db->quoteName('account') . ' = ' . $db->quote($account->id));
+// $query->where($db->quoteName('disabled') . ' = ' . $db->quote(0));
+// $query->order('datein ASC');
+// $db->setQuery($query);
+// $itemObjects = $db->loadObjectList();
+
+//      for ($i = 0; $i < count($itemObjects); $i++){
+//   $thisDate =  date("Y-m", strtotime($itemObjects[$i]->datein));
+
+//   if (($counterA != 0) && ($thisDate != $lastDate)){
+//      //WRITE OR UPDATE DATABASE
+//     $writedate = date("Y-m-01", strtotime($lastDate));
+//     if ($moneycounter != 0){
+//     $value = $moneycounter / $multiplier;
+//     };
+//     echo write_update_totalrow($value, $writedate, $account->id, $user->id, $db);
+//    // echo "++++[" . $account->id . "] " . $writedate . " = " . ($moneycounter / $multiplier) . " /+++ ";
+//   };  
+  
+//   $moneycounter = $moneycounter + ($itemObjects[$i]->value * $multiplier);
+//  // echo " [   " . $itemObjects[$i]->datein . " " . $moneycounter . "   ] " ;
+//   $counterA++;
+//   $lastDate  = date("Y-m", strtotime($itemObjects[$i]->datein));
+// }; // END FOR EACH _2_ 
+
+//   //WRITE OR UPDATE DATABASE IF ACCOUNT CHANGES
+//  $writedate = date("Y-m-01", strtotime($lastDate));
+//  if ($moneycounter != 0){
+//   $value = $moneycounter / $multiplier;
+//   };
+//  echo write_update_totalrow($value, $writedate, $account->id, $user->id, $db);
+// }; // END FOREACH _1_ 
 }
+};

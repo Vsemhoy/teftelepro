@@ -88,6 +88,7 @@ class Input
     }
     elseif ($filter == 'FLOAT')
     {
+      if ($input == ""){ return 0; }
       return self::ESCAPECHARS($input);
     }
     elseif ($filter == 'HTMLSPECIALCHARS')
@@ -195,7 +196,10 @@ class Input
   public static function ARRAY($value)
   {
     //return htmlspecialchars($value, ENT_QUOTES);
-    return $value;
+    if (is_array($value)){
+      return $value;
+    }
+    return [];
   }
 
   public static $intarray = true;

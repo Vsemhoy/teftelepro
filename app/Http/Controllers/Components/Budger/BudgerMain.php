@@ -315,7 +315,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
   $dateObj    = DateTime::createFromFormat('!m', $datemonth_);
   $monthname  = $dateObj->format('F');
   $date4total = $dateyear_ . "-" . $dateObj->format('m') . "-01";
-  $result .= "<tr class='bg-subtotal subtotal'>
+  $result .= "<tr class='bg-subtotal subtotal' startDate='" . $date4total . "'>
   <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
   foreach ($accountsToloadArr AS $account){
     $result .=  "<td class='mtotalio'  dec='" . $account->decimals . "'>";
@@ -323,8 +323,8 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
     if ($lastRow == false){
 
       $result .=  "<div class='uk-grid-small' uk-grid>
-      <div class='uk-width-expand' uk-leader>Incoms</div>
-      <div class='incoms'>$20.90</div>
+      <div class='uk-width-expand' uk-leader>incomes</div>
+      <div class='incomes'>$20.90</div>
       </div>
       <div class='uk-grid-small' uk-grid>
       <div class='uk-width-expand' uk-leader>Deposits</div>
@@ -345,7 +345,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
     }
     
     $result .=  "</td>
-    <td class='mtotals'><span class='subtotalbal ' date='" . $date4total . "' foracc='" . trim($account->id) . "'  dec='" . $account->decimals . "'>";
+    <td class='mtotals' acc='" . trim($account->id) . "' ><span class='subtotalbal ' date='" . $date4total . "' dec='" . $account->decimals . "'>";
     $ttv = 0;
         foreach ($this->items AS $total){
           if ($total->date_in == $date4total && $total->account ==  $account->id){
@@ -353,11 +353,13 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
           }
         }
         $result .=  $ttv;
-    $result .=  "</span><span class='subbal-diff uk-text-muted uk-display-inline-block'></span></td>";
+    $result .=  "</span><span class='subbal-diff uk-text-muted uk-display-inline-block' title='Difference with the past month'></span>
+    <span class='subbal-perc uk-text-danger uk-display-inline-block' title='Lost money as percents'></span>
+    </td>";
   };
   if (count($accountsToloadArr) > 1){
     $result .=  "<td class='totalofrow_s'><small> " . 
-    "<span class='incoms'></span></small><small>" . 
+    "<span class='incomes'></span></small><small>" . 
     " <span class='expences'></span></small><small><span class='difference'></span></small></td>";
   };
   $result .=  "</tr>";

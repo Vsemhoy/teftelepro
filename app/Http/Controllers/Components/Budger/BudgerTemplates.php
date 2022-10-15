@@ -59,6 +59,12 @@ if ($dataSection == 1){
   $target = 'bud_good_';
 };
 
+$parentData = "";
+if ($parent != 0){
+  $parentData = "parent='" . $parent . "'";
+}
+
+
 $result = "";
 
 $accentclass = "";
@@ -68,7 +74,6 @@ if ($accent == 1){
 $disclass = "";
 if ($disabled == 1){
   $disclass = " bud-disabled";
-
 };
 
 //  openeditorwindow = 1 - type: 1-editchart; 2 - edit template, 3 - edit good; second = id of the element
@@ -76,7 +81,7 @@ $result .= "<div class='bud-event-card dragtemplate " . $transclasstype . $accen
  "' aria-current='true'
   id='" . $target . $id . "' draggable='true' ondragstart='drag(event)'
   template='22" . random_int(1, 30000) . "' type='" . $eventtype . "' ordered='" . $ordered . "'
-  haschildren='" . $haschildren . "'>
+  haschildren='" . $haschildren . "' " . $parentData . ">
 
   <div class='cardName'>
     <div class='bud-name'>" . $name . "</div>
@@ -142,10 +147,18 @@ public static  function tpl_in_calendar_event_transfer($id, $trans_id, $name, $t
     $footerText = "<span class='uk-text-small'>Transfer from <br></span>" . $accname;
   };
   
+  $accentclass = "";
+  if ($accent == 1){
+    $accentclass = " bud-accented";
+  };
+  $disclass = "";
+  if ($disabled == 1){
+    $disclass = " bud-disabled";
+  };
 
-  $result = "  <div class='bud-event-card dragtemplate " . $transclasstype . "' aria-current='true'
+  $result = "  <div class='bud-event-card dragtemplate " . $transclasstype . $accentclass . $disclass . "' aria-current='true'
    id='bud_item_" . $id . "' draggable='true' trans_id='" . $trans_id . "'
-   type='" . $eventtype . "'  haschildren='0' transaccount='" . $transaccount . "'>
+   type='" . $eventtype . "'  haschildren='" . $haschildren . "' transaccount='" . $transaccount . "'>
   <div class='cardName'>
   <div class='bud-name'>" . $name . "</div>
   <div class='bud-trigger'>
@@ -885,6 +898,7 @@ public static function renderEventItemMenu(){
   $result = "<div id='itemMenu' data-target='' class='uk-dropdown uk-open menu-inverted' style=''>
   <ul class='uk-nav uk-dropdown-nav'>
      <!-- <li><a href='' data-event='opensettings' class='btnChangeColor'>Change color</a></li> -->
+      <li id='btn_goParent' data-event='goparent'><a class=''>Go to parent</a> <span uk-icon='icon: forward'></span></li>
       <li class='' data-event='enlarge' ><a class=''>Enlarge</a> <span uk-icon='icon: plus'></span></li>
       <li  data-event='show' ><a class=''>Show</a>            <span uk-icon='icon: commenting'></span></li>
       <li  data-event='edit' ><a class=''>Edit</a>            <span uk-icon='icon: pencil'></span></li>

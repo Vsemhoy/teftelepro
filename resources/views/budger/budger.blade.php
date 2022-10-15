@@ -563,7 +563,8 @@ class ModalHandler
         setTimeout(() => {
           Modal.closeEventModal();
           Dom.reload();
-          Mastercounter.recount();
+          MasterCounter.recount();
+          MasterCounter.recountTotals(MasterCounter.firstDayInMonth(date.date), data.account);
           // reorderItems(block.parentNode.parentNode);
         }, 100);
       }
@@ -645,7 +646,8 @@ class ModalHandler
         setTimeout(() => {
           Dom.reload();
           Modal.closeEventModal();
-          Mastercounter.recount();
+          MasterCounter.recount();
+          MasterCounter.recountTotals(MasterCounter.firstDayInMonth(data.date), data.account);
           // reorderItems(block.parentNode.parentNode);
         }, 30);
       }
@@ -686,6 +688,7 @@ class DOM {
       menuTrigger[i].addEventListener("click", function(){
         //eventBlock = true; 
         parent.chousenItem = this.parentNode.parentNode.parentNode.id;
+        
 
         let left = menuTrigger[i].getBoundingClientRect().left;
         let top = menuTrigger[i].getBoundingClientRect().top;
@@ -724,14 +727,12 @@ class DOM {
               console.log('accent');
             } else if (buttons[y].getAttribute('data-event') == 'disable'){
               // removeItem(id);
-              console.log('disable');
               parent.disableItem(parent.chousenItem);
-              Mastercounter.recount();
+              console.log('disable');
             } else if (buttons[y].getAttribute('data-event') == 'remove'){
               // removeItem(id);
               parent.removeItem(parent.chousenItem);
               console.log('remove');
-              Mastercounter.recount();
             }
             document.querySelector('#itemMenu').remove();
             //parentItem.classList.remove('menu-opened');
@@ -866,6 +867,8 @@ class DOM {
 
   removeItem(identer){
     let block = document.querySelector('#' + identer);
+    let date = block.parentNode.parentNode.getAttribute('date');
+    let account = block.parentNode.getAttribute('account');
     let removeChilds = 0;
     if (block.getAttribute('haschildren') == 1){
       const result = confirm('Remove all child events?');
@@ -873,6 +876,12 @@ class DOM {
         removeChilds = 1;
       }
     }
+    let type = block.getAttribute('type');
+    let trans = 0;
+    if (type == 4 || type == 3){
+      trans = block.getAttribute('trans_id');
+    }
+
     let counter = 0;
     let requestCode = 390;
     let outFormat = "json";
@@ -881,6 +890,8 @@ class DOM {
     data.code = requestCode;
     data.id = identer;
     data.removechilds = removeChilds;
+    data.type = type;
+    data.trans = trans;
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -930,9 +941,10 @@ class DOM {
             }
           }
         }
+        Dom.reload();
         setTimeout(() => {
-          Dom.reload();
-          // reorderItems(block.parentNode.parentNode);
+          MasterCounter.recount();
+          MasterCounter.recountTotals(MasterCounter.firstDayInMonth(date), account);
         }, 30);
       }
       else if (this.status > 200)
@@ -954,6 +966,8 @@ class DOM {
 
   disableItem(identer){
     let block = document.querySelector('#' + identer);
+    let date = block.parentNode.parentNode.getAttribute('date');
+    let account = block.parentNode.getAttribute('account');
     let disablestate = 1;
     if (block.classList.contains('bud-disabled')){
        disablestate = 0;
@@ -961,6 +975,11 @@ class DOM {
       } else {
         block.classList.add('bud-disabled');
       }
+      let type = block.getAttribute('type');
+    let trans = 0;
+    if (type == 4 || type == 3){
+      trans = block.getAttribute('trans_id');
+    }
     let disableChilds = 0;
     if (block.getAttribute('haschildren') == 1){
       let phrase = 'Disable all child events?';
@@ -981,6 +1000,8 @@ class DOM {
     data.id = identer;
     data.state = disablestate;
     data.disablechilds = disableChilds;
+    data.type = type;
+    data.trans = trans;
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -989,10 +1010,10 @@ class DOM {
           return 0;
         };
         if (block.getAttribute("type") == 3 || block.getAttribute("type") == 4){
-            let trans = block.getAttribute("trans_id");
-            let meToo = document.querySelector('#bud_item_' + trans);
-            if (meToo != undefined){
-              if (accentstate == 0)
+          let meToo = document.querySelector('#bud_item_' + trans);
+          if (meToo != undefined){
+              //alert(meToo);
+              if (disablestate == 0)
               {
                 meToo.classList.remove('bud-disabled');
               }
@@ -1021,9 +1042,10 @@ class DOM {
             }
           }
         }
+        Dom.reload();
         setTimeout(() => {
-          Dom.reload();
-          // reorderItems(block.parentNode.parentNode);
+          MasterCounter.recount();
+          MasterCounter.recountTotals(MasterCounter.firstDayInMonth(date), account);
         }, 30);
       }
       else if (this.status > 200)
@@ -1062,6 +1084,11 @@ class DOM {
         accentChilds = 1;
       }
     }
+    let type = block.getAttribute('type');
+    let trans = 0;
+    if (type == 4 || type == 3){
+      trans = block.getAttribute('trans_id');
+    }
 
     let counter = 0;
     let requestCode = 370;
@@ -1072,6 +1099,8 @@ class DOM {
     data.id = identer;
     data.state = accentstate;
     data.accentchilds = accentChilds;
+    data.type = type;
+    data.trans = trans;
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -1081,9 +1110,8 @@ class DOM {
           return 0;
         };
         if (block.getAttribute("type") == 3 || block.getAttribute("type") == 4){
-            let trans = block.getAttribute("trans_id");
-            let meToo = document.querySelector('#bud_item_' + trans);
-            if (meToo != undefined){
+          let meToo = document.querySelector('#bud_item_' + trans);
+          if (meToo != undefined){
               if (accentstate == 0)
               {
                 meToo.classList.remove('bud-accented');
@@ -1239,11 +1267,12 @@ function drag(ev) {
 function drop(ev) {
   let account = ev.target.getAttribute('account');
   let date = ev.target.getAttribute('date');
-  let actype = ev.target.getAttribute('account');
-
+  
   let sourceType = document.getElementById(sourceEventId).getAttribute('type');
 
+
   if (ev.shiftKey){
+    // CLONE EVENT
     //var data = ev.dataTransfer.getData("Text");
     var nodeCopy = document.getElementById(sourceEventId).cloneNode(true);
     console.log(sourceEventId);
@@ -1257,16 +1286,49 @@ function drop(ev) {
       //   ev.target.appendChild(nodeCopy);
       // }
       Dom.reload();
+      MasterCounter.recount();
+      MasterCounter.recountTotals(MasterCounter.firstDayInMonth(date), account);
     }
   } 
-  else {
+  else { 
+    // MOVE EVENT
     if (ev.target.classList.contains('droptabledata')){
     var data = ev.dataTransfer.getData("Text");
+    let sourceDate = document.getElementById(sourceEventId).parentNode.getAttribute('date');
+    let sourceAccount = document.getElementById(sourceEventId).parentNode.getAttribute('account');
     Dom.moveEventItem(sourceEventId, date, account);
     ev.target.appendChild(document.getElementById(data));
+    MasterCounter.recount();
+      // we should recount only if:
+        // 1 - account changed
+        // 2 - Month changed
+        if (document.getElementById(sourceEventId).parentNode.classList.contains('droptabledata')){
+          // ONLY for main table events
+          //alert(sourceDate + " to " + date);
+          let s_date = MasterCounter.firstDayInMonth(sourceDate);
+          let g_date = MasterCounter.firstDayInMonth(date);
+          let minDate = s_date;
+          let s_o = new Date(s_date);
+          let g_o = new Date(g_date);
+          if (s_o.getTime() > g_o.getTime()){
+            minDate = g_date;
+          }
+          if (sourceAccount != account){
+            // Call function for 2 accounts
+            MasterCounter.recountTotals(minDate, account);
+            MasterCounter.recountTotals(minDate, sourceAccount);
+          } else {
+            // only for one
+            if (s_date != g_date){
+              MasterCounter.recountTotals(minDate, account);
+            }
+          }
+
+        }
+        //recountTotals(month, account);
     }
   }
-  Mastercounter.recount();
+
   ev.preventDefault();
 }
   
@@ -1313,6 +1375,7 @@ class Counter
     // RECOUNT ROWS
     // 1 - get starting balance and create value array
     let resarray = [];
+    let percarray = [];
     let lastBalanceArr = [];
     let subobjects = [];
     let subtotalrows = document.querySelectorAll('.subtotal');
@@ -1322,6 +1385,7 @@ class Counter
       for (let q = 0; q < subbalances.length; q++) {
         let value = +((subbalances[q].innerHTML).trim());
         resarray.push(value);
+        percarray.push(0);
         lastBalanceArr.push(value);
         let obj = {
           "incom" : 0,
@@ -1351,9 +1415,12 @@ class Counter
           {
             let percentValue = rows[index].querySelectorAll('.daytotals')[t].getAttribute('data-percent');
             if (percentValue > 0){
+              // COUNT PERCENTS
               let days  = this.daysInMonth(rows[index].getAttribute('date'));
               let addon = resarray[t] * (percentValue / 100) / 12 / days;
+              percarray[t] = percarray[t] + addon;
               resarray[t] = resarray[t] + addon;
+              //console.log(addon);
             }
           }
           let dec = rows[index].querySelectorAll('.daytotals')[t].getAttribute('dec');
@@ -1372,8 +1439,15 @@ class Counter
           if (lastBalanceArr[t] != 0){
             let valDiff  = (resarray[t] - lastBalanceArr[t]).toFixed(0);
             if (valDiff != 0){
+              //console.log(valDiff);
               rows[index].querySelectorAll('.subbal-diff')[t].innerHTML = valDiff > 0 ? ("+" + valDiff) : valDiff;
             }
+          }
+          // percent set
+          if (percarray[t] != 0){
+            rows[index].querySelectorAll('.subbal-perc')[t].innerHTML = percarray[t] != 0 ? percarray[t].toFixed(dec) : "";
+            console.log(percarray[t]);
+            percarray[t] = 0;
           }
           lastBalanceArr[t] = resarray[t];
 
@@ -1421,7 +1495,7 @@ class Counter
 
       for (let i = 0; i < rows[index].querySelectorAll('.mtotalio').length; i++) {
         let celler = rows[index].querySelectorAll('.mtotalio')[i];
-        if (celler.querySelectorAll('.incoms').length > 0){
+        if (celler.querySelectorAll('.incomes').length > 0){
 
           let sign = "+";
           let previc = "";
@@ -1431,14 +1505,14 @@ class Counter
           if (value > 0){sign = "+";} else {sign = "";};
           previc = "(" + sign + (value) + ")";
           let t = previc;
-          celler.querySelectorAll('.incoms')[0].innerHTML      = subobjects[i].incom;
-          celler.querySelectorAll('.incoms')[0].parentNode.setAttribute('title', t);
+          celler.querySelectorAll('.incomes')[0].innerHTML      = subobjects[i].incom;
+          celler.querySelectorAll('.incomes')[0].parentNode.setAttribute('title', t);
           
           value = subobjects[i].depos - subobjects[i].prev_depos;
           if (value > 0){sign = "+";} else {sign = "";};
           previc = "(" + sign + value + ")";
           celler.querySelectorAll('.deposits')[0].innerHTML    = subobjects[i].depos;
-          let b = previc + " incoms + deposits = " + (subobjects[i].incom + subobjects[i].depos);
+          let b = previc + " incomes + deposits = " + (subobjects[i].incom + subobjects[i].depos);
           celler.querySelectorAll('.deposits')[0].parentNode.setAttribute('title', b);
           
           value = subobjects[i].expens - subobjects[i].prev_expens;
@@ -1482,8 +1556,109 @@ class Counter
   daysInMonth (date) {
     let arr = date.split('-');
     return new Date(arr[0], arr[1], 0).getDate();
+  }
+
+  firstDayInMonth(dater){
+    let parts = dater.split('-');
+    return parts[0] +  "-" + parts[1] + "-01";
+    //var dt = new Date(parts[1], parts[1] - 1);
+    // return new Date(date.getFullYear(), date.getMonth(), 1);
+    //return dt.getFullYear() + "-" + (dt.getMonth() + 1) + "-01"; // dt.getDate();
+  }
+
+  lastDayInMonth(dater){
+    var date = new Date(dater);
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  }
+
+  recountTotals(startDate, account){
+    let counter = 0;
+    let requestCode = 901;
+    let outFormat = "number";
+
+    let objectArray = [];
+    let table = document.querySelector('#budgettable');
+    let rows = table.querySelectorAll('tr');
+
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i].classList.contains('subtotal'))
+      {
+        if (rows[i].getAttribute('startDate') != null){
+          let trasholdDate = new Date(startDate);
+          let currDate = new Date(rows[i].getAttribute('startDate'));
+          if (trasholdDate.getTime() <= currDate.getTime()){
+
+            console.log(rows[i].getAttribute('startDate') + " account: " + account);
+            let totalCells = rows[i].querySelectorAll('.mtotals');
+            let preCells = rows[i].querySelectorAll('.mtotalio');
+            for (let n = 0; n < totalCells.length; n++){
+              if (totalCells[n].getAttribute('acc') == account){
+                let amount = totalCells[n].querySelectorAll('.subtotalbal')[0].innerHTML.trim();
+                let diff = totalCells[n].querySelectorAll('.subbal-diff')[0].innerHTML.trim();
+                let perc = totalCells[n].querySelectorAll('.subbal-perc')[0].innerHTML.trim();
+                let incomes = preCells[n].querySelectorAll('.incomes')[0].innerHTML.trim();
+                let deposits = preCells[n].querySelectorAll('.deposits')[0].innerHTML.trim();
+                let expenses = preCells[n].querySelectorAll('.expenses')[0].innerHTML.trim();
+                let transfers = preCells[n].querySelectorAll('.transfers')[0].innerHTML.trim();
+                let difference = preCells[n].querySelectorAll('.difference')[0].innerHTML.trim();
+                let obj = {
+                  'value'      : amount, 
+                  'monthdiff'  : diff,
+                  'percent'    : perc,
+                  'incomes'    : incomes,
+                  'deposits'   : deposits,
+                  'expenses'   : expenses,
+                  'transfers'  : transfers,
+                  'difference' : difference,
+                  'date'       : rows[i].getAttribute('startDate')
+                }
+                objectArray.push(obj);
+              }
+            }
+          }
+        }
+      }
+    }
+    let data = {};
+    data.account = account;
+    data.code = requestCode;
+    data.objects = objectArray;
+    data.date = startDate;
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+      if (this.readyState == 4 && this.status == 200) {
+        if (this.responseText == -1){ alert("You are not registered!");
+
+          return 0;
+        };
+        console.log(this.responseText);
+        // let result = JSON.parse(this.responseText);
+        console.log('subtotals updated ' + this.responseText);
+      }
+      else if (this.status > 200)
+      {
+        if (counter < 1){
+          alert("Oops! There is some problems with the server connection.");
+          block.remove();
+          counter++;
+        }
+      }
+    };
+    xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+    // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+
+    //alert(JSON.stringify(data));
+    xhttp.send(JSON.stringify(data));
+  }
+
 }
-}
+
+
+
+
 
 
  class Decorator
@@ -1626,7 +1801,11 @@ class Counter
 //  var DOME = new DOM();
 //  var DMAN =  new DomManager();
  var Decor = new Decorator();
- var Mastercounter = new Counter();
+ var MasterCounter = new Counter();
+
+
+
+
 
  //a simple date formatting function
 function dateFormat(inputDate, format) {
