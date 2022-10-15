@@ -177,7 +177,17 @@ class BudgerData
 
 
     /* ----------------------- get items ------------------------ */
-  public static function LoadItemsToChart($user, $accounts, $startmonth, $lastmonth){
+  public static function LoadItemsToChart($user, $accountArr, $startmonth, $lastmonth){
+    $accounts = "";
+    $counter = 0;
+    foreach ($accountArr AS $acco)
+    {
+      $accounts .= $acco->id;
+      if ($counter < count($accountArr) - 1){
+        $accounts .= ",";
+      }
+      $counter++;
+    }
     if (is_array($accounts)){
       $accounts = Utils::arrayToCommaSeparated($accounts);
     }
@@ -203,5 +213,77 @@ class BudgerData
    // $lastmonth . '"
   }
 
+/* ----------------------- get totals ------------------------ */
+public static function LoadAllTotals($user, $startmonth, $lastmonth, $accountArr){
+  $newStartmonth = date("Y-m-d", strtotime($startmonth . "-1 month"));
+  $accounts = "";
+  $counter = 0;
+  $accountsStrArr = [];
+  foreach ($accountArr AS $acco)
+  {
+    $accounts .= $acco->id;
+    array_push($accountsStrArr, $acco->id);
+    if ($counter < count($accountArr) - 1){
+      $accounts .= ",";
+    }
+    $counter++;
+  }
+  
+  $result = DB::table(env('TB_BUD_TOTALS'))
+  ->where('user', $user)
+  ->where('actual', '1')
+  ->whereIn('account', $accountsStrArr)
+  ->whereBetween('setdate', [$newStartmonth, $lastmonth])
+  ->get();
+
+  // $accArr = explode(",", $accounts);
+  $falsecounter = count($accountArr);
+  foreach ($accountArr AS $account){  // Looking for last month totals
+    foreach ($result AS $object){
+      if (isset($object->value)){ 
+        $falsecounter--;
+        break;
+      };
+    };
+  };
+  if ($falsecounter == 0){
+    return $result;
+  } else { // If totals not exist (it may be Gap), we get last amount value by each account and return it here
+    $resultObjects = [];
+    foreach ($accountArr AS $account){
+      $account = trim($account->id);
+
+      $result = DB::table(env('TB_BUD_TOTALS'))
+      ->where('user', $user)
+      ->where('actual', '1')
+      ->where('account', $account)
+      ->where('setdate', '<', $lastmonth)
+      ->orderBy('setdate', 'desc')
+      ->first();
+        /* We don't need to fill Gaps, because user can not set new events
+        and we fill Gaps only if user will create an event */
+      if (!empty($result)){ // If we found values in the past, we pack it into array
+        $result->setdate = $newStartmonth;
+        array_push($resultObjects, $result);
+      } else {              // But if we don't find them, we create empty object and return it
+        $cork = (object)[];
+        $cork->id  = 0;
+        $cork->setdate = $newStartmonth;
+        $cork->value   = 0;
+        $cork->monthdiff   = 0;
+        $cork->percent   = 0;
+        $cork->incomes   = 0;
+        $cork->deposits   = 0;
+        $cork->expenses   = 0;
+        $cork->transfers   = 0;
+        $cork->difference   = 0;
+        $cork->account = $account;
+        $cork->user    = $user;
+        array_push($resultObjects, $cork);
+      };
+    }
+    return $resultObjects;
+    };
+  }
 
 }

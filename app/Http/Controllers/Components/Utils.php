@@ -35,6 +35,7 @@ class Utils
 
   public static function arrayToCommaSeparated($array){
     $result = "";
+    if (!is_array($array)){ return "";};
     for ($i = 0; $i < count($array); $i++){
       $result .= $array[$i];
       if ($i < (count($array) - 1)){

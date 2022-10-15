@@ -10904,4 +10904,11 @@ select .opt-header {
   opacity: 0 !important;
 }
 
+.mtotals {
+  display: flex;
+  align-content: space-between;
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
 /*# sourceMappingURL=uikit-theme.css.map */

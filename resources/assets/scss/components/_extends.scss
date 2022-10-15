@@ -647,3 +647,9 @@ select {
   filter: blur(4px);
   opacity: 0 !important;
 }
+.mtotals {
+  display: flex;
+  align-content: space-between;
+  flex-direction: column;
+  flex-wrap: wrap;
+}

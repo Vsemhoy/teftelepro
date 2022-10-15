@@ -62,6 +62,7 @@ class BudgerMain extends BaseController
   public $Goods_Objects;
   public $Categories_Objects;
   public $items;
+  public $totals;
 
   public $URL;
   
@@ -159,20 +160,14 @@ class BudgerMain extends BaseController
     $this->tableLength = self::countDaysBetweenDates($this->get_startMonth, $this->get_lastMonth);
     $this->currentCurr = 1;
 
+    // $accountsCsv = '';
+    // foreach ($this->accounts AS $ac){
 
-    $accounts = "";
-    $counter = 0;
-    foreach ($this->accounts AS $acco)
-    {
-      $accounts .= $acco->id;
-      if ($counter < count($this->accounts) - 1){
-        $accounts .= ",";
-      }
-      $counter++;
-    }
-    $this->items = BudgerData::LoadItemsToChart($USER, $accounts, $this->_params_startMonth, $this->_btn_next_month_date);
+    // }
+
+    $this->items = BudgerData::LoadItemsToChart($USER, $this->accounts, $this->_params_startMonth, $this->_btn_next_month_date);
     // require_once( JPATH_SITE . "/components/com_teftelebudget/tmpl/_templates/tpl_events.php" );
-
+    $this->totals = BudgerData::LoadAllTotals($USER, $this->get_startMonth, $this->get_lastMonth, $this->accounts);
   }
 
 
@@ -188,6 +183,7 @@ class BudgerMain extends BaseController
 
 /* ----------------------- get totals ------------------------ */
   public static function LoadAllTotals($user, $startmonth, $lastmonth, $accounts){
+
     // $newstartmonth = date("Y-m-d", strtotime($startmonth . "-1 month"));
     // $db = parent::getDbo();
     // $query = $db->getQuery(true);
@@ -319,6 +315,15 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
   <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
   foreach ($accountsToloadArr AS $account){
     $result .=  "<td class='mtotalio'  dec='" . $account->decimals . "'>";
+    $ttv = 0;
+    $dif = 0;
+    $prc = 0;
+        // foreach ($this->items AS $total){
+        //   if ($total->date_in == $date4total && $total->account ==  $account->id){
+        //       $ttv = $total->value;
+        //   }
+        // }
+
 
     if ($lastRow == false){
 
@@ -343,18 +348,20 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
       <div class='difference'>$20.90</div>
       </div>";
     }
-    
+    foreach ($this->totals AS $total){
+      if ($total->setdate == $date4total && $total->account == $account->id){
+        $ttv = $total->value;
+        $dif = $total->monthdiff != 0 ? $total->monthdiff : "";
+        $prc = $total->percent != 0 ? $total->percent : "";
+      }
+    }
     $result .=  "</td>
-    <td class='mtotals' acc='" . trim($account->id) . "' ><span class='subtotalbal ' date='" . $date4total . "' dec='" . $account->decimals . "'>";
-    $ttv = 0;
-        foreach ($this->items AS $total){
-          if ($total->date_in == $date4total && $total->account ==  $account->id){
-              $ttv = $total->value;
-          }
-        }
+    <td class='mtotals' acc='" . trim($account->id) . "' >
+    <span class='subtotalbal ' date='" . $date4total . "' dec='" . $account->decimals . "'>";
+
         $result .=  $ttv;
-    $result .=  "</span><span class='subbal-diff uk-text-muted uk-display-inline-block' title='Difference with the past month'></span>
-    <span class='subbal-perc uk-text-danger uk-display-inline-block' title='Lost money as percents'></span>
+    $result .=  "</span><span class='subbal-diff uk-text-muted uk-display-inline-block' title='Difference with the past month'>" . $dif . "</span>
+    <span class='subbal-perc uk-text-danger uk-display-inline-block' title='Lost money as percents'>" . $prc . "</span>
     </td>";
   };
   if (count($accountsToloadArr) > 1){
