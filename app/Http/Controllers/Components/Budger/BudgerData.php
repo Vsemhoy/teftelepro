@@ -5,7 +5,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
-use App\Http\Controllers\Objects\SidemenuItem;
+use App\Http\Controllers\Objects\SideMenuItem;
 use App\Http\Controllers\Base\Input;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Components\Utils;
@@ -74,7 +74,10 @@ class BudgerData
       $row = DB::table( env('TB_BUD_ACCOUNTS') )
                 ->orderBy('ordered')
                 ->first();
-      return $row->currency;
+                if (!empty($row)){
+                  return $row->currency;
+                }
+                return null;
     }
 
     public static function LoadAccountList_Currency_keyId($user, $currency = 0){
@@ -212,6 +215,30 @@ class BudgerData
     //$accounts . '") AND date_in BETWEEN "' . $startmonth . '" AND "' .
    // $lastmonth . '"
   }
+
+/* ----------------------- get totals ------------------------ */
+public static function LoadAllTotalsByCurrency($user, $accountArr){
+  $accounts = "";
+  $counter = 0;
+  $accountsStrArr = [];
+  foreach ($accountArr AS $acco)
+  {
+    $accounts .= $acco->id;
+    array_push($accountsStrArr, $acco->id);
+    if ($counter < count($accountArr) - 1){
+      $accounts .= ",";
+    }
+    $counter++;
+  }
+  
+  $result = DB::table(env('TB_BUD_TOTALS'))
+  ->where('user', $user)
+  ->where('actual', '1')
+  ->whereIn('account', $accountsStrArr)
+  ->orderBy('setdate', 'asc')
+  ->get();
+  return $result;
+}
 
 /* ----------------------- get totals ------------------------ */
 public static function LoadAllTotals($user, $startmonth, $lastmonth, $accountArr){

@@ -1,4 +1,4 @@
-@extends('Template.shell')
+@extends('template.shell')
 
 @section('page-content')
 
@@ -24,13 +24,21 @@
     //     echo "<br>";
     // }
     $com = Controller::getComponent('budger');
-    $cont = new BudgerMain($user->id);
-    
+    $cont        = null;
+    $accounts    = null;
+    $categories  = null;
+    $allaccounts = null;
+    $currencies  = null;
+    if (!empty($user)){
+      $cont = new BudgerMain($user->id);
+      $accounts    = BudgerData::LoadAccountsByCurrency($user->id, $cont->currentCurrency);
+      if (!empty($accounts)){
+        $categories  = BudgerData::LoadGroupedCategories($user->id);
+        $allaccounts = BudgerData::LoadAccountList($user->id);
+        $currencies  = BudgerData::LoadCurrencies_keyId($user->id);
 
-    $accounts    = BudgerData::LoadAccountsByCurrency($user->id, $cont->currentCurrency);
-    $categories  = BudgerData::LoadGroupedCategories($user->id);
-    $allaccounts = BudgerData::LoadAccountList($user->id);
-    $currencies  = BudgerData::LoadCurrencies_keyId($user->id);
+      }
+    }
     ?>
 
 <div class="uk-section uk-section-primary uk-padding-small">
@@ -59,11 +67,38 @@
  <br>
  
   <div class="container">
+      <?php
+      if (empty($user)){
+        ?>
+        <div class="uk-container uk-container-xsmall">
+          <div class="uk-alert-danger" uk-alert>
+          <a class="uk-alert-close" uk-close></a>
+          <p>You are not <a href="{{ route('login') }}">logged in!</a></p>
+        </div>
+  </div>
+  <?php
+      } 
+      else {
 
-      <?php echo $cont->renderNavigateButtons(); ?>
-      <?php echo $cont->renderWholeTable(); ?>
-      <br>
-      <?php echo $cont->renderNavigateButtons(); ?>
+        if (!empty($accounts)){
+          echo $cont->renderNavigateButtons('topoftable');
+          echo $cont->renderWholeTable(); 
+          echo "<br>";
+          echo $cont->renderNavigateButtons('botoftable', 'bottom'); 
+        }
+        else 
+        {
+          ?>
+          <div class="uk-container uk-container-xsmall">
+            <div class="uk-card uk-card-secondary uk-card-body">
+              <h3 class="uk-card-title">There is no accounts yet!</h3>
+              <p>Create <a href="{{ route('budger.accmanager')}}" >account</a> and <a href="{{ route('budger.catmanager')}}" >category</a> at first.</p>
+            </div>
+          </div>
+          <?php
+        }
+      }
+      ?>
 </div>
 <br>
 
@@ -74,7 +109,7 @@
       ?>
 
   
-    <div class="container">
+    <div class="uk-container-small">
       <div class="alert alert-info" role="alert">  
         Press SHIFT before you start draging an Event to make a copy of event    </div>
       <div class="alert alert-info" role="alert">  
@@ -102,6 +137,53 @@
       $currencies  
       );
  ?>
+ <style>
+  .date-navigation {
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+  }
+  .btn-template-trigger {
+    position: fixed;
+    right: 0px;
+    bottom: 50px;
+  }
+  .date-navigation .uk-dropdown.uk-open {
+    display: block;
+    box-shadow: 0px 1px 4px #00000033;
+    background: #ffffff75;
+    backdrop-filter: blur(15px);
+}
+.date-navigation .uk-dropdown.uk-open a {
+    color: #777;
+}
+.date-navigation .uk-dropdown.uk-open li:hover > a {
+    color: #026bbf
+}
+
+ </style>
+ <button class="uk-button uk-button-text btn-template-trigger" type="button"><span class=" uk-padding-small" uk-icon="album"></span></button>
+ <div class="uk-inline date-navigation">
+    <button class="uk-button uk-button-text" type="button"><span class=" uk-padding-small" uk-icon="more-vertical"></span></button>
+    <div uk-dropdown>
+        <ul class="uk-nav uk-dropdown-nav">
+            <!-- <li class="uk-active"><a href="#">Active</a></li> -->
+            <li class="uk-nav-header">Navigator</li>
+            <li><a href='#topoftable'>Go top</a></li>
+            <li class="uk-nav-divider"></li>
+            
+  <?php
+    foreach ($cont->navigationByMonth AS $navi)
+    {
+      echo "<li><a href='#" . $navi->id . "'>" . $navi->name . "</a></li>";
+    }
+    ?>
+  
+            <li class="uk-nav-divider"></li>
+            <li><a href='#botoftable'>Go Bottom</a></li>
+        </ul>
+    </div>
+</div>
 
 
 @endsection
@@ -713,6 +795,14 @@ class DOM {
           buttons[y].addEventListener('click', function(elem){
             if (buttons[y].getAttribute('data-event') == 'enlarge'){
               //archieveItem(id);
+              
+              let textBlock = document.querySelector('#' + parent.chousenItem).querySelectorAll('.bud-descr')[0];
+              if (textBlock.classList.contains('normal-text')){
+                textBlock.classList.remove('normal-text');
+              }
+              else {
+                textBlock.classList.add('normal-text')
+              }
               console.log('enlarge');
             } else if (buttons[y].getAttribute('data-event') == 'show'){
               // restoreItem(id);

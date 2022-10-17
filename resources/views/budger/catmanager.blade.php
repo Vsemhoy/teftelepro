@@ -1,4 +1,4 @@
-@extends('Template.shell')
+@extends('template.shell')
 
 @section('page-content')
 
@@ -38,9 +38,9 @@
     <h3 class="uk-card-title uk-light text-white">Category manager: <span>active items</span></h3>
     <p uk-margin>
 
-      <button class="uk-button uk-button-default" id='addGroupButton'>Add group</button>
-      <button class="uk-button uk-button-default" data-collapsed='false' id='collapesAllButton'>Collapse all</button>
-      <button class="uk-button uk-button-primary" >Show archieved</button>
+      <button class="uk-button uk-button-default" <?php if (empty($user)){ echo "disabled"; }?> id='addGroupButton'>Add group</button>
+      <button class="uk-button uk-button-default" <?php if (empty($user)){ echo "disabled"; }?> data-collapsed='false' id='collapesAllButton'>Collapse all</button>
+      <button class="uk-button uk-button-primary" <?php if (empty($user)){ echo "disabled"; }?> >Show archieved</button>
         
       </p>
     </div>
@@ -54,7 +54,7 @@
 <div class="uk-child-width-1-1 not-archieved-list" uk-grid  uk-sortable="handle: .uk-sortable-handle"  id="domContainer">
 
 <?php
-if ($user != null){
+if (!empty($user)){
 
   foreach ($groups AS $key => $value)
   {
@@ -73,10 +73,10 @@ if ($user != null){
 }
 else {
   ?>
-<div class="uk-alert-danger" uk-alert>
+  <div class="uk-alert-danger" uk-alert>
     <a class="uk-alert-close" uk-close></a>
-    <p>You are not logged in!</p>
-</div>
+    <p>You are not <a href="{{ route('login') }}">logged in!</a></p>
+  </div>
   <?php 
 };
  ?>

@@ -5,7 +5,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
-use App\Http\Controllers\Objects\SidemenuItem;
+use App\Http\Controllers\Objects\SideMenuItem;
 
 class HomeController extends BaseController
 {
@@ -25,7 +25,7 @@ class HomeController extends BaseController
     private function _buildSideMenu()
     {
 
-      $menuItem1 = new SidemenuItem("Home", false);
+      $menuItem1 = new SideMenuItem("Home", false);
       $menuItem1->itemReference = "#";
       $menuItem1->itemLetters = "HO";
       $menuItem1->itemIcon = "";
@@ -35,7 +35,7 @@ class HomeController extends BaseController
       //$menuItem1->isDivider = $isDiv;
       array_push($this->sideMenu, $menuItem1 );
       
-      $menuItem2 = new SidemenuItem("Dashboard", false);
+      $menuItem2 = new SideMenuItem("Dashboard", false);
       $menuItem2->itemReference = "#";
       $menuItem2->itemLetters = "DB";
       $menuItem2->itemIcon = "home";
@@ -45,7 +45,7 @@ class HomeController extends BaseController
       //$menuItem1->isDivider = $isDiv;
       array_push($this->sideMenu, $menuItem2 );
       
-      $menuItem3 = new SidemenuItem("Super Divider", true);
+      $menuItem3 = new SideMenuItem("Super Divider", true);
       $menuItem3->itemReference = "";
       $menuItem3->itemLetters = "BS";
       $menuItem3->itemIcon = "settings";
@@ -55,7 +55,7 @@ class HomeController extends BaseController
       //$menuItem1->isDivider = $isDiv;
       array_push($this->sideMenu, $menuItem3 );
 
-      $menuItem4 = new SidemenuItem("Base Accounts", false);
+      $menuItem4 = new SideMenuItem("Base Accounts", false);
       $menuItem4->itemReference = "#";
       $menuItem4->itemLetters = "BS";
       $menuItem4->itemIcon = "";
@@ -65,7 +65,7 @@ class HomeController extends BaseController
       //$menuItem1->isDivider = $isDiv;
       array_push($this->sideMenu, $menuItem4 );
 
-      $menuItem5 = new SidemenuItem("Group Manager", false);
+      $menuItem5 = new SideMenuItem("Group Manager", false);
       $menuItem5->itemReference = "#";
       $menuItem5->itemLetters = "GM";
       $menuItem5->itemIcon = "comment";

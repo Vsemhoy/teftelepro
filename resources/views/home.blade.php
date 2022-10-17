@@ -1,4 +1,4 @@
-@extends('Template.shell')
+@extends('template.shell')
 
 @section('page-content')
 

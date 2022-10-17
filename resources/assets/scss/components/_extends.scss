@@ -653,3 +653,22 @@ select {
   flex-direction: column;
   flex-wrap: wrap;
 }
+
+.middle-text {
+	font-size: 1rem;
+}
+.long-text {
+	font-size: 0.7rem;
+}
+.longest-text {
+	font-size: 0.5rem;
+}
+.extrawide-text {
+	font-size: 0.3rem;
+}
+.super-extrawide-text {
+	font-size: 0.2rem;
+}
+.normal-text {
+	font-size: 1rem !important;
+}

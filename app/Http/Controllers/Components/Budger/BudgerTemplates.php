@@ -17,7 +17,7 @@ class BudgerTemplates extends BaseController{
 
 
   public static function tpl_in_calendar_event($id, $name, $text, $date, $account, $eventtype, $amount, $category = '', $catname = '', $icon = '', $iconcolor = '', $whiteicon = '', $iconpath = '', $ordered = 0, $dataSection = 1, $disabled = 0, $accent = 0, $haschildren = 0, $parent = 0){
-$length = strlen($text) / 4;
+$length = mb_strlen($text) / 4;
 // Prevent insert negative values
 if ($amount < 0){
   $amount = $amount * -1;
@@ -37,18 +37,17 @@ if ($eventtype == 1){
   $transclasstype = "transfered";
 };
 
-if ($length < 10){
-  $lengthClass = "shortest-text";
-} else if ($length < 20){
-  $lengthClass = "short-text";
-} else if ($length < 40){
+$lengthClass = '';
+if ($length < 40){
   $lengthClass = "middle-text";
 } else if ($length < 80){
   $lengthClass = "long-text";
 } else if ($length < 120) {
   $lengthClass = "longest-text";
-} else {
+} else if ($length < 250) {
   $lengthClass = "extrawide-text";
+} else {
+  $lengthClass = "super-extrawide-text";
 };
 
 if ($dataSection == 1){
@@ -339,8 +338,14 @@ function account_item_render($id, $name, $amount, $comment, $language, $accessty
   } else {
      $balclass = "expend-color";
   };
- return '<div class="card shadow mb-2 accard" id="acc_' . $id . '" acc="' . $id . '" draggable="true" ondragstart="drag(event)">
- <div class="card-body p-2">
+ $result = '<div class="card shadow mb-2 accard" id="acc_' . $id . '" acc="' . $id . '" draggable="true" ondragstart="drag(event)">
+ <div class="card-body p-2">';
+ $result .= "  <span class='uk-icon-link uk-sortable-hand uk-icon' uk-icon='move' style='user-select: none;'>
+ <svg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
+   <polygon points='4,5 1,5 1,9 2,9 2,6 4,6'>
+   </polygon><polygon points='1,16 2,16 2,18 4,18 4,19 1,19'></polygon><polygon points='14,16 14,19 11,19 11,18 13,18 13,16'></polygon><rect fill='none' stroke='#000' x='5.5' y='1.5' width='13' height='13'></rect><rect x='1' y='11' width='1' height='3'></rect><rect x='6' y='18' width='3' height='1'></rect></svg>
+   </span>";
+ $result .= '
  <h5 class="card-title modal-trigger" onclick="openeditor(' . $id . ');" 
  data-bs-toggle="modal" data-bs-target="#EditorWindow"><span class="mname">
  ' . $name . '</span><span class="card-balance ' . $balclass . '" 
@@ -799,7 +804,8 @@ public static function renderGroupContainer($id, $name, $masterColor, $icon, $it
   <span class='uk-icon-link uk-sortable-handle uk-icon' uk-icon='move' style='user-select: none;'>
   <svg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
     <polygon points='4,5 1,5 1,9 2,9 2,6 4,6'>
-    </polygon><polygon points='1,16 2,16 2,18 4,18 4,19 1,19'></polygon><polygon points='14,16 14,19 11,19 11,18 13,18 13,16'></polygon><rect fill='none' stroke='#000' x='5.5' y='1.5' width='13' height='13'></rect><rect x='1' y='11' width='1' height='3'></rect><rect x='6' y='18' width='3' height='1'></rect></svg></span>  
+    </polygon><polygon points='1,16 2,16 2,18 4,18 4,19 1,19'></polygon><polygon points='14,16 14,19 11,19 11,18 13,18 13,16'></polygon><rect fill='none' stroke='#000' x='5.5' y='1.5' width='13' height='13'></rect><rect x='1' y='11' width='1' height='3'></rect><rect x='6' y='18' width='3' height='1'></rect></svg>
+    </span>  
   <span class='groupname'>" . $name . "</span> 
   <span class='uk-text-muted counts'>[" . $iterator . "]</span>
 <!--  <span class='btn-colorize' uk-toggle='target: #modal-example'>colorize</span> -->
@@ -829,7 +835,7 @@ public static function renderGroupContainer($id, $name, $masterColor, $icon, $it
   <span class='btn-collapse' title='toggle collapse'><span uk-icon='shrink'></span></span>
   <span class='btn-addItem' title='add new item'><span uk-icon='plus'></span><span>
 </span></span></h4>
-      <div uk-sortable='group: sortable-group' class='uk-sortable uk-sortable-empty' style=''>";
+      <div uk-sortable='group: sortable-group; handle: .uk-sortable-hand' class='uk-sortable uk-sortable-empty' style=''>";
       if ($iterator != 0){
         foreach ($items AS $item)
         {
@@ -860,6 +866,12 @@ public static function renderGroupItem($id, $name, $color, $isArchieved, $order 
 
   $result = "<div class='uk-margin-sm card-box' id='" . $id . "' " . $color . " data-order='" . $order . "'>
   <div class='uk-card uk-card-sm uk-card-body  uk-box-shadow-small uk-box-shadow-hover-medium uk-card-small'>
+  <span class='uk-icon-link uk-sortable-hand uk-icon' uk-icon='move' style='user-select: none;'>
+  <svg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
+    <polygon points='4,5 1,5 1,9 2,9 2,6 4,6'>
+    </polygon><polygon points='1,16 2,16 2,18 4,18 4,19 1,19'></polygon><polygon points='14,16 14,19 11,19 11,18 13,18 13,16'></polygon><rect fill='none' stroke='#000' x='5.5' y='1.5' width='13' height='13'></rect><rect x='1' y='11' width='1' height='3'></rect><rect x='6' y='18' width='3' height='1'></rect></svg>
+    </span>  
+    
   <span class='cardName'>" . $name . "</span><div class='uk-align-right'>
   <span class='itemMenu '><span class='' uk-icon='settings'></span>
   </span></div>
@@ -942,7 +954,7 @@ public static function renderAccountContainer($id, $name, $items, $order = 0)
   <span class='btn-collapse' title='toggle collapse'><span uk-icon='shrink'></span></span>
   
 </span></span></h4>
-      <div uk-sortable='group: sortable-group' class='uk-sortable uk-sortable-empty' style=''>";
+      <div uk-sortable='group: sortable-group; handle: .uk-sortable-hand' class='uk-sortable uk-sortable-empty' style=''>";
       if ($iterator != 0){
         foreach ($items AS $item)
         {
@@ -973,7 +985,12 @@ $isArchieved = 0, $notshow = 0, $isactive = 0)
 
   $result = "<div class='uk-margin-sm card-box' id='" . $id . "' data-order='" . $order . "'>
   <div class='uk-card uk-card-sm uk-card-body accard uk-box-shadow-small uk-box-shadow-hover-medium uk-card-small'>
-  <span class='cardName'>" . $name . "</span><div class='uk-align-right'>
+  <span class='cardName'>
+  <span class='uk-icon-link uk-sortable-hand uk-icon' uk-icon='move' style='user-select: none;'>
+  <svg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'>
+    <polygon points='4,5 1,5 1,9 2,9 2,6 4,6'>
+    </polygon><polygon points='1,16 2,16 2,18 4,18 4,19 1,19'></polygon><polygon points='14,16 14,19 11,19 11,18 13,18 13,16'></polygon><rect fill='none' stroke='#000' x='5.5' y='1.5' width='13' height='13'></rect><rect x='1' y='11' width='1' height='3'></rect><rect x='6' y='18' width='3' height='1'></rect></svg></span>
+  " . $name . "</span><div class='uk-align-right'>
   ";
   if ($type == 1){
     $result .= "<span class='itemTypeMarker uktm-1 uk-badge' >standard</span>";
@@ -1011,7 +1028,7 @@ public static function renderAccountModal($currencies)
         <!--legend class='uk-legend'>Legend</legend -->
 
         <div class='uk-margin uk-mb-0'>
-            <input class='uk-input' type='text' max='32' placeholder='Account name' id='bud_name'>
+            <input class='uk-input' type='text' max='64' placeholder='Account name' id='bud_name'>
         </div>
 
         <div class='uk-margin uk-mb-0'>

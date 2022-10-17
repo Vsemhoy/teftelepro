@@ -54,7 +54,7 @@ class Input
     elseif ($filter == 'STRING' || $filter == 'TEXT')
     {
       if ($length != 0){
-        return substr( self::STRING($input), 0 , $length);
+        return mb_substr( self::STRING($input), 0 , $length);
       }
       return self::STRING($input);
     }

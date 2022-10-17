@@ -27,7 +27,7 @@
 
 <body class="sidebar-mini layout-fixed ">
 <nav id="navHead" class="uk-navbar uk-navbar-container uk-box-shadow-large uk-position-z-index" style="z-index: 9;"
-uk-sticky="show-on-up: true">
+> <?php // uk-sticky="show-on-up: true" ?>
     <div class="uk-navbar-left uk-width-1-1 uk-flex-between">
       <div class="uk-navbar-item uk-padding-remove">
         <a class="uk-navbar-toggle uk-box-shadow-hover-large" id="leftSidenavToggler" style="width: 60px;">
@@ -142,7 +142,7 @@ uk-sticky="show-on-up: true" style="z-index: 9;">
         <input type="submit" value="LOGIN" class="uk-button uk-button-primary"/>
       </p>
       <hr>
-      <a href="#" class="uk-button uk-button-text">Not a member? Sign UP!</a>
+      <a href="{{ route('registration') }}" class="uk-button uk-button-text">Not a member? Sign UP!</a>
     </div>
   </form>
   </div>
@@ -166,6 +166,7 @@ uk-sticky="show-on-up: true" style="z-index: 9;">
                   <li><a href="#">Item</a></li>
                   <li><a href="#">Item</a></li>
                   <li><a href="#">Item</a></li> -->
+                  <a href="{{ route('logout')}}?token={{ csrf_token() }}"  class="app-item login-btn">
               </ul>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
 
@@ -231,7 +232,7 @@ uk-sticky="show-on-up: true" style="z-index: 9;">
 <div class="menu-minimized" id="mainWrapper">
   <div class="uk-width-1-1 ">
   {{-- side navigation menu (dynamical)   --}}
-  @include('Template.sidenav')  
+  @include('template.sidenav')  
 
     <main class="col-main ms-sm-auto p-0" id="mainWrapper">
     <!-- <div class="uk-margin"></div> -->
@@ -296,7 +297,7 @@ uk-sticky="show-on-up: true" style="z-index: 9;">
 
 
 {{-- vendors and page scripts file   --}}
-  @include('Template.scripts')
+  @include('template.scripts')
 
   @yield('page-scripts')
 </body>

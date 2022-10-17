@@ -5,7 +5,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
-use App\Http\Controllers\Objects\SidemenuItem;
+use App\Http\Controllers\Objects\SideMenuItem;
 use App\Http\Controllers\Base\Input;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Components\Utils;
@@ -66,11 +66,13 @@ class BudgerMain extends BaseController
 
   public $URL;
   
+  public $navigationByMonth;
 
   //http://link/foo.php?id[]=1&id[]=2&id[]=3
 
   public function __construct($USER = '0')
   {
+    $this->navigationByMonth = [];
     $this->URL = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH); //. rtrim($_SERVER['SERVER_NAME'] , '/') . 
     $this->_GET_PARAMS = "";
     $this->_params_startMonth = "";
@@ -261,13 +263,17 @@ public static function countDaysBetweenDates($d1, $d2){
 }
 
 
-public function renderNavigateButtons(){
+public function renderNavigateButtons($containerId = "", $position = ""){
+  $goBottom = "";
+  if ($position == "bottom"){
+    $goBottom = "#" . $containerId;
+  }
   $result = "";
-  $result .= "<div class='uk-container'>";
+  $result .= "<div class='uk-container' id='" . $containerId . "'>";
   $result .= "<div class='uk-button-group bud-navigation' >";
-  $result .= "<a type='uk-button ' href='" . $this->_btn_go_prevMonth ."' class='uk-button uk-button-default'>
+  $result .= "<a type='uk-button ' href='" . $this->_btn_go_prevMonth .  $goBottom . "' class='uk-button uk-button-default'>
   <span uk-icon='chevron-left'></span></a>";
-  $result .= "<a type='button' href='". $this->_btn_expand_prevMonth ."'  class='uk-button uk-button-default'>";
+  $result .= "<a type='button' href='". $this->_btn_expand_prevMonth .  $goBottom . "'  class='uk-button uk-button-default'>";
   $result .= "<span uk-icon='chevron-double-left'></span>";
   $result .= "</a>";
   $result .= "<button type='button' id='f_showEmptyRows' class='uk-button uk-button-default' title='HIDEEMPTY'>";
@@ -285,10 +291,10 @@ public function renderNavigateButtons(){
   $result .= "<button type='button' onclick='tf_create(1, 0);' class='uk-button uk-button-default' title='NEWEVENT'>";
   $result .= "<span uk-icon='file-text'></span>";
   $result .= "</button>";
-  $result .= "<a type='button' href='". $this->_btn_expand_nextMonth ."' class='uk-button uk-button-default'>";
+  $result .= "<a type='button' href='". $this->_btn_expand_nextMonth .  $goBottom."' class='uk-button uk-button-default'>";
   $result .= "<span uk-icon='chevron-double-right'></span>";
   $result .= "</a>";
-  $result .= "<a type='button'href='". $this->_btn_go_nextMonth ."'  class='uk-button uk-button-default'>
+  $result .= "<a type='button'href='". $this->_btn_go_nextMonth .  $goBottom ."'  class='uk-button uk-button-default'>
   <span uk-icon='chevron-right'></span></a>";
   $result .= "</div>";
   $result .= "</div>";
@@ -310,21 +316,19 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
   $dateyear_  = date('Y', strtotime($date));
   $dateObj    = DateTime::createFromFormat('!m', $datemonth_);
   $monthname  = $dateObj->format('F');
+  $obj = (object) array(
+    'id' => 'trow_' . str_replace("-", "", $date),
+    'name' => $monthname . " " . $dateyear_
+  );
+  array_push($this->navigationByMonth, $obj);
   $date4total = $dateyear_ . "-" . $dateObj->format('m') . "-01";
-  $result .= "<tr class='bg-subtotal subtotal' startDate='" . $date4total . "'>
+  $result .= "<tr class='bg-subtotal subtotal' startDate='" . $date4total . "' id='" . $obj->id . "' monthname='" . $obj->name . "'>
   <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
   foreach ($accountsToloadArr AS $account){
     $result .=  "<td class='mtotalio'  dec='" . $account->decimals . "'>";
     $ttv = 0;
     $dif = 0;
     $prc = 0;
-        // foreach ($this->items AS $total){
-        //   if ($total->date_in == $date4total && $total->account ==  $account->id){
-        //       $ttv = $total->value;
-        //   }
-        // }
-
-
     if ($lastRow == false){
 
       $result .=  "<div class='uk-grid-small' uk-grid>
@@ -386,7 +390,7 @@ public function renderWholeTable(){
     $cdate_day = date('d', strtotime($this->get_lastMonth));
     $secondcounter = 0;
 
-  
+    $result .= date('Y-m-d h-m-i', time());
     $result .= "<table class='uk-table uk-table-divider uk-table-hover uk-table-small budgetable'>
     <thead>
     <tr style='border-top: 1px solid #e5e5e5;'>
@@ -439,8 +443,13 @@ public function renderWholeTable(){
     $cdateclass = "";
     $cdateIden = "";
     if ($date == $currentDate){
-      $cdateclass = " currentdate";
+      $cdateclass = " currentdate" ;
       $empty = "";
+      $obj = (object) array(
+        'id' => "dragrow_" . $idconstructorrow,
+        'name' => "* Today *"
+      );
+      array_push($this->navigationByMonth, $obj);
     };
     if ($week == 0 || $week == 6){
       $cdateclass .= " weekend";
@@ -476,23 +485,23 @@ public function renderWholeTable(){
        foreach ($this->items AS $_object){
         if ($_object->date_in == $date){
           if ($_object->account == $accountid){
+            $_grpname      = '';
+            $_gpricon      = '';
+            $_grpcolor     = '';
+            $_grpwhiteicon = '';
+            if (!empty($this->Categories_Objects)) {
+              if (isset($this->Categories_Objects[$_object->category])){
+
+                $_grpname      = $this->Categories_Objects[$_object->category]->name;
+                $_gpricon      = $this->Categories_Objects[$_object->category]->icon;
+                $_grpcolor     = $this->Categories_Objects[$_object->category]->color; 
+                $_grpwhiteicon = $this->Categories_Objects[$_object->category]->whiteicon; 
+              }
+            };
             if (trim($_object->type) < 3){
   
-              if (!empty($this->Categories_Objects)) {
-                if ($this->Categories_Objects[$_object->category]){
-
-                  $_grpname      = $this->Categories_Objects[$_object->category]->name;
-                  $_gpricon      = $this->Categories_Objects[$_object->category]->icon;
-                  $_grpcolor     = $this->Categories_Objects[$_object->category]->color; 
-                  $_grpwhiteicon = $this->Categories_Objects[$_object->category]->whiteicon; 
-                }
-              };
-              if (empty($this->Categories_Objects) || !isset($_grpname)) {
-                  $_grpname      = '';
-                  $_gpricon      = '';
-                  $_grpcolor     = '';
-                  $_grpwhiteicon = '';
-                };
+              // if (empty($this->Categories_Objects) || !isset($_grpname)) {
+              //   };
 
               $result .= BudgerTemplates::tpl_in_calendar_event( // $group, $groupname, $icon, $iconcolor, $iconpath, 
               $_object->id, 

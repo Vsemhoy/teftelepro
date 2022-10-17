@@ -8,18 +8,18 @@
 
     $user = User::where('id', '=', session('LoggedUser'))->first();
 
-    $BD = new BudgerData();
+
 
     $accounts = null;
     $currencies = null;
     $currencyOrder = null;
     if ($user != null){
-      $accounts = $BD->LoadAccountList($user->id);
-      $currencyOrder = $BD->GetCurrencyOrder($user->id);
-      $currencies = $BD->LoadCurrencies_keyId($user->id);
+      $accounts =      BudgerData::LoadAccountList($user->id);
+      $currencyOrder = BudgerData::GetCurrencyOrder($user->id);
+      $currencies    = BudgerData::LoadCurrencies_keyId($user->id);
     }
 ?>
-@extends('Template.shell')
+@extends('template.shell')
 
 @section('page-content')
 <style>
@@ -35,9 +35,9 @@
     <h3 class="uk-card-title uk-light text-white">Account manager: <span>active items</span></h3>
     <p uk-margin>
 
-      <button class="uk-button uk-button-default" id='addGroupButton'>Add account</button>
-      <button class="uk-button uk-button-default" data-collapsed='false' id='collapesAllButton'>Collapse all</button>
-      <button class="uk-button uk-button-primary" >Show archieved</button>
+      <button class="uk-button uk-button-default" <?php if (empty($user)){ echo "disabled"; }?> id='addGroupButton'>Add account</button>
+      <button class="uk-button uk-button-default <?php if (empty($user)){ echo "disabled"; }?> " data-collapsed='false' id='collapesAllButton'>Collapse all</button>
+      <button class="uk-button uk-button-primary <?php if (empty($user)){ echo "disabled"; }?> " >Show archieved</button>
         
       </p>
     </div>
@@ -50,28 +50,39 @@
 
       <?php
       $currentCurr = 0;
-      if ($accounts != null){
-        $currentCurr = $currencyOrder[0];
-        $accIts = [];
-        
-        foreach ($currencyOrder AS $curen)
-        {
-          foreach ($accounts AS $data)
-          {
-            if ($curen == $data->currency){
-              // echo BudgerTemplates::renderAccountContainer($currentCurr,
-              //  $currencies[$currentCurr]->literals, $accIts);
-              array_push($accIts, 
-              BudgerTemplates::renderAccountItem($data->id, $data->name, $data->type, $data->description,
-              $data->decimals, $data->ordered, $data->archieved, $data->notshow, $data->is_active));
-              //$currentCurr = $data->currency;
-            }
-          }
-          echo BudgerTemplates::renderAccountContainer($curen,
-          $currencies[$curen]->literals, $accIts);
+      if (!empty($user)){
+        if (!empty($accounts)){
+          $currentCurr = $currencyOrder[0];
           $accIts = [];
+          
+          foreach ($currencyOrder AS $curen)
+          {
+            foreach ($accounts AS $data)
+            {
+              if ($curen == $data->currency){
+                // echo BudgerTemplates::renderAccountContainer($currentCurr,
+                //  $currencies[$currentCurr]->literals, $accIts);
+                array_push($accIts, 
+                BudgerTemplates::renderAccountItem($data->id, $data->name, $data->type, $data->description,
+                $data->decimals, $data->ordered, $data->archieved, $data->notshow, $data->is_active));
+                //$currentCurr = $data->currency;
+              }
+            }
+            echo BudgerTemplates::renderAccountContainer($curen,
+            $currencies[$curen]->literals, $accIts);
+            $accIts = [];
+          }
+
         }
 
+      }
+      else {
+        ?>
+  <div class="uk-alert-danger" uk-alert>
+    <a class="uk-alert-close" uk-close></a>
+    <p>You are not <a href="{{ route('login') }}">logged in!</a></p>
+  </div>
+        <?php
       }
       
 ?>
