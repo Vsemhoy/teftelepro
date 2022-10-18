@@ -148,6 +148,11 @@
     right: 0px;
     bottom: 50px;
   }
+  .trashbin-area {
+    position: fixed;
+    right: 0px;
+    bottom: 100px;
+  }
   .date-navigation .uk-dropdown.uk-open {
     display: block;
     box-shadow: 0px 1px 4px #00000033;
@@ -161,8 +166,44 @@
     color: #026bbf
 }
 
+.bud-offcanvas {
+  display: grid;
+  grid-template-rows: 40px auto ;
+  padding: 0px;
+  max-width: 200px !important;
+  box-shadow: -4px -1px 11px 5px rgb(0 0 0 / 11%);
+}
+@media only screen and (min-width: 900px){
+  .bud-offcanvas {
+    max-width: 250px !important;
+  }
+}
+@media only screen and (min-width: 1200px){
+  .bud-offcanvas {
+    max-width: 300px !important;
+  }
+}
+.offc-botcloser {
+  bottom: 0px;
+    right: 0px;
+    top: 0px;
+    border: none;
+}
+.offc-botcloser:hover {
+  border: none;
+}
+.offcanvas-body {
+  display: grid;
+  grid-template-rows: auto ;
+}
  </style>
- <button class="uk-button uk-button-text btn-template-trigger" type="button"><span class=" uk-padding-small" uk-icon="album"></span></button>
+ <div id='bud_trashbin' ondrop='removeEvent(event)' ondragover='allowDrop(event)'
+  class="uk-button uk-button-text trashbin-area" ><span class=" uk-padding-small" uk-icon="trash"></span></div>
+ <button class="uk-button uk-button-text btn-template-trigger" 
+ type="button" uk-toggle="target: #offcanvas-push"
+ ondrop='moveToTemplate(event)' ondragover='allowDrop(event)'
+ >
+  <span class=" uk-padding-small" uk-icon="album"></span></button>
  <div class="uk-inline date-navigation">
     <button class="uk-button uk-button-text" type="button"><span class=" uk-padding-small" uk-icon="more-vertical"></span></button>
     <div uk-dropdown>
@@ -173,10 +214,13 @@
             <li class="uk-nav-divider"></li>
             
   <?php
+  if (!empty($cont)){
     foreach ($cont->navigationByMonth AS $navi)
     {
       echo "<li><a href='#" . $navi->id . "'>" . $navi->name . "</a></li>";
     }
+
+  }
     ?>
   
             <li class="uk-nav-divider"></li>
@@ -185,6 +229,21 @@
     </div>
 </div>
 
+
+<div id="offcanvas-push" uk-offcanvas=" flip: true; overlay: false; bg-close: false; esc-close: true">
+    <div class="uk-offcanvas-bar bud-offcanvas uk-background-default">
+
+        <button class="uk-offcanvas-close" type="button" uk-close></button>
+        <h3>Title</h3>
+        <div class='offcanvas-body'>
+          <div id='templatePool' class="templatepool" ondrop='moveToTemplate(event)' ondragover='allowDrop(event)'>
+
+          </div>
+        </div>
+
+        <button class="uk-offcanvas-close nav-rail offc-botcloser"></button>
+    </div>
+</div>
 
 @endsection
 
@@ -1349,6 +1408,7 @@ class DOM {
   ev.preventDefault();
 }
 let sourceEventId = '';
+
 function drag(ev) {
   ev.dataTransfer.setData("Text", ev.target.id);
   sourceEventId = ev.target.id;
@@ -1367,7 +1427,6 @@ function drop(ev) {
     var nodeCopy = document.getElementById(sourceEventId).cloneNode(true);
     console.log(sourceEventId);
     if (ev.target.classList.contains('droptabledata')){
-
       Dom.cloneEventItem(sourceEventId, date, account, ev.target);
       // if (data.length > 0){
       //   ev.target.appendChild(data[0]);
@@ -1383,8 +1442,8 @@ function drop(ev) {
   else { 
     // MOVE EVENT
     if (ev.target.classList.contains('droptabledata')){
-    var data = ev.dataTransfer.getData("Text");
-    let sourceDate = document.getElementById(sourceEventId).parentNode.getAttribute('date');
+      var data = ev.dataTransfer.getData("Text");
+      let sourceDate = document.getElementById(sourceEventId).parentNode.getAttribute('date');
     let sourceAccount = document.getElementById(sourceEventId).parentNode.getAttribute('account');
     Dom.moveEventItem(sourceEventId, date, account);
     ev.target.appendChild(document.getElementById(data));
@@ -1413,13 +1472,32 @@ function drop(ev) {
               MasterCounter.recountTotals(minDate, account);
             }
           }
-
+          
         }
         //recountTotals(month, account);
+      }
     }
-  }
-
   ev.preventDefault();
+}
+
+
+function moveToTemplate(ev){
+
+      //alert(ev.target.id);
+
+    var nodeCopy = document.getElementById(sourceEventId).cloneNode(true);
+    console.log(sourceEventId);
+    // let pool = document.querySelector('#templatePool').insertAdjacentHTML('afterBegin', nodeCopy);
+     let pool = document.querySelector('#templatePool');
+     pool.appendChild(nodeCopy);
+      //Dom.cloneEventItem(sourceEventId, date, account, ev.target);
+    
+}
+
+function removeEvent(ev){
+
+        Dom.removeItem(sourceEventId);
+        ev.preventDefault();
 }
   
 class DomManager {
