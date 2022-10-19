@@ -705,7 +705,7 @@ class ModalHandler
           Modal.closeEventModal();
           Dom.reload();
           MasterCounter.recount();
-          MasterCounter.recountTotals(MasterCounter.firstDayInMonth(date.date), data.account);
+          MasterCounter.recountTotals(MasterCounter.firstDayInMonth(data.date), data.account);
           // reorderItems(block.parentNode.parentNode);
         }, 100);
       }
@@ -1875,8 +1875,134 @@ class Counter
     }
     constructor()
     {
+      let autoCategoryArray = [ <?php
+      $helpers = BudgerData::getCategorySelectHelpers($user->id);
+      foreach ($helpers AS $data){
+        echo "{ 'word': '" . $data->word . "', 'value': " . $data->value . ", 'freq': " . $data->freq . "},";
+      };
+    ?>];
       this.reload();
       this.handleScrollTableTop();
+
+
+      document.querySelector('#mod_repeatPeriod').addEventListener('change', function(){
+        document.querySelector('#mod_isRepeat').checked = true;
+      });
+      document.querySelector('#mod_amountChanger').addEventListener('change', function(){
+        document.querySelector('#mod_isRepeat').checked = true;
+      });
+      document.querySelector('#mod_repeatTimes').addEventListener('change', function(){
+        document.querySelector('#mod_isRepeat').checked = true;
+      });
+      document.querySelector('#mod_amounGoal').addEventListener('change', function(){
+        document.querySelector('#mod_isRepeat').checked = true;
+      });
+
+
+      let saver = document.querySelector('#btnSaveEvent');
+      let mdn = document.querySelector('#mod_name');
+      mdn.addEventListener('keyup', function(){
+        if (mdn.value.length > 2){
+          console.log(mdn.value);
+          let result = autoCategoryArray.find(el => (el.word.toLowerCase()).includes(mdn.value.toLowerCase()));
+          if (result != undefined){
+
+            document.querySelector('#mod_category').value = result.value;
+            // console.log(result);
+          }
+        }
+      });
+      saver.addEventListener('click', function(){
+        let arr = mdn.value.split(' ');
+        let string = arr[0];
+        if (arr.length > 1){
+          string += " " + arr[1];
+        }
+        if (arr.length > 2){
+          string += " " + arr[2];
+        } 
+        let value = document.querySelector('#mod_category').value;
+
+        let result = autoCategoryArray.find(el => (el.word.toLowerCase()).includes(value.toLowerCase()));
+          if (result == undefined){
+            let lock = {};
+            lock.word = string.toLowerCase();
+            lock.value = +value;
+            lock.freq = 1;
+            autoCategoryArray.push(lock);
+            // console.log(lock);
+          }
+          else {
+            let maxFreq = 0;
+            let minFreq = 999999999;
+            for (let i = 0 ; i < autoCategoryArray.length; i++){
+              if (autoCategoryArray[i].word == result.word &&
+              autoCategoryArray[i].value == result.value &&
+              autoCategoryArray[i].freq == result.freq
+              ){
+                autoCategoryArray[i].freq += 1;
+                if (maxFreq < autoCategoryArray[i].freq){
+                  maxFreq = autoCategoryArray[i].freq;
+                }
+                if (minFreq > autoCategoryArray[i].freq){
+                  minFreq = autoCategoryArray[i].freq;
+                }
+              }
+            }
+            let newArray = [];
+            while (autoCategoryArray.length > 100){
+              for (let i = 0 ; i < autoCategoryArray.length; i++){
+                if (autoCategoryArray[i].freq == minFreq){
+                  autoCategoryArray[i].splice(i, 1);
+                }
+              }
+              minFreq += 1;
+            }
+            if (maxFreq > 1000){
+              for (let i = 0 ; i < autoCategoryArray.length; i++){
+                autoCategoryArray[i].freq == autoCategoryArray[i].freq / 2;
+              }
+            }
+          }
+
+          let counter = 0;
+          let requestCode = 333;
+          let outFormat = "number";
+          let data = {};
+          data.code = requestCode;
+          data.objects = autoCategoryArray;
+
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+              if (this.responseText == -1){ alert("You are not registered!");
+
+                return 0;
+              };
+              console.log(this.responseText);
+              // let result = JSON.parse(this.responseText);
+              console.log('рудзукы updated ' + this.responseText);
+            }
+            else if (this.status > 200)
+            {
+              if (counter < 1){
+                alert("Oops! There is some problems with the server connection.");
+
+                counter++;
+              }
+            }
+          };
+          xhttp.open("POST", "/budger/ajaxcall?code=" + requestCode + "&format=" + outFormat, false);
+          // xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+          xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+          xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
+
+          //alert(JSON.stringify(data));
+          xhttp.send(JSON.stringify(autoCategoryArray));
+      });
+
+
+
     }
 
     handleScrollTableTop(){
@@ -1964,6 +2090,9 @@ class Counter
       });
     }
  }
+
+
+
  var Modal = new ModalHandler();
  var Dom = new DOM();
 //  var DOME = new DOM();

@@ -69,6 +69,16 @@ class BudgerData
       }
       return "-???-";
     }
+
+
+    public static function getCategorySelectHelpers($user){
+      $item = DB::table(env('TB_BUD_HELPER_CAT'))
+      ->select('data')
+      ->where('user', '=', $user )
+      ->first();
+
+      return json_decode($item->data);
+    }
   
     public static function GetFirstCurrency($user){
       $row = DB::table( env('TB_BUD_ACCOUNTS') )

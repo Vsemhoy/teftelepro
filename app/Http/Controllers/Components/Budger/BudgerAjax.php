@@ -189,6 +189,10 @@ class BudgerAjax extends BaseController
       // returns number -1 if not success, 1 if success
       return self::cloneEventItem($data, $user);
     }
+    if ($code == 333){
+      // returns number -1 if not success, 1 if success
+      return self::updateCategoryHelper($data, $user);
+    }
 
 
     if ($code == 350) // restore category Item
@@ -1027,6 +1031,41 @@ class BudgerAjax extends BaseController
        $categoryname, '', '', '', '', 0, 1, $item->disabled, $item->accented, $hasChildren, $item->parent);
       array_push($result, $block);
     return json_encode($result); 
+  }
+
+ /// 333
+  public function updateCategoryHelper($json, $user){
+    //$data = Input::filterMe("ARRAY", $json->objects );
+    //print_r( $json);
+    $data = json_encode($json);
+
+    //return $data;
+    if (empty($data)){ return 0 ;}
+
+    $item = DB::table(env('TB_BUD_HELPER_CAT'))
+    ->select('id')
+    ->where('user', '=', $user->id )
+    ->first();
+
+    if (empty($item)){
+      $newId  = DB::table(env('TB_BUD_HELPER_CAT'))->insertGetId(
+        [
+        'data'         => $data,
+        'user'         => $user->id
+        ]
+      );
+      return $newId;
+    }
+    else {
+      $affected = DB::table(env('TB_BUD_HELPER_CAT'))
+      ->where('id', $item->id)
+      ->where('user', $user->id)
+      ->update([
+          'data' => $data
+      ]);
+      return $affected;
+    }
+    return 0;
   }
 
 

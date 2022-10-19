@@ -8,26 +8,26 @@
   let rail = document.querySelector('#navRail');
   let container_width = container.offsetWidth;
 
-  if (container_width > 1900)
-  {
-    container.classList.remove("menu-minimized");
-    container.classList.add("menu-opened");
-  }
-  else 
-  {
-    container.classList.remove("menu-opened");
-    container.classList.add("menu-minimized");
+  // if (container_width > 1900)
+  // {
+  //   container.classList.remove("menu-minimized");
+  //   container.classList.add("menu-opened");
+  // }
+  // else 
+  // {
+  //   container.classList.remove("menu-opened");
+  //   container.classList.add("menu-minimized");
     
-  }
+  // }
 
-  window.addEventListener('resize', function(){
+  // window.addEventListener('resize', function(){
 
-    if (container.offsetWidth > 1900){
-      container.classList.add("menu-opened");
-    } else if (container.offsetWidth < 1901){
-      container.classList.add("menu-minimized");
-    }
-  })
+  //   if (container.offsetWidth > 1900){
+  //     container.classList.add("menu-opened");
+  //   } else if (container.offsetWidth < 1901){
+  //     container.classList.add("menu-minimized");
+  //   }
+  // })
   
   trigger.addEventListener('click', function()
   {
