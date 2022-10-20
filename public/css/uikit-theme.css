@@ -10936,4 +10936,16 @@ select .opt-header {
   font-size: 1rem !important;
 }
 
+#stickytablehead {
+  position: fixed;
+  top: 0px;
+  background: white;
+  z-index: 99;
+  transition: all 0.5s ease-in-out;
+  box-shadow: 0px 3px 5px rgba(128, 128, 128, 0.31);
+}
+#stickytablehead .uk-table {
+  margin: 0px;
+}
+
 /*# sourceMappingURL=uikit-theme.css.map */

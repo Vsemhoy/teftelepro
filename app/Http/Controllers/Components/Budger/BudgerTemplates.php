@@ -540,7 +540,8 @@ public static function renderEventModal($accounts = null, $categories = null, $a
 
         <div class='uk-margin uk-mb-0 uk-inline uk-width-1-1' title='Amount of money'>
           <span class='uk-form-icon uk-form-icon' uk-icon='icon: database' ></span>
-          <input class='uk-input' type='number' placeholder='Amount' inputmode='decimal' id='mod_amount'>
+          <input class='uk-input' type='number' placeholder='Amount'
+           inputmode='decimal' id='mod_amount'>
         </div>
 
         <div class='uk-margin uk-mb-0 uk-inline uk-width-1-1' title='Event date'>
@@ -626,24 +627,25 @@ public static function renderEventModal($accounts = null, $categories = null, $a
         <input id='mod_isAccent' class='uk-checkbox' type='checkbox'> Accented</label>
       </div>
 
+      <div class='uk-margin uk-mb-0 uk-grid-small uk-child-width-auto uk-grid' id='mod_isRepeatRow'>
+      <label>
+      <input id='mod_isRepeat' class='uk-checkbox' type='checkbox'> Repeat event</label>
+        </div>
 
     </fieldset>
   </form>
-  </div>
-  <div>
+  </div>";
+  $result .= "<div class='uk-hidden'>
     <div class='uk-button-group uk-column-1-1 uk-width-1-1' style='column-gap: 0px;'>
         <button id='btn_optionTrigger' class='uk-button uk-button-default uk-width-1-2 '>Additiona options</button>
         <button id='btn_manageTrigger' class='uk-button uk-button-default uk-width-1-2'>Sequence management</button>
     </div>
-  </div>
-  <div class='uk-modal-body' id='mod_options_body'>
+  </div>";
+  $result .= " <div class='uk-modal-body' id='mod_options_body'>
     <form>
       <fieldset class='uk-fieldset'>
 
-      <div class='uk-margin uk-mb-0 uk-grid-small uk-child-width-auto uk-grid'>
-        <label>
-        <input id='mod_isRepeat' class='uk-checkbox' type='checkbox'> Repeat event</label>
-          </div>
+
 
           <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1 uk-column-1-2' title='Main repeat options'>
           <span class='small' >Repeat period</span>

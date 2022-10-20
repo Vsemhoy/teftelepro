@@ -322,7 +322,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
   );
   array_push($this->navigationByMonth, $obj);
   $date4total = $dateyear_ . "-" . $dateObj->format('m') . "-01";
-  $result .= "<tr class='bg-subtotal subtotal' startDate='" . $date4total . "' id='" . $obj->id . "' monthname='" . $obj->name . "'>
+  $result .= "<tr class='bg-subtotal subtotal totalhider' startDate='" . $date4total . "' id='" . $obj->id . "' monthname='" . $obj->name . "'>
   <td class='' colspan='2'><b><span class='tf-table-monthname'>" . $monthname . "</span> <span class='stdtyr'>" . $dateyear_ . "</span></b></td>";
   foreach ($accountsToloadArr AS $account){
     $result .=  "<td class='mtotalio'  dec='" . $account->decimals . "'>";

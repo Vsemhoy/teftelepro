@@ -76,8 +76,12 @@ class BudgerData
       ->select('data')
       ->where('user', '=', $user )
       ->first();
-
-      return json_decode($item->data);
+      if (!empty($item)){
+        return json_decode($item->data);
+      }
+      else {
+        return [];
+      }
     }
   
     public static function GetFirstCurrency($user){

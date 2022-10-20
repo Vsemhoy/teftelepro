@@ -272,7 +272,7 @@ class ModalHandler
     this.btnDep = document.querySelectorAll('.uk-button-deposit')[0];
 
     this.modHeader = document.querySelectorAll('.uk-modal-header')[0];
-    this.btnOptns = document.querySelector('#btn_optionTrigger');
+
     this.btnManage = document.querySelector('#btn_manageTrigger');
     
     this.btnDisable = document.querySelector("#btnDisableEvent");
@@ -284,6 +284,7 @@ class ModalHandler
     
     this.rowOptions = document.querySelector('#mod_options_body');
     this.rowManage = document.querySelector('#mod_manage_body');
+    this.rowRepeat = document.querySelector('#mod_isRepeatRow');
     
     this.categorySelector = document.querySelector('#mod_category');
     this.accountSelector = document.querySelector('#mod_account');
@@ -314,9 +315,9 @@ class ModalHandler
     });
     
 
-    this.btnOptns.addEventListener('click', function(){
-      self.SetOptionsShowed(self);
-    });
+    // this.btnOptns.addEventListener('click', function(){
+    //   self.SetOptionsShowed(self);
+    // });
     
 
     this.btnManage.addEventListener('click', function(){
@@ -408,11 +409,10 @@ class ModalHandler
       } else {
         this.SetExpense(this);
       }
-      this.SetOptionsHidden(this);
       this.title.innerHTML = 'Add new event';
       this.btnManage.setAttribute('disabled', 'disabled');
-      this.btnOptns.removeAttribute('disabled');
-
+      // this.btnOptns.removeAttribute('disabled');
+      this.rowRepeat.classList.remove('uk-hidden');
       let date = elem.parentNode.getAttribute('date');
       let account = elem.getAttribute('account');
       
@@ -423,7 +423,7 @@ class ModalHandler
 
      document.querySelector('#mod_name').value = "";
         document.querySelector('#mod_description').value = "";
-        document.querySelector('#mod_amount').value = 0;
+        document.querySelector('#mod_amount').value = '';
       
         //document.querySelector('#mod_category').value = result.category;
         // document.querySelector('#mod_category')[document.querySelector('#mod_category').selectedIndex].text.trim();
@@ -585,34 +585,17 @@ class ModalHandler
       }
     }
   }
-  SetOptionsHidden(parent){
-    parent.rowManage.classList.add('uk-hidden');
-    parent.rowOptions.classList.add('uk-hidden');
-    parent.btnOptns.classList.remove('uk-background-default');
-    parent.btnManage.classList.remove('uk-background-default');
 
-  }
-  SetOptionsShowed(parent){
-    if (parent.btnOptns.classList.contains('uk-background-default')){
-      parent.btnOptns.classList.remove('uk-background-default');
-      parent.rowOptions.classList.add('uk-hidden');
-      return;
-    }
-    parent.btnOptns.classList.add('uk-background-default');
-    parent.btnManage.classList.remove('uk-background-default');
-    parent.rowManage.classList.add('uk-hidden');
-    parent.rowOptions.classList.remove('uk-hidden');
-  }
   SetManageShowed(parent){
-    if (parent.btnManage.classList.contains('uk-background-default')){
-      parent.btnManage.classList.remove('uk-background-default');
-      parent.rowManage.classList.add('uk-hidden');
-      return;
-    }
-    parent.btnOptns.classList.remove('uk-background-default');
-    parent.btnManage.classList.add('uk-background-default');
-    parent.rowOptions.classList.add('uk-hidden');
-    parent.rowManage.classList.remove('uk-hidden');
+    // if (parent.btnManage.classList.contains('uk-background-default')){
+    //   parent.btnManage.classList.remove('uk-background-default');
+    //   parent.rowManage.classList.add('uk-hidden');
+    //   return;
+    // }
+    // parent.btnOptns.classList.remove('uk-background-default');
+    // parent.btnManage.classList.add('uk-background-default');
+    // parent.rowOptions.classList.add('uk-hidden');
+    // parent.rowManage.classList.remove('uk-hidden');
   }
 
   HideTargetAccount(){
@@ -928,6 +911,9 @@ class DOM {
   {
     document.querySelector('#btnSaveEvent').classList.add('uk-hidden');
     document.querySelector('#btnUpdateEvent').classList.remove('uk-hidden');
+    Modal.rowRepeat.classList.add('uk-hidden');
+    Modal.rowOptions.classList.add('uk-hidden');
+
     let block = document.querySelector('#' + identer);
     Dom.chousenItem = identer;
     let counter = 0;
@@ -967,7 +953,7 @@ class DOM {
         }
 
         Modal.SetManageShowed(Modal);
-        Modal.btnOptns.setAttribute('disabled', 'disabled');
+        // Modal.btnOptns.setAttribute('disabled', 'disabled');
         Modal.btnManage.removeAttribute('disabled');
         if (result.haschildren == 0){
           Modal.SetManageShowed(Modal);
@@ -1876,14 +1862,29 @@ class Counter
     constructor()
     {
       let autoCategoryArray = [ <?php
-      $helpers = BudgerData::getCategorySelectHelpers($user->id);
-      foreach ($helpers AS $data){
-        echo "{ 'word': '" . $data->word . "', 'value': " . $data->value . ", 'freq': " . $data->freq . "},";
-      };
+      if (isset($user->id)){
+        $helpers = BudgerData::getCategorySelectHelpers($user->id);
+        foreach ($helpers AS $data){
+          echo "{ 'word': '" . $data->word . "', 'value': " . $data->value . ", 'freq': " . $data->freq . "},";
+        };
+      }
     ?>];
       this.reload();
       this.handleScrollTableTop();
 
+      let rowOptions = document.querySelector('#mod_options_body');
+      let rowManage = document.querySelector('#mod_manage_body');
+      rowOptions.classList.add('uk-hidden');
+      rowManage.classList.add('uk-hidden');
+      var checkbox = document.querySelector("#mod_isRepeat");
+
+      checkbox.addEventListener('change', function() {
+        if (this.checked) {
+          rowOptions.classList.remove('uk-hidden');
+        } else {
+          rowOptions.classList.add('uk-hidden');
+        }
+      });
 
       document.querySelector('#mod_repeatPeriod').addEventListener('change', function(){
         document.querySelector('#mod_isRepeat').checked = true;
@@ -2018,41 +2019,117 @@ class Counter
       */
       var lastScrollTop = 0;
       var conditor = 0;
+      var position = 0;
+      let position_left = 0;
+      let self = window;
+      let scrolled = 0;
+      
       window.addEventListener('scroll', function(event){
-        let self = window;
-        var position = 0;
-        var st = window.scrollY;
-
-        var ttble = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().top;
-        //console.log(ttble);
-          if (st > lastScrollTop){
-            position = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().left;
-            if (position > -1){
-              position = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().left;
+        let tableToTop = document.querySelectorAll(".budgetable")[0].offsetTop;
+        let tableWidth = document.querySelectorAll(".budgetable")[0].getBoundingClientRect().width;
+        
+        scrolled = window.scrollY;
+        // console.log("table top " + tableToTop);
+        // console.log("scrolled from top " + scrolled);
+          if (scrolled > lastScrollTop){
+            position_left = document.querySelectorAll(".budgetable")[0].getBoundingClientRect().left;
+            if (position_left > -1){
+              position_left = document.querySelectorAll(".budgetable")[0].getBoundingClientRect().left;
             };
-            //console.log(position);
+
             //$("#stickytablehead").css("left", position + "px");
-           // document.querySelector("#stickytablehead").style.left = position + "px";
+            // document.querySelector("#stickytablehead").style.left = position + "px";
           };
           if (document.querySelector("#stickytablehead") != undefined){
+            document.querySelector("#stickytablehead").style.left = position_left + "px";
+            document.querySelector("#stickytablehead").style.width = tableWidth + "px";
+            let month = document.querySelectorAll('.tf-table-monthname');
+            //console.log(month[0].getBoundingClientRect().top + window.scrollY);
+            for (let i = 0 ; i < month.length ; i++){
+              let montnamepos = month[i].getBoundingClientRect().top + window.scrollY;
+              let montnamneme = month[i].innerHTML;
+              //console.log("position of name " + montnamepos);
+              if (scrolled > montnamepos){
+                montnamneme = montnamneme.slice(0, 3);
+                //$("#stickytablehead").find("th").eq(0).text(montnamneme);
+                document.querySelector('#stickytablehead').querySelectorAll('th')[0].innerHTML = montnamneme;
+              }
+            }
             /*
             $(".tf-table-monthname").each(function(){
-                let montnamepos = $(this).offset().top;
-                let montnamneme = $(this).text();
-                if (st > montnamepos){
-                  montnamneme = montnamneme.slice(0, 3);
-                  $("#stickytablehead").find("th").eq(0).text(montnamneme);
-                }
-              }); */
+              let montnamepos = $(this).offset().top;
+              let montnamneme = $(this).text();
+              if (st > montnamepos){
+                montnamneme = montnamneme.slice(0, 3);
+                $("#stickytablehead").find("th").eq(0).text(montnamneme);
+              }
+            }); */
           };
+          if (scrolled > tableToTop + 1){
+            //console.log("last scroll top  " + lastScrollTop);
+            if  (scrolled > lastScrollTop){
+              if (conditor == 0){
+                let counter = 0;
+                let header = document.querySelectorAll(".budgetable")[0].querySelectorAll("thead")[0].innerHTML;
+                //$(".tftable").children("thead").html();
+                let newCon = "<div id='stickytablehead'><table class='uk-table uk-table-divider uk-table-hover uk-table-small'><thead>" + header + "</thead></table></div>";
+                if (scrolled > tableToTop + 1){
+                  document.querySelector("#main-tf-1").insertAdjacentHTML('afterBegin', newCon);
+                };
+                let tabrowhead = document.querySelectorAll(".budgetable")[0].querySelectorAll("th");
+                
+                for (let i = 0; i < tabrowhead.length ; i++){
+                  let width = tabrowhead[i].getBoundingClientRect().width;
+                  let padding = tabrowhead[i].style.getPropertyValue('padding');
+                  let back = tabrowhead[i].style.getPropertyValue('background');
+                  // console.log(width);
+                  width = parseInt(width) - 0.5;
+                  document.querySelector("#stickytablehead").querySelectorAll("th")[i].style.width = width + "px";
+                  //document.querySelector("#stickytablehead").querySelectorAll("th")[i].style.padding = padding ;
+                  document.querySelector("#stickytablehead").querySelectorAll("th")[i].style.zIndex = 99;
+                  document.querySelector("#stickytablehead").querySelectorAll("th")[i].style.background = back;
+                }
+
+              //   $(".tftable").eq(0).children("thead").find("th").each(function(){
+              // let width = ($(this).css("width"));
+              // let padding = $(this).css("padding");
+              // width = parseInt(width) + 0.5;
+              // $("#stickytablehead").find("th").eq(counter).css("width", width + "px");
+              // $("#stickytablehead").find("th").eq(counter).css("padding", padding);
+              // $("#stickytablehead").find("th").eq(counter).css("z-index", "99");
+              // $("#sidebarMenu").addClass("top-zero");
+              // $("#fixedpool").addClass("top-zero");
+              // counter++;
+              // });
+              // console.log("ON");
+              conditor = 1;
+              };
+            } else {
+            // upscroll code
+            if (conditor == 1){
+              //$("nav").removeClass("d-none");
+              document.querySelector("#stickytablehead").remove();
+              // $("#stickytablehead").remove();
+              // $("#sidebarMenu").removeClass("top-zero");
+              // $("#fixedpool").removeClass("top-zero");
+              conditor = 0;
+              // console.log("OFF");
+            };
+          }
+
+            }
+          
+          
+
           /*
-          if (st > ttble + 1){
+          if (st > tableToTop + 1){
       // if (st > lastScrollTop){
           if (conditor == 0){
+
             let counter = 0;
             let header = $(".tftable").children("thead").html();
             let newCon = "<div id='stickytablehead'><table class='table table-bordered mb-0'><thead>" + header + "</thead></table></div>";
-            if (st > ttble + 1){
+            if (st > tableToTop + 1){
               $("#main-tf-1").append(newCon);
             };
             $(".tftable").eq(0).children("thead").find("th").each(function(){
@@ -2069,6 +2146,7 @@ class Counter
               $("nav").addClass("d-none");
               conditor = 1;
             }
+
             // downscroll code
           } else {
             // upscroll code
@@ -2080,7 +2158,7 @@ class Counter
               conditor = 0;
             };
           } */
-          lastScrollTop = st;
+          lastScrollTop = scrolled;
           position = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().left; // position
           if (position > -1){
             position = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().left; // offset
