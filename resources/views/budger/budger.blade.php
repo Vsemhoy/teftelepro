@@ -1590,13 +1590,13 @@ class Counter
           let dec = rows[index].querySelectorAll('.subtotalbal')[t].getAttribute('dec');
           rows[index].querySelectorAll('.subtotalbal')[t].innerHTML = resarray[t].toFixed(dec);
 
-          if (lastBalanceArr[t] != 0){
+          // if (lastBalanceArr[t] != 0){
             let valDiff  = (resarray[t] - lastBalanceArr[t]).toFixed(0);
-            if (valDiff != 0){
+            // if (valDiff != 0){
               //console.log(valDiff);
               rows[index].querySelectorAll('.subbal-diff')[t].innerHTML = valDiff > 0 ? ("+" + valDiff) : valDiff;
-            }
-          }
+            // }
+          // }
           // percent set
           if (percarray[t] != 0){
             rows[index].querySelectorAll('.subbal-perc')[t].innerHTML = percarray[t] != 0 ? percarray[t].toFixed(dec) : "";
@@ -1864,9 +1864,12 @@ class Counter
       let autoCategoryArray = [ <?php
       if (isset($user->id)){
         $helpers = BudgerData::getCategorySelectHelpers($user->id);
-        foreach ($helpers AS $data){
-          echo "{ 'word': '" . $data->word . "', 'value': " . $data->value . ", 'freq': " . $data->freq . "},";
-        };
+        if ($helpers != null){
+          foreach ($helpers AS $data){
+            echo "{ 'word': '" . $data->word . "', 'value': " . $data->value . ", 'freq': " . $data->freq . "},";
+          };
+
+        }
       }
     ?>];
       this.reload();
@@ -1904,16 +1907,17 @@ class Counter
       let mdn = document.querySelector('#mod_name');
       mdn.addEventListener('keyup', function(){
         if (mdn.value.length > 2){
-          console.log(mdn.value);
+          // console.log(mdn.value);
           let result = autoCategoryArray.find(el => (el.word.toLowerCase()).includes(mdn.value.toLowerCase()));
           if (result != undefined){
-
+            
             document.querySelector('#mod_category').value = result.value;
             // console.log(result);
           }
         }
       });
       saver.addEventListener('click', function(){
+        mdn = document.querySelector('#mod_name');
         let arr = mdn.value.split(' ');
         let string = arr[0];
         if (arr.length > 1){
@@ -1922,24 +1926,27 @@ class Counter
         if (arr.length > 2){
           string += " " + arr[2];
         } 
+        string = string.toLowerCase();
         let value = document.querySelector('#mod_category').value;
 
-        let result = autoCategoryArray.find(el => (el.word.toLowerCase()).includes(value.toLowerCase()));
+        let result = autoCategoryArray.find(el => (el.word.toLowerCase()).includes(string));
           if (result == undefined){
             let lock = {};
             lock.word = string.toLowerCase();
             lock.value = +value;
             lock.freq = 1;
             autoCategoryArray.push(lock);
-            // console.log(lock);
+            //console.log(lock);
+            console.log("RESULT IS UNDEF " + autoCategoryArray);
           }
           else {
+            console.log("RESULT IS DEFF " + autoCategoryArray);
             let maxFreq = 0;
             let minFreq = 999999999;
             for (let i = 0 ; i < autoCategoryArray.length; i++){
               if (autoCategoryArray[i].word == result.word &&
-              autoCategoryArray[i].value == result.value &&
-              autoCategoryArray[i].freq == result.freq
+              autoCategoryArray[i].value == result.value 
+              // autoCategoryArray[i].freq == result.freq
               ){
                 autoCategoryArray[i].freq += 1;
                 if (maxFreq < autoCategoryArray[i].freq){
@@ -2036,11 +2043,11 @@ class Counter
             if (position_left > -1){
               position_left = document.querySelectorAll(".budgetable")[0].getBoundingClientRect().left;
             };
-
             //$("#stickytablehead").css("left", position + "px");
             // document.querySelector("#stickytablehead").style.left = position + "px";
           };
           if (document.querySelector("#stickytablehead") != undefined){
+            
             document.querySelector("#stickytablehead").style.left = position_left + "px";
             document.querySelector("#stickytablehead").style.width = tableWidth + "px";
             let month = document.querySelectorAll('.tf-table-monthname');
@@ -2055,15 +2062,8 @@ class Counter
                 document.querySelector('#stickytablehead').querySelectorAll('th')[0].innerHTML = montnamneme;
               }
             }
-            /*
-            $(".tf-table-monthname").each(function(){
-              let montnamepos = $(this).offset().top;
-              let montnamneme = $(this).text();
-              if (st > montnamepos){
-                montnamneme = montnamneme.slice(0, 3);
-                $("#stickytablehead").find("th").eq(0).text(montnamneme);
-              }
-            }); */
+            
+
           };
           if (scrolled > tableToTop + 1){
             //console.log("last scroll top  " + lastScrollTop);
@@ -2079,29 +2079,18 @@ class Counter
                 let tabrowhead = document.querySelectorAll(".budgetable")[0].querySelectorAll("th");
                 
                 for (let i = 0; i < tabrowhead.length ; i++){
-                  let width = tabrowhead[i].getBoundingClientRect().width;
+                  let width = tabrowhead[i].getBoundingClientRect().width - (25);
                   let padding = tabrowhead[i].style.getPropertyValue('padding');
                   let back = tabrowhead[i].style.getPropertyValue('background');
                   // console.log(width);
-                  width = parseInt(width) - 0.5;
+                  //width = parseInt(width) - 0.5;
                   document.querySelector("#stickytablehead").querySelectorAll("th")[i].style.width = width + "px";
                   //document.querySelector("#stickytablehead").querySelectorAll("th")[i].style.padding = padding ;
                   document.querySelector("#stickytablehead").querySelectorAll("th")[i].style.zIndex = 99;
                   document.querySelector("#stickytablehead").querySelectorAll("th")[i].style.background = back;
                 }
 
-              //   $(".tftable").eq(0).children("thead").find("th").each(function(){
-              // let width = ($(this).css("width"));
-              // let padding = $(this).css("padding");
-              // width = parseInt(width) + 0.5;
-              // $("#stickytablehead").find("th").eq(counter).css("width", width + "px");
-              // $("#stickytablehead").find("th").eq(counter).css("padding", padding);
-              // $("#stickytablehead").find("th").eq(counter).css("z-index", "99");
-              // $("#sidebarMenu").addClass("top-zero");
-              // $("#fixedpool").addClass("top-zero");
-              // counter++;
-              // });
-              // console.log("ON");
+
               conditor = 1;
               };
             } else {

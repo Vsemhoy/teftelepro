@@ -30,7 +30,7 @@
 <?php
 foreach ($accounts AS $account){
   ?>
-<div id="container_<?php echo $account->id; ?>" style="width:100%; height:400px;"></div>
+<div id="container_<?php echo $account->id; ?>" style="width:100%; height:600px;"></div>
 <script>
 Highcharts.chart('container_<?php echo $account->id; ?>', {
   chart: {
@@ -41,7 +41,7 @@ Highcharts.chart('container_<?php echo $account->id; ?>', {
   },
   subtitle: {
     align: 'center',
-    text: 'Source: <a href="https://www.ssb.no/jord-skog-jakt-og-fiskeri/jakt" target="_blank">SSB</a>'
+    text: 'Source: <a href="https://www.ssb.no/" target="_blank">SSB</a>'
   },
   legend: {
     layout: 'vertical',
@@ -151,6 +151,44 @@ Highcharts.chart('container_<?php echo $account->id; ?>', {
     echo "]";
     ?>
   },
+
+  {
+    name: 'Transfers',
+    data:
+    <?php
+    echo " [";
+    foreach ($totals AS $item){
+      if ($item->account == $account->id){
+        $dat = explode("-", $item->setdate);
+      echo " {";
+      echo "'name': '" . $dat[0] . "-" . $dat[1] .  "',";
+      echo "'y': " . $item->transfers . ",";
+      echo "'drilldown': '" . $item->value . "'";
+      echo "},";
+    }
+  };
+    echo "]";
+    ?>
+  },
+
+  {
+    name: 'Deposits',
+    data:
+    <?php
+    echo " [";
+    foreach ($totals AS $item){
+      if ($item->account == $account->id){
+        $dat = explode("-", $item->setdate);
+      echo " {";
+      echo "'name': '" . $dat[0] . "-" . $dat[1] .  "',";
+      echo "'y': " . $item->deposits . ",";
+      echo "'drilldown': '" . $item->value . "'";
+      echo "},";
+    }
+  };
+    echo "]";
+    ?>
+  },
   <?php if ($account->type == 2){ ?>
   {
     name: 'Percents',
@@ -177,5 +215,175 @@ Highcharts.chart('container_<?php echo $account->id; ?>', {
 
 <?php
 }
+//print_r($totals);
+$newTotals = [];
+$counter = 0;
+foreach($totals AS $tot){
+  $itHas = 0;
+    foreach ($newTotals AS $new){
+      if ($new->setdate == $tot->setdate){
+        $new->value      += $tot->value;
+        $new->monthdiff  += $tot->monthdiff;
+        $new->percent    += $tot->percent;
+        $new->incomes    += $tot->incomes;
+        $new->deposits   += $tot->deposits;
+        $new->expenses   += $tot->expenses;
+        $new->transfers  += $tot->transfers;
+        $new->difference += $tot->difference;
+        $itHas = 1;
+      }
+    }
+  if ($itHas == 0){
+    $tot->account = 0;
+    array_push($newTotals, $tot);
+  }
+}
 ?>
+<div id="container_total" style="width:100%; height:600px;"></div>
+<script>
+Highcharts.chart('container_total', {
+  chart: {
+    type: 'areaspline'
+  },
+  title: {
+    text: 'Totals for all accounts'
+  },
+  subtitle: {
+    align: 'center',
+    text: 'Source: <a href="https://www.ssb.no/" target="_blank">SSB</a>'
+  },
+  legend: {
+    layout: 'vertical',
+    align: 'left',
+    verticalAlign: 'top',
+    x: 120,
+    y: 70,
+    floating: true,
+    borderWidth: 1,
+    backgroundColor:
+      Highcharts.defaultOptions.legend.backgroundColor || '#FFFFFF'
+  },
+  xAxis: {
+    type: 'category',
+    uniqueNames: true
+},
+  yAxis: {
+    title: {
+      text: 'Quantity'
+    }
+  },
+  tooltip: {
+    shared: true,
+    headerFormat: '<b>Totals of all accounts</b><br>'
+  },
+  credits: {
+    enabled: false
+  },
+  plotOptions: {
+    series: {
+      pointStart: 2022
+    },
+    areaspline: {
+      fillOpacity: 0.5
+    }
+  },
+  series: [
+    {
+    name: 'Balance',
+    data:
+    <?php
+    echo " [";
+    foreach ($newTotals AS $item){
+
+        $dat = explode("-", $item->setdate);
+      echo " {";
+      echo "'name': '" . $dat[0] . "-" . $dat[1] .  "',";
+      echo "'y': " . $item->value . ",";
+      echo "'drilldown': '" . $item->value . "'";
+      echo "},";
+
+  };
+    echo "]";
+    ?>
+  }, 
+  {
+    name: 'Difference',
+    data:
+    <?php
+    echo " [";
+    foreach ($newTotals AS $item){
+
+        $dat = explode("-", $item->setdate);
+      echo " {";
+      echo "'name': '" . $dat[0] . "-" . $dat[1] .  "',";
+      echo "'y': " . $item->monthdiff . ",";
+      echo "'drilldown': '" . $item->value . "'";
+      echo "},";
+    
+  };
+    echo "]";
+    ?>
+  },
+  {
+    name: 'Incomes',
+    data:
+    <?php
+    echo " [";
+    foreach ($newTotals AS $item){
+
+        $dat = explode("-", $item->setdate);
+      echo " {";
+      echo "'name': '" . $dat[0] . "-" . $dat[1] .  "',";
+      echo "'y': " . $item->incomes . ",";
+      echo "'drilldown': '" . $item->value . "'";
+      echo "},";
+
+  };
+    echo "]";
+    ?>
+  },
+  {
+    name: 'Expenses',
+    data:
+    <?php
+    echo " [";
+    foreach ($newTotals AS $item){
+
+        $dat = explode("-", $item->setdate);
+      echo " {";
+      echo "'name': '" . $dat[0] . "-" . $dat[1] .  "',";
+      echo "'y': " . $item->expenses . ",";
+      echo "'drilldown': '" . $item->value . "'";
+      echo "},";
+    
+  };
+    echo "]";
+    ?>
+  },
+
+  {
+    name: 'Percents',
+    data:
+    <?php
+    echo " [";
+    foreach ($newTotals AS $item){
+
+        $dat = explode("-", $item->setdate);
+      echo " {";
+      echo "'name': '" . $dat[0] . "-" . $dat[1] .  "',";
+      echo "'y': " . $item->percent . ",";
+      echo "'drilldown': '" . $item->value . "'";
+      echo "},";
+    
+  };
+    echo "]";
+    ?>
+  },
+
+
+
+]
+});
+</script>
+
 @endsection
