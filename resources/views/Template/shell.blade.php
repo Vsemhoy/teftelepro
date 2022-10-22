@@ -134,7 +134,7 @@ uk-sticky="show-on-up: true" style="z-index: 9;">
             <input class="uk-input" type="text" placeholder="Login email" name="email">
         </div>
         <div class="uk-margin">
-            <input class="uk-input" type="text" placeholder="password" name="password" >
+            <input class="uk-input" type="password" placeholder="password" name="password" >
         </div>
       </fieldset>
       <p class="uk-text-right">

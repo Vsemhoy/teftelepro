@@ -206,6 +206,7 @@ class Input
   public static function INTARRAY($value)
   {
     //return htmlspecialchars($value, ENT_QUOTES);
+    return("HELLO");
     if (is_array($value)){
       $arr = [];
       foreach ($value AS $number){

@@ -28,6 +28,7 @@
   </div>
 
 <?php
+if ($accounts != null){
 foreach ($accounts AS $account){
   ?>
 <div id="container_<?php echo $account->id; ?>" style="width:100%; height:600px;"></div>
@@ -238,6 +239,8 @@ foreach($totals AS $tot){
     array_push($newTotals, $tot);
   }
 }
+
+if (count($accounts) > 1){
 ?>
 <div id="container_total" style="width:100%; height:600px;"></div>
 <script>
@@ -385,5 +388,30 @@ Highcharts.chart('container_total', {
 ]
 });
 </script>
+<?php 
+};
+} 
+else if (!empty($user))
+{
+  ?>
+          <div class="uk-container uk-container-xsmall">
+            <div class="uk-card uk-card-secondary uk-card-body">
+              <h3 class="uk-card-title">There is no accounts yet!</h3>
+              <p>Create <a href="{{ route('budger.accmanager')}}" >account</a> and <a href="{{ route('budger.catmanager')}}" >category</a> at first.</p>
+            </div>
+          </div>
+          <?php
+}
 
+if (empty($user)){
+  ?>
+  <div class="uk-container uk-container-xsmall">
+    <div class="uk-alert-danger" uk-alert>
+    <a class="uk-alert-close" uk-close></a>
+    <p>You are not <a href="{{ route('login') }}">logged in!</a></p>
+  </div>
+</div>
+<?php
+} 
+?>
 @endsection

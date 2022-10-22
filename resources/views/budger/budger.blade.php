@@ -79,7 +79,6 @@
   <?php
       } 
       else {
-
         if (!empty($accounts)){
           echo $cont->renderNavigateButtons('topoftable');
           echo $cont->renderWholeTable(); 
@@ -109,33 +108,31 @@
       ?>
 
   
-    <div class="uk-container-small">
-      <div class="alert alert-info" role="alert">  
-        Press SHIFT before you start draging an Event to make a copy of event    </div>
-      <div class="alert alert-info" role="alert">  
-        This section uses Nestable.JS which implements five-level nesting of items. 
-        At the moment this functionality is redundant, but in the future I will definetly 
-        figure out how to use it with the greatest benefit for the user.    </div>
-    </div>
+    
 </div>
   
 
   </div>
 
 <?php 
- echo BudgerTemplates::renderEventModal(
-    $accounts,
-    $categories,
-    $allaccounts,
-    $currencies  
-    );
-
-    echo BudgerTemplates::renderEventFilterModal(
-      $accounts,
-      $categories,
-      $allaccounts,
-      $currencies  
-      );
+if ($accounts != null){
+  echo BudgerTemplates::renderEventModal(
+     $accounts,
+     $categories,
+     $allaccounts,
+     $currencies  
+     );
+ 
+     echo BudgerTemplates::renderEventFilterModal(
+       $accounts,
+       $categories,
+       $allaccounts,
+       $currencies,
+       $cont->get_startMonth,
+       $cont->get_lastMonth
+       );
+  
+}
  ?>
  <style>
   .date-navigation {
@@ -146,12 +143,12 @@
   .btn-template-trigger {
     position: fixed;
     right: 0px;
-    bottom: 50px;
+    bottom: 90px;
   }
   .trashbin-area {
     position: fixed;
     right: 0px;
-    bottom: 100px;
+    bottom: 180px;
   }
   .date-navigation .uk-dropdown.uk-open {
     display: block;
@@ -206,7 +203,7 @@
   <span class=" uk-padding-small" uk-icon="album"></span></button>
  <div class="uk-inline date-navigation">
     <button class="uk-button uk-button-text" type="button"><span class=" uk-padding-small" uk-icon="more-vertical"></span></button>
-    <div uk-dropdown>
+    <div uk-dropdown class='dd-datenav'>
         <ul class="uk-nav uk-dropdown-nav">
             <!-- <li class="uk-active"><a href="#">Active</a></li> -->
             <li class="uk-nav-header">Navigator</li>
@@ -2008,21 +2005,10 @@ class Counter
           //alert(JSON.stringify(data));
           xhttp.send(JSON.stringify(autoCategoryArray));
       });
-
-
-
     }
 
     handleScrollTableTop(){
       /* HIDE Nav when scroll down
-      let inwindow = (e || event).clientY; // Throw position depended by window top
-      let scrolled = window.scrollY;
-      let clickposition = scrolled + inwindow;
-      //let id = $(this).attr("id");
-      let blockpos = 0;
-      let height = 0;
-      if (inblocks.length > 0){
-        blockpos = inblocks[0].getBoundingClientRect().top + scrolled;
       */
       var lastScrollTop = 0;
       var conditor = 0;
@@ -2105,48 +2091,9 @@ class Counter
               // console.log("OFF");
             };
           }
-
-            }
-          
+        }
           
 
-          /*
-          if (st > tableToTop + 1){
-      // if (st > lastScrollTop){
-          if (conditor == 0){
-
-            let counter = 0;
-            let header = $(".tftable").children("thead").html();
-            let newCon = "<div id='stickytablehead'><table class='table table-bordered mb-0'><thead>" + header + "</thead></table></div>";
-            if (st > tableToTop + 1){
-              $("#main-tf-1").append(newCon);
-            };
-            $(".tftable").eq(0).children("thead").find("th").each(function(){
-              let width = ($(this).css("width"));
-              let padding = $(this).css("padding");
-              width = parseInt(width) + 0.5;
-              $("#stickytablehead").find("th").eq(counter).css("width", width + "px");
-              $("#stickytablehead").find("th").eq(counter).css("padding", padding);
-              $("#stickytablehead").find("th").eq(counter).css("z-index", "99");
-              $("#sidebarMenu").addClass("top-zero");
-              $("#fixedpool").addClass("top-zero");
-              counter++;
-              });
-              $("nav").addClass("d-none");
-              conditor = 1;
-            }
-
-            // downscroll code
-          } else {
-            // upscroll code
-            if (conditor == 1){
-              $("nav").removeClass("d-none");
-              $("#stickytablehead").remove();
-              $("#sidebarMenu").removeClass("top-zero");
-              $("#fixedpool").removeClass("top-zero");
-              conditor = 0;
-            };
-          } */
           lastScrollTop = scrolled;
           position = document.querySelectorAll(".uk-table")[0].getBoundingClientRect().left; // position
           if (position > -1){
@@ -2158,7 +2105,44 @@ class Counter
     }
  }
 
+ 
+ class FilterModal 
+ {
+   constructor(){
+     let unitFilter = document.querySelector("#unit_filter");
+     let accounts = document.querySelector("#accounts_filter");
+    <?php if (isset( $cont->currentCurrency)){
+      ?>
+        unitFilter.value = '<?php echo $cont->currentCurrency; ?>';
+      <?php
+    };
+    ?>
 
+    let unitid = unitFilter.value;
+
+    for(let i = 0; i < accounts.options.length; i++){
+      if (accounts.options[i].getAttribute('data-unit') == unitid){
+        accounts.options[i].classList.remove('uk-hidden');
+      } else {
+        accounts.options[i].classList.add('uk-hidden');
+      }
+    //Add operations here
+    }
+
+    unitFilter.addEventListener('change', function(){
+      unitid = unitFilter.value;
+      for(let i = 0; i < accounts.options.length; i++){
+      if (accounts.options[i].getAttribute('data-unit') == unitid){
+        accounts.options[i].classList.remove('uk-hidden');
+      } else {
+        accounts.options[i].classList.add('uk-hidden');
+      }
+    //Add operations here
+    }
+    });
+
+   }
+ }
 
  var Modal = new ModalHandler();
  var Dom = new DOM();
@@ -2166,7 +2150,8 @@ class Counter
 //  var DMAN =  new DomManager();
  var Decor = new Decorator();
  var MasterCounter = new Counter();
-
+ 
+ var Filter = new FilterModal();
 
 
 
@@ -2196,6 +2181,10 @@ function dateFormat(inputDate, format) {
 
     return format;
 }
+
+// window.onload = function(){
+//   alert("READY!");
+// }
 
 </script>
 @endsection

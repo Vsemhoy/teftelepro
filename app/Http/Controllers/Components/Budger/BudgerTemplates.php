@@ -704,11 +704,27 @@ public static function renderEventModal($accounts = null, $categories = null, $a
   return $result;
 }
 
-public static function renderEventFilterModal($accounts = null, $categories = null, $allaccounts = null, $currencies = null) 
+public static function renderEventFilterModal($accounts = null, $categories = null, $allaccounts = null, $currencies = null, $startMonth = '', $endMonth = '') 
 {
+  $stm = '';
+  $endm = '';
+  if (empty($startMonth)){
+    $stm = date("Y-m");
+  } 
+  else {
+    $d = explode('-', $startMonth);
+    $stm = $d[0] . "-" . $d[1]; 
+  }
+  if (empty($endMonth)){
+    $endm = date("Y-m");
+  } else {
+    $d = explode('-', $endMonth);
+    $endm = $d[0] . "-" . $d[1]; 
+  }
+
   $result = "";
   $result .= "<div id='modal-container' class='uk-modal-container' uk-modal>
-  <div class='uk-modal-dialog'>
+  <div class='uk-modal-dialog'>" . $startMonth . " 
       <button class='uk-modal-close-default' type='button' uk-close></button>
       <form method='GET' action='/public/budger'>
       <h3 class='uk-modal-header'>Event Navigator</h3>
@@ -717,13 +733,13 @@ public static function renderEventFilterModal($accounts = null, $categories = nu
           ";
 
           $result .= "<div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Currency'>
-          <span class='small' >Currencies</span>
-          <select class='uk-select' name='cur' id='currency_filter' placeholder='Currency'>";
+          <span class='small' >Units</span>
+          <select class='uk-select' name='unt' id='unit_filter' placeholder='Unit'>";
           if ($currencies != null){
             foreach ($currencies AS $value){
     
                       if ($value->is_removed == 0){
-                        $result .= "<option class='' data-type='' value='" . $value->id . "'>  " . $value->name . "</option>";
+                        $result .= "<option class='' value='" . $value->id . "'>  " . $value->name . "</option>";
                       }
                       else {
                         
@@ -742,7 +758,7 @@ public static function renderEventFilterModal($accounts = null, $categories = nu
             foreach ($allaccounts AS $value){
     
                       if ($value->archieved == 0){
-                        $result .= "<option class='' data-type='' value='" . $value->id . "'>  " . $value->name . "</option>";
+                        $result .= "<option class=''  data-unit='" . $value->currency . "' value='" . $value->id . "'>  " . $value->name . "</option>";
                       }
                       else {
                         
@@ -755,12 +771,12 @@ public static function renderEventFilterModal($accounts = null, $categories = nu
 
    $result .= "<div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Past time'>
    <label for='stm'>Month from (past)</label>
-   <input class='uk-input' type='month' id='stm' name='stm' value='2022-06'>
+   <input class='uk-input' type='month' id='stm' name='stm' value='" . $stm . "'>
    </div>";
    
    $result .= "<div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Future time'>
     <label for='enm'>Month to (future)</label>
-    <input class='uk-input' type='month' id='enm' name='enm' value='2022-08'>
+    <input class='uk-input' type='month' id='enm' name='enm' value='" . $endm . "'>
    </div>
 
    </div>
@@ -1060,7 +1076,7 @@ public static function renderAccountModal($currencies)
         </div>
 
         <div class='uk-margin uk-mb-0 uk-mt-half uk-width-1-1' title='Category of event'>
-        <span class='small' >Currency identifier</span>
+        <span class='small' >Unit identifier</span>
           <select class='uk-select' id='bud_currency' placeholder='Account'>";
             if ($currencies != null){
               foreach ($currencies AS $dat){

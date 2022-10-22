@@ -10948,4 +10948,13 @@ select .opt-header {
   margin: 0px;
 }
 
+.dd-datenav {
+  max-height: 90vh;
+  overflow: auto;
+}
+
+.droptabledata {
+  max-width: 300px;
+}
+
 /*# sourceMappingURL=uikit.css.map */

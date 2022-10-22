@@ -45,6 +45,8 @@ class BudgerMain extends BaseController
   private $_params_startMonth = "";
   private $_params_endMonth = "";
 
+  private $_all_accounts;
+
   public $_btn_prev_month_date;
   public $_btn_next_month_date;
   public $_btn_go_prevMonth;
@@ -80,12 +82,24 @@ class BudgerMain extends BaseController
 
     $this->input = new Input();
 
-    $this->get_groups = $this->input->get('grp', '', 'STRING');
-    $this->get_accounts = $this->input->get('grp', '', 'ARRAY');
-    $this->get_currency = $this->input->get('grp', '', 'INT');
+    // $this->get_groups = $this->input->get('grp', '', 'STRING');
+    $this->get_accounts = [];
+    If (isset($_GET['acc']))
+    {
+      foreach ($_GET['acc'] AS $int){
 
-    if ($this->get_accounts == ""){
-    $this->currentCurrency = BudgerData::GetFirstCurrency($USER);
+        array_push( $this->get_accounts, Input::filterMe('INT', $int));
+      }
+    }
+    // $this->get_accounts = Input::filterMe('INTARRAY', $_GET['acc']);
+    $this->get_currency = $this->input->get('unt', '', 'INT');
+
+    if ($this->get_currency == ""){
+      $this->currentCurrency = BudgerData::GetFirstCurrency($USER);
+    }
+    else 
+    {
+      $this->currentCurrency = $this->input->get('unt', '', 'INT');
     }
 
     $this->today_MY = date("Y-m");
@@ -154,7 +168,17 @@ class BudgerMain extends BaseController
     $total_last_date .= "-01";
     // END RESERVE
 
-    $this->accounts = BudgerData::LoadAccountList_Currency_keyId($USER, $this->currentCurrency);
+    if (count($this->get_accounts) > 0){
+      $nsm = true;
+      if (isset($_GET['acc'])){$nsm = false;};
+      $this->accounts = BudgerData::LoadAccountsFromArr($USER, $this->get_accounts, $this->currentCurrency, $nsm);
+    }
+    else 
+    {
+      $this->accounts = BudgerData::LoadAccountList_Currency_keyId($USER, $this->currentCurrency);
+    }
+    $this->_all_accounts = BudgerData::LoadAccountList_Currency_keyId($USER, $this->currentCurrency, false);
+
     $this->Template_Objects = BudgerData::LoadTemplateList_ALL_keyId($USER);
     $this->Goods_Objects = BudgerData::LoadGoodsList($USER);
     $this->Categories_Objects = BudgerData::LoadCategoryList_ALL_keyId($USER);
@@ -276,10 +300,10 @@ public function renderNavigateButtons($containerId = "", $position = ""){
   $result .= "<a type='button' href='". $this->_btn_expand_prevMonth .  $goBottom . "'  class='uk-button uk-button-default'>";
   $result .= "<span uk-icon='chevron-double-left'></span>";
   $result .= "</a>";
-  $result .= "<button type='button' id='f_showEmptyRows' class='uk-button uk-button-default' title='HIDEEMPTY'>";
+  $result .= "<button type='button' id='f_showEmptyRows' class='uk-button uk-button-default  uk-hidden' title='HIDEEMPTY'>";
   $result .= "<span uk-icon='more'></span>";
   $result .= "</button>";
-  $result .= "<button  type='button' id='f_showTotalCols' class='uk-button uk-button-default' title='HIDETOTALS'>";
+  $result .= "<button  type='button' id='f_showTotalCols' class='uk-button uk-button-default uk-hidden' title='HIDETOTALS'>";
   $result .= "<span uk-icon='more-vertical'></span>";
   $result .= "</button>";
   //$result .= "<button type='button' onclick='databaseRecount();' class='uk-button uk-button-default'>Update Database</button>";
@@ -288,7 +312,7 @@ public function renderNavigateButtons($containerId = "", $position = ""){
   $result .= "<button type='button' href='#modal-container' uk-toggle class='uk-button uk-button-default' title='Navigator'>";
   $result .= "<span uk-icon='server'></span>";
   $result .= "</button>";
-  $result .= "<button type='button' onclick='tf_create(1, 0);' class='uk-button uk-button-default' title='NEWEVENT'>";
+  $result .= "<button type='button' onclick='tf_create(1, 0);' class='uk-button uk-button-default uk-hidden' title='NEWEVENT'>";
   $result .= "<span uk-icon='file-text'></span>";
   $result .= "</button>";
   $result .= "<a type='button' href='". $this->_btn_expand_nextMonth .  $goBottom."' class='uk-button uk-button-default'>";
@@ -333,23 +357,23 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
 
       $result .=  "<div class='uk-grid-small' uk-grid>
       <div class='uk-width-expand' uk-leader>incomes</div>
-      <div class='incomes'>$20.90</div>
+      <div class='incomes'></div>
       </div>
       <div class='uk-grid-small' uk-grid>
       <div class='uk-width-expand' uk-leader>Deposits</div>
-      <div class='deposits'>$20.90</div>
+      <div class='deposits'></div>
       </div>
       <div class='uk-grid-small' uk-grid>
       <div class='uk-width-expand' uk-leader>Expenses</div>
-      <div class='expenses'>$20.90</div>
+      <div class='expenses'></div>
       </div>
       <div class='uk-grid-small' uk-grid>
       <div class='uk-width-expand' uk-leader>Transfers</div>
-      <div class='transfers'>$20.90</div>
+      <div class='transfers'></div>
       </div>
       <div class='uk-grid-small' uk-grid>
       <div class='uk-width-expand' uk-leader>Difference</div>
-      <div class='difference'>$20.90</div>
+      <div class='difference'></div>
       </div>";
     }
     foreach ($this->totals AS $total){
@@ -390,7 +414,6 @@ public function renderWholeTable(){
     $cdate_day = date('d', strtotime($this->get_lastMonth));
     $secondcounter = 0;
 
-    $result .= date('Y-m-d h-m-i', time());
     $result .= "<table class='uk-table uk-table-divider uk-table-hover uk-table-small budgetable'>
     <thead>
     <tr style='border-top: 1px solid #e5e5e5;'>
@@ -540,7 +563,7 @@ public function renderWholeTable(){
                 $_object->value,
                 $_object->category,
                 $_grpname, 
-                $this->accounts[$_object->transaccount]->name,
+                $this->_all_accounts[$_object->transaccount]->name,
                 // $allAccounts[$_object->transaccount]->name,
                 // $allAccounts[$_object->transaccount]->color,
                 // $allAccounts[$_object->transaccount]->currency,

@@ -94,14 +94,44 @@ class BudgerData
                 return null;
     }
 
-    public static function LoadAccountList_Currency_keyId($user, $currency = 0){
+    public static function LoadAccountList_Currency_keyId($user, $currency = 0, $main = true){
       //  FIRST HARVEST LANGUAGES to arrange items into Currency-groups
+      $nts = "";
+      if ($main == true){
+        $nts = "AND notshow = 0";
+      }
       if ($currency == 0){ $currency = SELF::GetFirstCurrency($user);};
       $result = DB::select('select * from ' . env('TB_BUD_ACCOUNTS') . 
-      ' where user = :user AND currency = :currency ORDER BY ordered ASC', ['user' => $user, 'currency' => $currency ]);
+      ' where user = :user AND currency = :currency ' . $nts . ' ORDER BY ordered ASC', 
+      ['user' => $user, 'currency' => $currency ]);
       return Utils::arrayToIndexed($result);
     }
 
+    public static function LoadAccountsFromArr($user, $accountArr, $currency, $main = true){
+      $accounts = "";
+      $counter = 0;
+      
+      $result = '';
+      if ($main == true){
+        $result = DB::table(env('TB_BUD_ACCOUNTS'))
+        ->where('user', $user)
+        ->where('notshow', '0')
+        ->where('currency', $currency)
+        ->whereIn('id', $accountArr)
+        ->orderBy('ordered', 'asc')
+        ->get();
+      }
+      else {
+        $result = DB::table(env('TB_BUD_ACCOUNTS'))
+        ->where('user', $user)
+        ->where('currency', $currency)
+        ->whereIn('id', $accountArr)
+        ->orderBy('ordered', 'asc')
+        ->get();
+      }
+      return $result;
+
+    }
 
     public static function LoadCurrencies_keyId($user){
       $result = DB::select('select * from ' . env('TB_COM_CURRENCY') . 
