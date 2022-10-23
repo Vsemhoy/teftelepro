@@ -8,6 +8,7 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use App\Http\Controllers\Components\Home\HomeController;
 use App\Http\Controllers\Components\Budger\BudgerController;
+use App\Http\Controllers\Components\Diary\DiaryController;
 use App\Http\Controllers\Base\Input;
 use Illuminate\Foundation\Auth\User;
 
@@ -30,7 +31,11 @@ class Controller extends BaseController
           $com = new BudgerController();
           return $com;
           break;
-        default:
+          case "diary":
+            $com = new DiaryController();
+            return $com;
+            break;
+          default:
           $com = new HomeController();
           return $com;
           break;

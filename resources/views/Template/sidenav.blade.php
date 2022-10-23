@@ -8,6 +8,7 @@
     $section = explode('.', Route::currentRouteName())[1];
   };
 ?>
+
 <nav id="sidebarMenu" class="col-sidenav uk-background-muted">
       <div class="position-sticky pt-3" >
       <a class="uk-navbar-toggle " id="leftSidenavToggler2" style="justify-items: none;">

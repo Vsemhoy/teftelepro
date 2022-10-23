@@ -1569,10 +1569,16 @@ class Counter
               // COUNT PERCENTS
               let days  = this.daysInMonth(rows[index].getAttribute('date'));
               let addon = resarray[t] * (percentValue / 100) / 12 / days;
+
+              console.log("perc " + addon);
               percarray[t] = percarray[t] + addon;
               resarray[t] = resarray[t] + addon;
               //console.log(addon);
-            }
+            } 
+          }
+          else if (rows[index].querySelectorAll('.daytotals')[t].getAttribute('actype') == 2){
+            console.log("resarr " + resarray[t]);
+            
           }
           let dec = rows[index].querySelectorAll('.daytotals')[t].getAttribute('dec');
           toFixer = toFixer < dec ? dec : toFixer;
@@ -1595,11 +1601,11 @@ class Counter
             // }
           // }
           // percent set
-          if (percarray[t] != 0){
-            rows[index].querySelectorAll('.subbal-perc')[t].innerHTML = percarray[t] != 0 ? percarray[t].toFixed(dec) : "";
-            console.log(percarray[t]);
+         
+            rows[index].querySelectorAll('.subbal-perc')[t].innerHTML = percarray[t] < 0 ? percarray[t].toFixed(dec) : "";
+            console.log(" percar " + percarray[t]);
             percarray[t] = 0;
-          }
+          
           lastBalanceArr[t] = resarray[t];
 
           sums += resarray[t];

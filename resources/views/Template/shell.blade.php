@@ -23,6 +23,20 @@
 
 
     <title><?php echo $component->title; ?></title>
+  <?php 
+  if (isset($component->color_col_sidenav_bg)){
+    echo "<style>
+    .col-sidenav{
+       background-color: " . $component->color_col_sidenav_bg . ";
+      box-shadow: " . $component->color_col_sidenav_shadow . ";
+    }
+    .sidebar-heading > span, .sidebar-heading > span {
+      color: " . $component->color_col_sidenav_divider . ";
+    }
+    </style>";
+  };
+  ?>
+
 </head>
 
 <body class="sidebar-mini layout-fixed ">
@@ -156,7 +170,7 @@ uk-sticky="show-on-up: true" style="z-index: 9;">
 
         <h3>Applications:</h3>
         <ul class="uk-nav uk-dropdown-nav">
-                  <li class=""><a class="uk-width-1-1 uk-flex-between" href="{{ route('home')}}">Diary <span class="" uk-icon="home"></span></a></li>
+                  <li class=""><a class="uk-width-1-1 uk-flex-between" href="{{ route('diary')}}">Diary <span class="" uk-icon="home"></span></a></li>
                   <li class="uk-nav-divider"></li>
                   <li class=""><a class="uk-width-1-1 uk-flex-between" href="{{ route('budger')}}">Budger <span class="" uk-icon="home"></span></a></li>
                   <li class="uk-nav-divider"></li>

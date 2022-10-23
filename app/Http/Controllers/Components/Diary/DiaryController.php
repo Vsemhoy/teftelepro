@@ -1,5 +1,5 @@
 <?php
-namespace App\Http\Controllers\Components\Budger;
+namespace App\Http\Controllers\Components\Diary;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -8,7 +8,7 @@ use Illuminate\Routing\Controller as BaseController;
 use App\Http\Controllers\Objects\SideMenuItem;
 use App\Http\Controllers\Base\Input;
 
-class BudgerController extends BaseController
+class DiaryController extends BaseController
 {   
     private $componentName = "budger";
     public $sideMenu;
@@ -26,43 +26,43 @@ class BudgerController extends BaseController
     public $defaultPage;
 
     // Month & Year
-    public $today_MY;
-    public $last_MY;
+    // public $today_MY;
+    // public $last_MY;
 
-    public $get_startMonth;
-    public $get_lastMonth;
+    // public $get_startMonth;
+    // public $get_lastMonth;
 
-    private $_GET_PARAMS;
-    private $_params_startMonth = "";
-    private $_params_endMonth = "";
+    // private $_GET_PARAMS;
+    // private $_params_startMonth = "";
+    // private $_params_endMonth = "";
 
-    public $_btn_prev_month_date;
-    public $_btn_next_month_date;
-    public $_btn_go_prevMonth;
-    public $_btn_go_nextMonth;
-    public $_btn_expand_prevMonth;
-    public $_btn_expand_nextMonth;
-    public $get_startMonth_filter;
-    public $get_lastMonth_filter;
+    // public $_btn_prev_month_date;
+    // public $_btn_next_month_date;
+    // public $_btn_go_prevMonth;
+    // public $_btn_go_nextMonth;
+    // public $_btn_expand_prevMonth;
+    // public $_btn_expand_nextMonth;
+    // public $get_startMonth_filter;
+    // public $get_lastMonth_filter;
 
-    public $tableLength;
-    public $currentCurr;
+    // public $tableLength;
+    // public $currentCurr;
 
-    public $__accounts;
-    public $__goods_Objects;
-    public $__groups_Objects;
+    // public $__accounts;
+    // public $__goods_Objects;
+    // public $__groups_Objects;
 
-    public $color_col_sidenav_bg = "rgba(0, 122, 193, 0.82)";
-    public $color_col_sidenav_shadow = "rgb(0 54 108 / 70%) 0px 0px 200px inset !important";
-    public $color_col_sidenav_divider = "rgb(176, 223, 251) !important";
+    public $color_col_sidenav_bg = "rgb(193 0 66 / 82%) !important";
+    public $color_col_sidenav_shadow = "rgb(108 0 25 / 70%) 0px 0px 200px inset !important";
+    public $color_col_sidenav_divider = "rgb(251 176 190) !important";
 
     //http://link/foo.php?id[]=1&id[]=2&id[]=3
 
     public function __construct()
     {
       $this->sideMenu = [];
-      $this->name = "Budget";
-      $this->title = "Simple Budget manager";
+      $this->name = "Diary";
+      $this->title = "Simple diary";
 
       $this->_buildSideMenu();
     }

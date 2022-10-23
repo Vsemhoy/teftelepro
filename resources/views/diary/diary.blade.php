@@ -13,7 +13,7 @@
     //     print_r($value);
     //     echo "<br>";
     // }
-    $component = Controller::getComponent('home');
+    $component = Controller::getComponent('diary');
     $user = User::where('id', '=', session('LoggedUser'))->first();
     ?>
 
@@ -24,6 +24,21 @@
       
       
 
+
+      <a class="uk-button uk-button-default" href="#modal-full" uk-toggle>Open</a>
+
+<div id="modal-full" class="uk-modal-full" uk-modal>
+    <div class="uk-modal-dialog">
+        <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+        <div class="uk-grid-collapse" uk-grid>
+            <div class="uk-background-cover" style="background-image: url('images/photo.jpg');" uk-height-viewport></div>
+            <div class="uk-padding-large">
+                <h1>Headline</h1>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <style>
@@ -54,6 +69,9 @@ html{
   border: 1px solid #e5e5e5;
    /* box-shadow: 0px -7px 8px 7px black; */
    backdrop-filter: blur(5px);
+   bottom: 0px;
+   overflow: auto;
+   max-height: 44px;
 }
 
 .tool-button{
@@ -116,10 +134,7 @@ box-shadow: 0px 1px 7px black;
 .editor-header {
 padding: 12px;
 }
-.nameEditor {
-margin-top: 61px;
 
-}
 .nameEditor > .textinput {
 font-size: 1.5rem;
 border: none;
@@ -369,67 +384,14 @@ border-bottom: 1px solid rgb(0, 174, 255);
 
       @endif
 
-  <div class="toolbar" uk-sticky="position: bottom">
+ 
 
-    <!-- <input type ='button' class="tool-button lup lup-underline"  onclick="document.execCommand('insertHTML', false, '<table><tr><td>123</td></tr></table>');"/> -->
-    <input type ='button' class="tool-button lup lup-heading"  onclick="document.execCommand('formatBlock', false, '<h3>');"/>
-      
-      
-      <input  type ='button' class="tool-button lup lup-underline"  onclick="document.execCommand('underline', false, '');"/>
-      <input type ='button' class="tool-button lup lup-italic" onclick="document.execCommand('italic', false, '');"/>
-      <input type ='button' class="tool-button lup lup-bold" onclick="document.execCommand('bold', false, '');"/>
-      <input type ='button' class="tool-button lup lup-strike" onclick="document.execCommand('strikeThrough',false,'')"/>
-      <input type ='button' class="tool-button lup lup-clear" onclick="clearFormat();"/>
-      
-      <input type ='button' class="tool-button lup lup-colorpic" onclick="choosecolor()"/>
-      <input type ='button' class="tool-button lup lup-pencil" onclick="changeColor()"/>
-      <input type ='button' class="tool-button lup lup-flame" onclick="changeBacklight()"/>
-      
-      
-      
-      <input type ='button' class="tool-button lup lup-bulletlist"  onclick="document.execCommand('insertUnorderedList', false, '');"/>
-      <input type ='button' class="tool-button lup lup-numlist"  onclick="document.execCommand('insertOrderedList', false, '');"/>
-      
-      <input type ='button' class="tool-button lup lup-jsleft" onclick="document.execCommand('justifyLeft',false,'')"/>
-      <input type ='button' class="tool-button lup lup-jscenter" onclick="document.execCommand('justifyCenter',false,'')"/>
-      <input type ='button' class="tool-button lup lup-jsright" onclick="document.execCommand('justifyRight',false,'')"/>
-      <input type ='button' class="tool-button lup lup-undo" onclick="document.execCommand('undo',false,'')"/>
-      <input type ='button' class="tool-button lup lup-redo" onclick="document.execCommand('redo',false,'')"/>
-
-
-      <input type ='button' class="tool-button lup lup-minus" onclick="document.execCommand('insertHorizontalRule',false,'')"/>
-      
-      <!--         <input type ='button' class="tool-button lup lup-link" onclick="link()"/> -->
-      <label for="file" class="tool-button lup lup-file-image"></label>
-      <input class="tool-button lup lup-file-image" type="file" accept="image/*" id="file" style="display: none;" onchange="getImage()">
-      
-      
-      <input type ='button' class="tool-button lup lup-trash" onclick="document.execCommand('delete',false,'')"/>
-      
-      
-      <input type ='button' class="tool-button lup lup-selectall" onclick="document.execCommand('selectAll',false,'')"/>
-      <!--       <input type ='button' class="tool-button lup lup-selectall" onclick="insertCodeSection();"/> -->
-      <input type ='button' class="tool-button lup lup-cut" onclick="document.execCommand('cut',false,'')"/>
-      <!-- <input type ='button' class="tool-button lup lup-paste" onclick="insertNotFormatted()"/> -->
-
-
-<!--   
-    <input type ='button' class="tool-button lup lup-clone" onclick="copy()"/> -->
-
-    <!-- Jutify -->
-
-
-
-<!--       <input type ='button' class="tool-button lup lup-code" onclick="showCode()"/>
-    <input type ='button' class="tool-button lup lup-text" onclick="showText()"/> -->
-  </div>
-
-  <div class="colorPicker d-none" id="ColorPicker" onclick="function fnc(e){e.preventDefault();};">
+  <div class="colorPicker uk-hidden" id="ColorPicker" onclick="function fnc(e){e.preventDefault();};">
 <!--       <div class="colorInstance" data-color="deeppink" style="background-color: deeppink;"></div>
     <div class="colorInstance" data-color="gold" style="background-color: gold;"></div> -->
   </div>
 
-  <div class="container">
+  <div class="uk-container">
     <div class="editor-header">
       <div  class="nameEditor">
         <input type="button" class="nameButton lup-plus" onclick="toggleAddInfo();"/>
@@ -446,7 +408,7 @@ border-bottom: 1px solid rgb(0, 174, 255);
       <div class="DateSec"><span id="Datem">12/23/23</span></div><div class="DateSec"><span id="Datec">45/45/45</span></div>
     </div>
     <div class="editor" contenteditable="true" id="WebVisor" onkeyup="window.external.notify('+PLUS:');">
-      <h1>Simple Html editor</h1>
+      <h3>Simple Html editor</h3>
       <p>Good to start</p>
     </div>
   </div>
@@ -460,7 +422,7 @@ border-bottom: 1px solid rgb(0, 174, 255);
    <!-- end of content -->
    </div>
 
-
+   
 
 
 
@@ -708,9 +670,52 @@ colopic.classList.add("d-none");
 }
 
 </script>
-
-
-
     </div>
+
+    <div class="toolbar"   >
+    <!-- <input type ='button' class="tool-button lup lup-underline"  onclick="document.execCommand('insertHTML', false, '<table><tr><td>123</td></tr></table>');"/> -->
+    <input type ='button' class="tool-button lup lup-heading"  onclick="document.execCommand('formatBlock', false, '<h3>');"/>
+      
+      
+      <input  type ='button' class="tool-button lup lup-underline"  onclick="document.execCommand('underline', false, '');"/>
+      <input type ='button' class="tool-button lup lup-italic" onclick="document.execCommand('italic', false, '');"/>
+      <input type ='button' class="tool-button lup lup-bold" onclick="document.execCommand('bold', false, '');"/>
+      <input type ='button' class="tool-button lup lup-strike" onclick="document.execCommand('strikeThrough',false,'')"/>
+      <input type ='button' class="tool-button lup lup-clear" onclick="clearFormat();"/>
+      
+      <input type ='button' class="tool-button lup lup-colorpic" onclick="choosecolor()"/>
+      <input type ='button' class="tool-button lup lup-pencil" onclick="changeColor()"/>
+      <input type ='button' class="tool-button lup lup-flame" onclick="changeBacklight()"/>
+      
+      <input type ='button' class="tool-button lup lup-bulletlist"  onclick="document.execCommand('insertUnorderedList', false, '');"/>
+      <input type ='button' class="tool-button lup lup-numlist"  onclick="document.execCommand('insertOrderedList', false, '');"/>
+      
+      <input type ='button' class="tool-button lup lup-jsleft" onclick="document.execCommand('justifyLeft',false,'')"/>
+      <input type ='button' class="tool-button lup lup-jscenter" onclick="document.execCommand('justifyCenter',false,'')"/>
+      <input type ='button' class="tool-button lup lup-jsright" onclick="document.execCommand('justifyRight',false,'')"/>
+      <input type ='button' class="tool-button lup lup-undo" onclick="document.execCommand('undo',false,'')"/>
+      <input type ='button' class="tool-button lup lup-redo" onclick="document.execCommand('redo',false,'')"/>
+
+
+      <input type ='button' class="tool-button lup lup-minus" onclick="document.execCommand('insertHorizontalRule',false,'')"/>
+      
+      <!--         <input type ='button' class="tool-button lup lup-link" onclick="link()"/> -->
+      <label for="file" class="tool-button lup lup-file-image"></label>
+      <input class="tool-button lup lup-file-image" type="file" accept="image/*" id="file" style="display: none;" onchange="getImage()">
+      
+      <input type ='button' class="tool-button lup lup-trash" onclick="document.execCommand('delete',false,'')"/>
+      
+      <input type ='button' class="tool-button lup lup-selectall" onclick="document.execCommand('selectAll',false,'')"/>
+      <!--       <input type ='button' class="tool-button lup lup-selectall" onclick="insertCodeSection();"/> -->
+      <input type ='button' class="tool-button lup lup-cut" onclick="document.execCommand('cut',false,'')"/>
+      <!-- <input type ='button' class="tool-button lup lup-paste" onclick="insertNotFormatted()"/> -->
+<!--   
+    <input type ='button' class="tool-button lup lup-clone" onclick="copy()"/> -->
+    <!-- Jutify -->
+
+<!--       <input type ='button' class="tool-button lup lup-code" onclick="showCode()"/>
+    <input type ='button' class="tool-button lup lup-text" onclick="showText()"/> -->
+ 
+</div>
 
 @endsection
