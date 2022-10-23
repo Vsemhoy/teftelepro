@@ -55,7 +55,9 @@ class DiaryController extends BaseController
     public $color_col_sidenav_bg = "rgb(193 0 66 / 82%) !important";
     public $color_col_sidenav_shadow = "rgb(108 0 25 / 70%) 0px 0px 200px inset !important";
     public $color_col_sidenav_divider = "rgb(251 176 190) !important";
-
+    public $styles = [
+      "/components/diary/main.css"
+    ];
     //http://link/foo.php?id[]=1&id[]=2&id[]=3
 
     public function __construct()

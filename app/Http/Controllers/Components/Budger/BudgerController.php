@@ -56,6 +56,10 @@ class BudgerController extends BaseController
     public $color_col_sidenav_shadow = "rgb(0 54 108 / 70%) 0px 0px 200px inset !important";
     public $color_col_sidenav_divider = "rgb(176, 223, 251) !important";
 
+    public $styles = [
+    
+    ];
+
     //http://link/foo.php?id[]=1&id[]=2&id[]=3
 
     public function __construct()
