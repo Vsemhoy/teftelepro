@@ -20,13 +20,14 @@
     <link rel="stylesheet" href="{{ URL::asset('css/app.css') }}"  type="text/css"/>
     <link rel="stylesheet" href="{{ asset('/css/uikit.css') }}"  type="text/css"/>
     <link rel="stylesheet" href="{{ asset('/css/uikit-theme.css') }}"  type="text/css"/>
-    
+    @if(isset($component->styles))
+    @foreach ($component->styles AS $path)
+    <link rel="stylesheet" href="{{ asset($path) }}"  type="text/css"/>
+
+    @endforeach
+    @endif
     <?php
-    foreach ($component->styles AS $path){
-     ?>
-      <link rel="stylesheet" href="{{ asset('/<?php echo $path; ?>') }}"  type="text/css"/>
-     <?php
-    };
+
 ?>
 
 

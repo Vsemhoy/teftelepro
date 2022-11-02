@@ -1,0 +1,67 @@
+
+.di-main-container {
+  display: grid;
+  grid-template-columns: 300px auto 300px;
+
+}
+.di-card-list {
+  padding: 12px;
+}
+
+.di-main-navigation {
+  border-right: 1px solid rgb(222, 222, 222);
+}
+
+.di-main-filters {
+  
+  border-left: 1px solid rgb(222, 222, 222);
+}
+.di-main-grid-header {
+  border-bottom: 1px solid rgb(222, 222, 222);
+  padding: 12px;
+  margin-bottom: 6px;
+  min-height: 66px;
+}
+.di-group-nav-card {
+  border-bottom: 1px solid rgb(222, 222, 222);
+  transition: all ease 0.3s;
+}
+.di-group-nav-card:hover {
+  background: rgb(193 0 66 / 82%);
+  color: white;
+}
+.di-main-grid-header {
+  display: grid;
+  grid-template-columns: 50px auto;
+}
+.di-main-grid-header > span {
+  display: flex;
+  align-items: flex-end;
+  /* justify-content: space-around; */
+}
+.di-book-icon > svg {
+  width: 30px;
+}
+
+.di-group-nav-title {
+  display: grid;
+  grid-template-columns: 50px auto;
+  padding: 6px 0px;
+}
+.di-groupname {
+  
+}
+.di-group-expander {
+  display: flex;
+  align-content: space-around;
+  justify-content: space-around;
+  
+}
+/* .di-group-nav-card.di-coox  {
+
+  padding-bottom: 6px;
+} */
+.di-group-nav-card.di-coox .di-group-nav-list {
+  height: 0px;
+  overflow: hidden;
+}

@@ -5,7 +5,7 @@ class TextGen
 {
 
   /* GENERATE RANDOM TEXT TO FILL CARDS */
-private static function digitCorrector($start, $last) { return rand($start, $last);};
+private static function digitCorrector($start, $last) { return rand($start, $last);}
 public static function generateRandomString($length = 100) {  
  $characters = "eatoinhsrdlwmguycfpbkvxjzq"; $vowels = "eaoiuy"; $consonants = "tinhsrdlwmgcfpbkvxjzq";            $capchars = 'EATOINHSRDLWMGUYCFPBKVXJZQ';
  $gaps = [" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", ", ", ", ", ", ", ", ", ", ", ", ", ", ", " - ", "'", ": ", "; ", " — " ];
@@ -43,7 +43,7 @@ public static function generateRandomString($length = 100) {
        $gap = $gaps[(rand(0, count($gaps) - 1))];
        $randomString = $randomString . $gap; }
      $boycounter++; }
- return trim($randomString);};
+ return trim($randomString);}
 /* GENERATE RANDOM TEXT TO FILL CARDS */
 
 }
