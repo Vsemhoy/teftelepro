@@ -202,7 +202,7 @@ if ($accounts != null){
  >
   <span class=" uk-padding-small" uk-icon="album"></span></button>
  <div class="uk-inline date-navigation">
-    <button class="uk-button uk-button-text" type="button"><span class=" uk-padding-small" uk-icon="more-vertical"></span></button>
+    <button class="uk-button uk-button-text" type="button"><span class=" uk-padding-small" uk-icon="more-vertical" id='go_today_dblclick'></span></button>
     <div uk-dropdown class='dd-datenav'>
         <ul class="uk-nav uk-dropdown-nav">
             <!-- <li class="uk-active"><a href="#">Active</a></li> -->
@@ -798,6 +798,7 @@ class DOM {
     this.menuTrigger = document.querySelectorAll(".itemMenu ");
     this.eventTrigger = document.querySelectorAll(".bud-event-card ");
     this.modalWindow = document.querySelector("#modal_event");
+    
 
     this.chousenItem = "";
 
@@ -902,6 +903,17 @@ class DOM {
   {
     this.reload(); 
     parent = this;
+
+    <?php  if (!empty($cont->today_row_id)){  ?>
+
+      let go_today = document.querySelector("#go_today_dblclick");
+      if (go_today != null){
+        go_today.addEventListener("dblclick", function(e){
+          e.preventDefault();
+          location ="#<?php echo $cont->today_row_id; ?>";
+        })
+    }
+<?php  }; ?>
   }
 
   fillEditItemWindow(identer)
@@ -1570,7 +1582,7 @@ class Counter
               let days  = this.daysInMonth(rows[index].getAttribute('date'));
               let addon = resarray[t] * (percentValue / 100) / 12 / days;
 
-              console.log("perc " + addon);
+              //console.log("perc " + addon);
               percarray[t] = percarray[t] + addon;
               resarray[t] = resarray[t] + addon;
               //console.log(addon);
@@ -1631,20 +1643,22 @@ class Counter
         if (rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card').length > 0)
         {
           for (let q = 0; q < rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card').length; q++) {
-            let value = rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card')[q].querySelectorAll('.bud-value')[0].innerHTML;
-            let type = rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card')[q].getAttribute('type');
-            value = +(value.trim());
-            if (type == 1){
-              subobjects[h].incom += value;
-            }
-            if (type == 4){
-              subobjects[h].depos += value;
-            }
-            if (type == 2){
-              subobjects[h].expens += value;
-            }
-            if (type == 3){
-              subobjects[h].transfer += value;
+            if (!rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card')[q].classList.contains('bud-disabled')){
+              let value = rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card')[q].querySelectorAll('.bud-value')[0].innerHTML;
+              let type = rows[index].querySelectorAll('.droptabledata')[h].querySelectorAll('.bud-event-card')[q].getAttribute('type');
+              value = +(value.trim());
+              if (type == 1){
+                subobjects[h].incom += value;
+              }
+              if (type == 4){
+                subobjects[h].depos += value;
+              }
+              if (type == 2){
+                subobjects[h].expens += value;
+              }
+              if (type == 3){
+                subobjects[h].transfer += value;
+              }
             }
           }
         }
@@ -1685,9 +1699,9 @@ class Counter
           let e = previc + " expenses + transfers = " + (subobjects[i].expens + subobjects[i].transfer);
           celler.querySelectorAll('.transfers')[0].parentNode.setAttribute('title', e);
 
-          celler.querySelectorAll('.difference')[0].innerHTML  = subobjects[i].incom + subobjects[i].expens;
-          let s = "all transactions = " + (subobjects[i].incom + subobjects[i].depos + subobjects[i].expens + subobjects[i].transfer);
-          celler.querySelectorAll('.difference')[0].parentNode.setAttribute('title', s);
+          celler.querySelectorAll('.difference')[0].innerHTML  = subobjects[i].incom + subobjects[i].depos + subobjects[i].expens + subobjects[i].transfer;
+          // let s = "all transactions = " + (subobjects[i].incom + subobjects[i].depos + subobjects[i].expens + subobjects[i].transfer);
+          // celler.querySelectorAll('.difference')[0].parentNode.setAttribute('title', s);
 
 
           subobjects[i].prev_incom    = subobjects[i].incom;
@@ -1745,7 +1759,7 @@ class Counter
           let currDate = new Date(rows[i].getAttribute('startDate'));
           if (trasholdDate.getTime() <= currDate.getTime()){
 
-            console.log(rows[i].getAttribute('startDate') + " account: " + account);
+            //console.log(" z " +  rows[i].getAttribute('startDate') + " account: " + account);
             let totalCells = rows[i].querySelectorAll('.mtotals');
             let preCells = rows[i].querySelectorAll('.mtotalio');
             for (let n = 0; n < totalCells.length; n++){
@@ -1758,6 +1772,12 @@ class Counter
                 let expenses = preCells[n].querySelectorAll('.expenses')[0].innerHTML.trim();
                 let transfers = preCells[n].querySelectorAll('.transfers')[0].innerHTML.trim();
                 let difference = preCells[n].querySelectorAll('.difference')[0].innerHTML.trim();
+                let actype = totalCells[n].getAttribute('actype');
+                let dec = totalCells[n].getAttribute('dec');
+                let percval = 0;
+                if (totalCells[n].getAttribute('perc') != null){
+                  percval = totalCells[n].getAttribute('perc');
+                }
                 let obj = {
                   'value'      : amount, 
                   'monthdiff'  : diff,
@@ -1767,6 +1787,9 @@ class Counter
                   'expenses'   : expenses,
                   'transfers'  : transfers,
                   'difference' : difference,
+                  'decimals'   : dec,
+                  'percentval' : percval,
+                  'actype'     : actype,
                   'date'       : rows[i].getAttribute('startDate')
                 }
                 objectArray.push(obj);
@@ -1789,7 +1812,7 @@ class Counter
 
           return 0;
         };
-        console.log(this.responseText);
+        //console.log(this.responseText);
         // let result = JSON.parse(this.responseText);
         console.log('subtotals updated ' + this.responseText);
       }
@@ -1797,7 +1820,7 @@ class Counter
       {
         if (counter < 1){
           alert("Oops! There is some problems with the server connection.");
-          block.remove();
+          
           counter++;
         }
       }
@@ -1807,7 +1830,7 @@ class Counter
     xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     xhttp.setRequestHeader('X-CSRF-TOKEN', '<?php echo csrf_token(); ?>');
 
-    //alert(JSON.stringify(data));
+    //console.log("all data: " + JSON.stringify(data));
     xhttp.send(JSON.stringify(data));
   }
 

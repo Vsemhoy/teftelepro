@@ -1267,6 +1267,9 @@ class BudgerAjax extends BaseController
     $account   = Input::filterMe("INT", $json->account );
     $objects = Input::filterMe("ARRAY", $json->objects );
     $date = Input::filterMe("DATE", $json->date );
+
+
+
     $dateMod = date("Y-m-d", strtotime($date . " -1 month"));
       //1 - set not actual to all rows of account
     $affected = DB::table(env('TB_BUD_TOTALS'))
@@ -1276,6 +1279,8 @@ class BudgerAjax extends BaseController
     ->update([
         'actual' => '0'
     ]);
+
+    $lastTotaledMonth = null;
 
     foreach ($objects AS $obj){
       $value =  Input::filterMe("FLOAT", $obj->value);
@@ -1288,6 +1293,10 @@ class BudgerAjax extends BaseController
       $transfers =  Input::filterMe("FLOAT", $obj->transfers);
       $difference =  Input::filterMe("FLOAT", $obj->difference);
       $dateThis = Input::filterMe("DATE", $obj->date );
+
+      $accounttype =  Input::filterMe("INT",   $obj->actype);
+      $percentval  =  Input::filterMe("FLOAT", $obj->percentval);
+      $decimals    =  Input::filterMe("FLOAT", $obj->decimals);
       //echo $difference . " and ";
       // 2 - read if exist
       $item = DB::table(env('TB_BUD_TOTALS'))
@@ -1334,8 +1343,83 @@ class BudgerAjax extends BaseController
           ]
         );
       }
+
+      $lastTotaledMonth = (object)[
+        'actype'       => $accounttype,
+        'percentvalue' => $percentval,
+        'decimals'     => $decimals,
+        'setdate'      => $dateThis,
+        'account'      => $account,
+        'value'        => $value,
+        'account'      => $account,
+        'monthdiff'    => $monthDiff,
+        'percent'      => $percent,
+        'incomes'      => $incomes,
+        'deposits'     => $deposits,
+        'expenses'     => $expenses,
+        'transfers'    => $transfers,
+        'difference'   => $difference
+      ];
     }
+    if ($lastTotaledMonth != null){
+      $this->totalRecountAccount($user, $lastTotaledMonth);
+    };
     return 1;
+  }
+
+  // recount all total 
+  public function totalRecountAccount($user, $data)
+  {
+
+    // $account  =  $data->account ;
+    $account  =  $data->account;
+    $monthDiff  =  $data->monthdiff;
+    $percent  =  $data->percent;
+    $incomes  =  $data->incomes;
+    $deposits  =  $data->deposits;
+    $expenses  =  $data->expenses;
+    $transfers  =  $data->transfers;
+    $difference  =  $data->difference;
+    
+    $acctype = $data->actype;
+    $percval = $data->percentvalue;
+    $decimals = $data->decimals;
+    
+    $value  =  $data->value ;
+    $percVal = 0;
+    
+    
+    $months = DB::table(env('TB_BUD_TOTALS'))
+    ->where('account', $account)->where('actual', '0')
+    ->where('user', '=', $user->id )
+    ->orderBy('setdate', 'asc')->get();
+    
+    
+    foreach ($months AS $item)
+    {
+      print_r($item);
+      $balance_m = $item->incomes + $item->percent + $item->deposits + $item->expenses + $item->transfers;
+      $monthDiff = $balance_m;
+      $difference = $balance_m; // should be removed
+      $value = $value + $balance_m;
+      print_r("   value: " . $value);
+      print_r(" bm " . $balance_m);
+      
+        $affected = DB::table(env('TB_BUD_TOTALS'))
+        ->where('id', $item->id)
+        ->where('user', $user->id)
+        ->update([
+          'actual'       => '1',
+          'value'        => $value,
+          'monthdiff'    => $monthDiff,
+          // 'percent'      => $percent,
+          // 'incomes'      => $incomes,
+          // 'deposits'     => $deposits,
+          // 'expenses'     => $expenses,
+          // 'transfers'    => $transfers,
+          'difference'   => $difference
+        ]);
+     }
   }
 
 

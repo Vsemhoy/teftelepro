@@ -66,6 +66,8 @@ class BudgerMain extends BaseController
   public $items;
   public $totals;
 
+  public $today_row_id;
+
   public $URL;
   
   public $navigationByMonth;
@@ -384,7 +386,7 @@ public function tableTotalSectton($date, $accountsToloadArr, $isEnd = false, $la
       }
     }
     $result .=  "</td>
-    <td class='mtotals' acc='" . trim($account->id) . "' >
+    <td class='mtotals' acc='" . trim($account->id) . "' actype='" . $account->type . "' perc='" . $account->percent . "' dec='" . $account->decimals . "' >
     <span class='subtotalbal ' date='" . $date4total . "' dec='" . $account->decimals . "'>";
 
         $result .=  $ttv;
@@ -466,6 +468,7 @@ public function renderWholeTable(){
     $cdateclass = "";
     $cdateIden = "";
     if ($date == $currentDate){
+      $this->today_row_id = "dragrow_" . $idconstructorrow;
       $cdateclass = " currentdate" ;
       $empty = "";
       $obj = (object) array(
