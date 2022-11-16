@@ -659,7 +659,7 @@ class BudgerAjax extends BaseController
         $contrAmount = $contrAmount * -1;
       } 
     } 
-    else 
+    else if ($type == 2)
     {
       if ($amount > 0){
         $amount = $amount * -1;
@@ -921,7 +921,7 @@ class BudgerAjax extends BaseController
       }
     }
 
-    if ($type == 1 || $type == 3){
+    if ($type == 1 || $type == 4){
       if ($amount < 0){
         $amount = $amount * -1;
       }
@@ -1344,82 +1344,230 @@ class BudgerAjax extends BaseController
         );
       }
 
-      $lastTotaledMonth = (object)[
-        'actype'       => $accounttype,
-        'percentvalue' => $percentval,
-        'decimals'     => $decimals,
-        'setdate'      => $dateThis,
-        'account'      => $account,
-        'value'        => $value,
-        'account'      => $account,
-        'monthdiff'    => $monthDiff,
-        'percent'      => $percent,
-        'incomes'      => $incomes,
-        'deposits'     => $deposits,
-        'expenses'     => $expenses,
-        'transfers'    => $transfers,
-        'difference'   => $difference
-      ];
+      // $lastTotaledMonth = (object)[
+      //   'actype'       => $accounttype,
+      //   'percentvalue' => $percentval,
+      //   'decimals'     => $decimals,
+      //   'setdate'      => $dateThis,
+      //   'account'      => $account,
+      //   'value'        => $value,
+      //   'account'      => $account,
+      //   'monthdiff'    => $monthDiff,
+      //   'percent'      => $percent,
+      //   'incomes'      => $incomes,
+      //   'deposits'     => $deposits,
+      //   'expenses'     => $expenses,
+      //   'transfers'    => $transfers,
+      //   'difference'   => $difference
+      // ];
     }
-    if ($lastTotaledMonth != null){
-      $this->totalRecountAccount($user, $lastTotaledMonth);
-    };
+    // if ($lastTotaledMonth != null){
+    //   $this->totalRecountAccount($user, $lastTotaledMonth);
+    // };
     return 1;
   }
 
   // recount all total 
   public function totalRecountAccount($user, $data)
   {
-
-    // $account  =  $data->account ;
     $account  =  $data->account;
-    $monthDiff  =  $data->monthdiff;
-    $percent  =  $data->percent;
-    $incomes  =  $data->incomes;
-    $deposits  =  $data->deposits;
-    $expenses  =  $data->expenses;
-    $transfers  =  $data->transfers;
-    $difference  =  $data->difference;
     
     $acctype = $data->actype;
     $percval = $data->percentvalue;
     $decimals = $data->decimals;
     
     $value  =  $data->value ;
-    $percVal = 0;
     
-    
-    $months = DB::table(env('TB_BUD_TOTALS'))
-    ->where('account', $account)->where('actual', '0')
-    ->where('user', '=', $user->id )
-    ->orderBy('setdate', 'asc')->get();
-    
-    
-    foreach ($months AS $item)
-    {
-      print_r($item);
-      $balance_m = $item->incomes + $item->percent + $item->deposits + $item->expenses + $item->transfers;
-      $monthDiff = $balance_m;
-      $difference = $balance_m; // should be removed
-      $value = $value + $balance_m;
-      print_r("   value: " . $value);
-      print_r(" bm " . $balance_m);
+    $lastDateOfMonth = date("Y-m-t", strtotime($data->setdate));
+    $items = DB::table(env('TB_BUD_EVENTS'))
+    ->where('account', $account)->where('disabled', '0')->where('is_removed', '0')
+    ->where('user', '=', $user->id )->where('date_in', '>', $lastDateOfMonth)
+    ->orderBy('date_in', 'asc')->get();
+
+    print_r(count($items));
+    if (count($items) > 0){
+      $i = 0;
+      $startValue = $value;
       
-        $affected = DB::table(env('TB_BUD_TOTALS'))
-        ->where('id', $item->id)
-        ->where('user', $user->id)
-        ->update([
-          'actual'       => '1',
-          'value'        => $value,
-          'monthdiff'    => $monthDiff,
-          // 'percent'      => $percent,
-          // 'incomes'      => $incomes,
-          // 'deposits'     => $deposits,
-          // 'expenses'     => $expenses,
-          // 'transfers'    => $transfers,
-          'difference'   => $difference
-        ]);
-     }
+      while ($i < count($items)){
+        $perc = 0;
+        $inc = 0;
+        $dep = 0;
+        $exp = 0;
+        $tra = 0;
+        $maxDays = date('t', strtotime($items[$i]->date_in));
+
+ 
+        $firstDate = date("Y-m-01", strtotime($items[$i]->date_in));
+        $controlDate = date("Y-m-t", strtotime($items[$i]->date_in));
+        $lastDate = $controlDate;
+        /// Flag prevents to count total percent value from last month
+        $flag = false;
+        $flagCounter = 0;
+
+        while (strtotime($items[$i]->date_in) <= strtotime($controlDate))
+        {
+          try {
+            // IF credit account, count credit value
+            if ($acctype == 2 && $percval != 0 && $lastDate != $items[$i]->date_in && $flag){
+              $startTimeStamp = strtotime($lastDate);
+              if ($flagCounter == 0){
+                $startTimeStamp = strtotime($firstDate);
+                $flagCounter++;
+              }
+              $endTimeStamp = strtotime($items[$i]->date_in);
+              $timeDiff = abs($endTimeStamp - $startTimeStamp);
+              $numberDays = $timeDiff/86400;  // 86400 seconds in one day
+              // and you might want to convert to integer
+              if (intval($numberDays) > 0){
+                for ($q = 0; $q < intval($numberDays); $q++)
+                {
+                  $localPercent = ($value / 12 / intval($maxDays) * $percval);
+                  $perc += $localPercent;
+                  $value = $value + $localPercent;
+                }
+              };
+            };
+            $val = $items[$i]->value;
+            if ($items[$i]->type == 1){
+              // INCOME
+              if ($val < 0)($val = $val * -1);
+              $inc += $val;
+            } else if ($items[$i]->type == 2){
+              // EXPENSE
+              if ($val > 0)($val = $val * -1);
+              $exp += $items[$i]->value;
+            } else if ($items[$i]->type == 3){
+              if ($val > 0)($val = $val * -1);
+              // TRANS OUT
+              $tra += $items[$i]->value;
+            } else if($items[$i]->type == 4){
+              // TRANS IN
+              if ($val < 0)($val = $val * -1);
+              $dep += $val;
+            } 
+            
+            $value += $val;
+            
+            $lastDate = $items[$i]->date_in;
+            $flag = true;
+            $i++;
+            if ($i == count($items)){ break; }
+
+          } 
+          catch (Exception $ex){
+            print_r("Error 001: ");
+            return $ex->getMessage();
+          }
+        }; // End FIRST WHILE
+        
+ 
+        
+        // We should count last day percents and count differenc if lastday < today
+        if ($acctype == 2 && $percval != 0){
+          try {
+            $startTimeStamp = strtotime($lastDate);
+            if ($flagCounter == 0){
+              $startTimeStamp = strtotime($firstDate);
+            }
+            $endTimeStamp = strtotime($items[$i]->date_in);
+            $timeDiff = abs($endTimeStamp - $startTimeStamp);
+            $numberDays = $timeDiff/86400;  // 86400 seconds in one day
+            //return;
+            // and you might want to convert to integer
+            for ($q = 0; $q < intval($numberDays) + 1; $q++)
+            {
+              $localPercent = ($value / 12 / intval($maxDays) * $percval);
+              $perc += $localPercent;
+              $value = $value + $localPercent;
+              //print_r( "LPC: " . $localPercent . " ; PERC: " . $perc );
+            }
+          }
+          catch (Exception $ex){
+            print_r("Error 004: ");
+            return $ex->getMessage();
+          }
+        };
+
+        // Okay, let's write results!
+        $item = DB::table(env('TB_BUD_TOTALS'))
+        ->where('account', $account)
+        ->where('user', '=', $user->id )
+        ->where('setdate', $firstDate )->first();
+
+       // print_r($item);
+        
+        
+        if ($inc < 0)($inc = $inc * -1);
+        if ($dep < 0)($dep = $dep * -1);
+        if ($exp > 0)($exp = $exp * -1);
+        if ($tra > 0)($tra = $tra * -1);
+        $monthDiff = $value - $startValue;
+        $percent  =  $perc;
+        $incomes  =  $inc;
+        $deposits  =  $dep;
+        $expenses  =  $exp;
+        $transfers  =  $tra;
+        $difference  =  $perc + $inc + $dep + $exp + $tra;
+        
+        print_r($item);
+        
+        if ($item != null && isset($item->id)){      
+          try {
+            $affected = DB::table(env('TB_BUD_TOTALS'))
+            ->where('id', $item->id)
+            ->where('user', $user->id)
+            ->update([
+              'actual'       => '1',
+              'value'        => $value,
+              'monthdiff'    => $monthDiff,
+              'percent'      => $percent,
+              'incomes'      => $incomes,
+              'deposits'     => $deposits,
+              'expenses'     => $expenses,
+              'transfers'    => $transfers,
+              'difference'   => $difference
+            ]);
+          }
+            catch (Exception $ex){
+              print_r("Error 002: ");
+              return $ex->getMessage();
+            }
+          //echo "Updated " + $item->id + " ! "; 
+        }
+        else
+        {
+          // 4 - write if not exists
+          try {
+            $newId  = DB::table(env('TB_BUD_TOTALS'))->insertGetId(
+              [
+              'actual'       => '1',
+              'setdate'      => $firstDate,
+              'user'         => $user->id,
+              'account'      => $account,
+              'value'        => $value,
+              'account'      => $account,
+              'monthdiff'    => $monthDiff,
+              'percent'      => $percent,
+              'incomes'      => $incomes,
+              'deposits'     => $deposits,
+              'expenses'     => $expenses,
+              'transfers'    => $transfers,
+              'difference'   => $difference
+              ]
+            );
+
+          }
+          catch (Exception $ex){
+            print_r("Error 002: ");
+            return $ex->getMessage();
+          }
+          
+        }
+        $startValue = $value;
+      } // END SECOND WHILE
+      
+    }
   }
 
 

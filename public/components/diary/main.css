@@ -32,7 +32,7 @@
 }
 .di-main-grid-header {
   display: grid;
-  grid-template-columns: 50px auto;
+  grid-template-columns: 50px auto 50px;
 }
 .di-main-grid-header > span {
   display: flex;
@@ -65,3 +65,4 @@
   height: 0px;
   overflow: hidden;
 }
+

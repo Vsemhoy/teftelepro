@@ -25,6 +25,18 @@
         <span uk-icon="book" class='di-book-icon'>
           </span>
           <span>WorkBook</span>
+          <span class="" type=""><span uk-icon="icon: chevron-down; ratio: 1.4"></span></span>
+<div uk-dropdown="mode: hover">
+    <ul class="uk-nav uk-dropdown-nav">
+        <li class="uk-active"><a href="#">Active</a></li>
+        <li><a href="#">Item</a></li>
+        <li class="uk-nav-header">Header</li>
+        <li><a href="#">Item</a></li>
+        <li><a href="#">Item</a></li>
+        <li class="uk-nav-divider"></li>
+        <li><a href="#">Item</a></li>
+    </ul>
+</div>
         </div>
       <div class='di-grpup-list'>
         <div class='di-group-nav-wrapper'>
